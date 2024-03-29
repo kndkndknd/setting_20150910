@@ -8,12 +8,14 @@ import { pickupStreamTarget } from "./pickupStreamTarget";
 import { chat } from "googleapis/build/src/apis/chat";
 import { switchCramp } from "../arduinoAccess/arduinoAccess";
 
-
 export const chatReceive = async (
   io: SocketIO.Server,
   buffer?: buffStateType
   // from: string
 ) => {
+  console.log("buffer.keys:", Object.keys(buffer));
+  // console.log("buffer.target:", buffer.target);
+  // console.log("buffer.from:", buffer.from);
   if (buffer !== undefined) {
     switch (buffer.source) {
       case "CHAT":
@@ -34,7 +36,7 @@ export const chatReceive = async (
       case "TIMELAPSE":
         streams.TIMELAPSE.audio.push(buffer.audio);
         streams.TIMELAPSE.video.push(buffer.video);
-        streams.TIMELAPSE.bufferSize = buffer.bufferSize
+        streams.TIMELAPSE.bufferSize = buffer.bufferSize;
         // console.log(buffer.audio)
         console.log(
           "TIMELAPSE.length:" + String(streams.TIMELAPSE.audio.length)
@@ -61,7 +63,7 @@ export const chatReceive = async (
             audio: [],
             video: [],
             bufferSize: basisBufferSize,
-            index: 0
+            index: 0,
           };
         }
         streams[buffer.source].audio.push(buffer.audio);
@@ -77,7 +79,7 @@ export const chatEmit = async (io, from?) => {
   if (states.current.stream.CHAT) {
     // console.log(states.client);
     // console.log(io.sockets.adapter.rooms);
-    console.log(io.sockets.adapter.rooms.size);
+    // console.log(io.sockets.adapter.rooms.size);
     // console.log(io.sockets.adapter.rooms.get(buffer.from));
     const targetId =
       from !== undefined

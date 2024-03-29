@@ -11,8 +11,8 @@ export const streamEmit = (
 ) => {
   // if(streams[source].length > 0) {
   state.current.stream[source] = true;
-  console.log(state.client);
-  console.log(source);
+  // console.log(state.client);
+  // console.log(source);
   const targetId =
     from === undefined
       ? pickupStreamTarget(state, source)
@@ -45,19 +45,35 @@ export const streamEmit = (
       }
       */
   } else {
-    console.log(streams[source]);
+    // console.log(streams[source]);
     if (streams[source].audio.length > 0 || streams[source].video.length > 0) {
       if (!state.stream.random[source]) {
-        
         buff = {
           source: source,
           bufferSize: streams[source].bufferSize,
-          audio: streams[source].audio.length > streams[source].index ? streams[source].audio[streams[source].index] : new Float32Array(streams[source].bufferSize),
-          video: streams[source].video.length > streams[source].index ? streams[source].video[streams[source].index] : "",
+          audio:
+            streams[source].audio.length > streams[source].index
+              ? streams[source].audio[streams[source].index]
+              : new Float32Array(streams[source].bufferSize),
+          video:
+            streams[source].video.length > streams[source].index
+              ? streams[source].video[streams[source].index]
+              : "",
           duration: streams[source].bufferSize / 44100,
         };
-        streams[source].index = streams[source].index >= streams[source].audio.length - 1 ? streams[source].index + 1 : 0
-        console.log(streams[source].index)
+        if (
+          streams[source].index < streams[source].audio.length &&
+          streams[source].index < streams[source].video.length
+        ) {
+          streams[source].index++;
+        } else {
+          streams[source].index = 0;
+        }
+        // streams[source].index =
+        //   streams[source].index >= streams[source].audio.length - 1
+        //     ? streams[source].index + 1
+        //     : 0;
+        console.log("index:", streams[source].index);
         // streams[source].audio.push(buff.audio);
         // streams[source].video.push(buff.video);
       } else {

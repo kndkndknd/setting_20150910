@@ -84,7 +84,7 @@ export const ioServer = (
     });
 
     socket.on("streamReqFromClient", (source: string) => {
-      console.log(source);
+      // console.log(source);
       if (states.current.stream[source]) {
         // if (states.stream.target[source].length > 0) {
         //   console.log(`target stream: ${source}`);

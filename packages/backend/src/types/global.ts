@@ -179,13 +179,13 @@ export type CmdType = {
 };
 
 export type StreamsType = {
-  [key: string] : {
+  [key: string]: {
     audio: Array<Float32Array>;
     video: Array<string>;
     index: number;
     bufferSize: number;
-  }
-}
+  };
+};
 
 /*
 

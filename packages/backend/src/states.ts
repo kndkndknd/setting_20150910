@@ -128,7 +128,8 @@ export const states: cmdStateType = {
   bpm: {},
   clockMode: false,
   arduino: {
-    host: "localhost",
+    // host: "localhost",
+    host: "pi5.local",
     // host: "192.168.15.166",
     port: 5050,
     connected: false,
@@ -140,7 +141,7 @@ export const states: cmdStateType = {
 
 export let basisBufferSize = 8192;
 
-export const chats = []
+export const chats = [];
 
 export const oneshots = {
   KICK: {
@@ -163,7 +164,7 @@ export const oneshots = {
     video: [],
     bufferSize: basisBufferSize,
   },
-}
+};
 
 export const streams: StreamsType = {
   PLAYBACK: {
@@ -182,13 +183,13 @@ export const streams: StreamsType = {
     audio: [],
     video: [],
     index: 0,
-    bufferSize: basisBufferSize
+    bufferSize: basisBufferSize,
   },
   EMPTY: {
     audio: [],
     video: [],
     index: 0,
-    bufferSize: basisBufferSize
+    bufferSize: basisBufferSize,
   },
 };
 

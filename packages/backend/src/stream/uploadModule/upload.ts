@@ -271,7 +271,8 @@ export const uploadStream = async (stringArr, io) => {
           case "wav":
           case "aif":
           case "aiff":
-            const samples = await getSample(mediaDirPath, f);
+            // const samples = await getSample(mediaDirPath, f);
+            const samples = 100000;
             if (samples > 32768) {
               await pcm.getPcmData(
                 mediaDirPath + "/" + f,

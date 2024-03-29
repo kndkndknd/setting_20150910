@@ -211,7 +211,7 @@ const onAudioProcess = (e: AudioProcessingEvent) => {
   }
   if (streamFlag.timelapse) {
     let bufferData = {
-      target: "TIMELAPSE",
+      source: "TIMELAPSE",
       video: toBase64(),
       audio: new Float32Array(bufferSize),
       bufferSize: bufferSize,
@@ -219,6 +219,7 @@ const onAudioProcess = (e: AudioProcessingEvent) => {
     };
     e.inputBuffer.copyFromChannel(bufferData.audio, 0);
     // console.log(bufferData.audio)
+    console.log("socket.id(chatFromClient)", socket.id);
     socket.emit("chatFromClient", bufferData);
     streamFlag.timelapse = false;
   }

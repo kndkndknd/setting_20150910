@@ -69,7 +69,7 @@ const pushStream = (streamArray: Array<streamInterface>) => {
   streams[type] = {
     audio: [],
     video: [],
-    index: [],
+    index: 0,
     bufferSize: 8192,
   };
   streamArray.forEach((element: streamInterface, index: number) => {
@@ -83,9 +83,9 @@ const pushStream = (streamArray: Array<streamInterface>) => {
     ).buffer;
     console.log(audio);
 
-    streams[type].audio.push(audio);
+    // streams[type].audio.push(audio);
     streams[type].video.push(element.video);
-    streams[type].index.push(index);
+    // streams[type].index.push(index);
   });
   console.log(streams[type].audio[0]);
   streamList.push(type);

@@ -18,42 +18,42 @@ export const insertStream = async (
   try {
     console.log(ipaddress);
 
-    if (type === "PLAYBACK") {
-      await streams[type].forEach(async (stream: buffStateType) => {
-        await setTimeout(async () => {
-          const audio = btoa(
-            String.fromCharCode(...new Uint8Array(stream.audio))
-          );
-          // if (place !== undefined && date !== undefined) {
-          await postStream(type, stream.video, audio, place, date);
-          // } else {
-          //   await postStream(type, stream.video, audio, io);
-          // }
-        }, 1000);
-      });
-      await io.emit("stringsFromServer", {
-        strings: "INSERT DONE",
-        timeout: true,
-      });
-    } else {
-      streams[type].audio.forEach(async (audio: Float32Array, index) => {
-        await setTimeout(async () => {
-          const video = streams[type].video[index];
-          const audioStr = btoa(String.fromCharCode(...new Uint8Array(audio)));
-          // if (place !== undefined && date !== undefined) {
-          await postStream(type, video, audioStr, place, date);
-          // } else {
-          // await postStream(type, video, audioStr, io);
-          // }
-        }, 1000);
-      });
+    // if (type === "PLAYBACK") {
+    //   await streams[type].forEach(async (stream: buffStateType) => {
+    //     await setTimeout(async () => {
+    //       const audio = btoa(
+    //         String.fromCharCode(...new Uint8Array(stream.audio))
+    //       );
+    //       // if (place !== undefined && date !== undefined) {
+    //       await postStream(type, stream.video, audio, place, date);
+    //       // } else {
+    //       //   await postStream(type, stream.video, audio, io);
+    //       // }
+    //     }, 1000);
+    //   });
+    //   await io.emit("stringsFromServer", {
+    //     strings: "INSERT DONE",
+    //     timeout: true,
+    //   });
+    // } else {
+    streams[type].audio.forEach(async (audio: Float32Array, index) => {
+      await setTimeout(async () => {
+        const video = streams[type].video[index];
+        const audioStr = btoa(String.fromCharCode(...new Uint8Array(audio)));
+        // if (place !== undefined && date !== undefined) {
+        await postStream(type, video, audioStr, place, date);
+        // } else {
+        // await postStream(type, video, audioStr, io);
+        // }
+      }, 1000);
+    });
 
-      stringEmit(io, "INSERT DONE", true);
-      // await io.emit("stringsFromServer", {
-      //   strings: "INSERT DONE",
-      //   timeout: true,
-      // });
-    }
+    stringEmit(io, "INSERT DONE", true);
+    // await io.emit("stringsFromServer", {
+    //   strings: "INSERT DONE",
+    //   timeout: true,
+    // });
+    // }
   } catch (error) {
     console.log(error);
     stringEmit(io, "INSERT ERROR", true);

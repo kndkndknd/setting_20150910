@@ -1,7 +1,8 @@
 import { Socket } from "socket.io-client";
-//import { initialize } from "./ts"
+import { initialize } from "./main";
 import { textPrint, erasePrint, eraseText } from "./imageEvent";
 import { bass } from "./webaudio";
+import { frontState } from "./globalVariable";
 let bassFlag = false;
 
 export const keyDown = (
@@ -10,8 +11,7 @@ export const keyDown = (
   socket: Socket,
   stx,
   strCnvs,
-  ctx?,
-  cnvs?
+  start?
 ) => {
   let character: string;
 
@@ -20,11 +20,6 @@ export const keyDown = (
   } else {
     character = keyCode[e.keyCode];
   }
-  /*
-  if(character === 'Enter' && !start) {
-    initialize()
-  }
-  */
 
   if (character === "\\") {
     bassFlag = !bassFlag;
@@ -35,13 +30,14 @@ export const keyDown = (
     } else {
       erasePrint(stx, strCnvs);
     }
-  } else if(character === 'Eisu' 
-    || character == 'Meta' 
-    || character === 'Shift'
-    || character === 'Control'
-    || character === 'Alt'
+  } else if (
+    character === "Eisu" ||
+    character == "Meta" ||
+    character === "Shift" ||
+    character === "Control" ||
+    character === "Alt"
   ) {
-    console.log(character + ' pressed')
+    console.log(character + " pressed");
   } else {
     if (character === " ") {
     }

@@ -24,7 +24,7 @@ import { streamEmit } from "../stream/streamEmit";
 import { helpPrint } from "./help";
 import { stringEmit } from "../socket/ioEmit";
 import { getLiveStream } from "../stream/getLiveStream";
-import { getTimeLine } from "./splitSpace/getTimeLine"
+import { getTimeLine } from "./splitSpace/getTimeLine";
 import { connectTest, switchCramp } from "../arduinoAccess/arduinoAccess";
 
 export const splitSpace = async (
@@ -263,6 +263,14 @@ export const splitSpace = async (
           timeout: true,
         });
       });
+    } else if (stringArr[1] === "ADDRESS") {
+      if (stringArr.length > 2) {
+        state.arduino.host = stringArr[2];
+      }
+      io.emit("stringsFromServer", {
+        strings: "SWITCH HOST: " + states.arduino.host,
+        timeout: true,
+      });
     }
   } else if (
     stringArr[1] === "CHAT" ||
@@ -328,16 +336,23 @@ export const splitSpace = async (
       }
     }
   } else if (stringArr[0] === "TWITTER" || stringArr[0] === "X") {
-    const result = await getTimeLine(stringArr, io, state)
+    const result = await getTimeLine(stringArr, io, state);
     if (result) {
       //stringEmit(io, "GET TIMELINE: SUCCESS");
     } else {
       stringEmit(io, "GET TIMELINE: FAILED");
     }
-  } else if (stringArr[0] === "GAIN" && Object.keys(state.cmd.GAIN).includes(stringArr[1])) {
-    if(stringArr.length === 3 &&arrTypeArr[2] === "number") {
-      state.cmd.GAIN[stringArr[1]] = Number(stringArr[2])
+  } else if (
+    stringArr[0] === "GAIN" &&
+    Object.keys(state.cmd.GAIN).includes(stringArr[1])
+  ) {
+    if (stringArr.length === 3 && arrTypeArr[2] === "number") {
+      state.cmd.GAIN[stringArr[1]] = Number(stringArr[2]);
     }
-    stringEmit(io, `${stringArr[1]} GAIN: ${String(state.cmd.GAIN[stringArr[1]])}`, true)
+    stringEmit(
+      io,
+      `${stringArr[1]} GAIN: ${String(state.cmd.GAIN[stringArr[1]])}`,
+      true
+    );
   }
 };

@@ -14,6 +14,7 @@ export const getLiveStream = async (stream: string, qWord?: string) => {
       video: [],
       audio: [],
       bufferSize: basisBufferSize,
+      index: 0,
     };
     pushStateStream(stream, states);
   }

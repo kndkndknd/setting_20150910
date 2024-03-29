@@ -12,6 +12,7 @@ import {
 } from "../../states";
 // import { cmdStateType } from "../../types/global";
 import { pushStateStream } from "../pushStateStream";
+import { getSample } from "./getDuration";
 
 const pcm = require("pcm");
 const fs = require("fs");
@@ -117,6 +118,7 @@ export const uploadStream = async (stringArr, io) => {
             audio: [],
             video: [],
             bufferSize: basisBufferSize,
+            index: 0,
           };
         }
         let tmpBuff = new Float32Array(basisBufferSize);
@@ -269,34 +271,67 @@ export const uploadStream = async (stringArr, io) => {
           case "wav":
           case "aif":
           case "aiff":
-            await pcm.getPcmData(
-              mediaDirPath + "/" + f,
-              { stereo: true, sampleRate: 22050 },
-              function (sample, channel) {
-                tmpBuff[i] = sample;
-                i++;
-                if (i === basisBufferSize) {
-                  streams[streamName].audio.push(tmpBuff);
-                  tmpBuff = new Float32Array(basisBufferSize);
-                  i = 0;
+            const samples = await getSample(mediaDirPath, f);
+            if (samples > 32768) {
+              await pcm.getPcmData(
+                mediaDirPath + "/" + f,
+                { stereo: true, sampleRate: 22050 },
+                function (sample, channel) {
+                  tmpBuff[i] = sample;
+                  i++;
+                  if (i === basisBufferSize) {
+                    streams[streamName].audio.push(tmpBuff);
+                    tmpBuff = new Float32Array(basisBufferSize);
+                    i = 0;
+                  }
+                },
+                function (err, output) {
+                  if (err) {
+                    console.log("err");
+                    throw new Error(err);
+                  }
+                  console.log(
+                    "pcm.getPcmData(" +
+                      f +
+                      ", { stereo: true, sampleRate: 44100 })"
+                  );
+                  io.emit("stringsFromServer", {
+                    strings: "UPLOADED",
+                    timeout: true,
+                  });
                 }
-              },
-              function (err, output) {
-                if (err) {
-                  console.log("err");
-                  throw new Error(err);
+              );
+            } else {
+              const oneshotBuff = new Float32Array(samples);
+
+              await pcm.getPcmData(
+                mediaDirPath + "/" + f,
+                { stereo: true, sampleRate: 22050 },
+                function (sample, channel) {
+                  oneshotBuff[i] = sample;
+                  i++;
+                  if (i === sample) {
+                    streams[streamName].audio.push(oneshotBuff);
+                  }
+                },
+                function (err, output) {
+                  if (err) {
+                    console.log("err");
+                    throw new Error(err);
+                  }
+                  console.log(
+                    "pcm.getPcmData(" +
+                      f +
+                      ", { stereo: true, sampleRate: 44100 })"
+                  );
+                  streams[streamName].bufferSize = samples;
+                  io.emit("stringsFromServer", {
+                    strings: "UPLOADED",
+                    timeout: true,
+                  });
                 }
-                console.log(
-                  "pcm.getPcmData(" +
-                    f +
-                    ", { stereo: true, sampleRate: 44100 })"
-                );
-                io.emit("stringsFromServer", {
-                  strings: "UPLOADED",
-                  timeout: true,
-                });
-              }
-            );
+              );
+            }
             // streamList.push(streamName);
             pushStateStream(streamName, states, true);
             break;

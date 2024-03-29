@@ -69,7 +69,7 @@ canvasSizing();
 
 document.addEventListener("keydown", (e) => {
   console.log(e);
-  stringsClient = keyDown(e, stringsClient, socket, ctx, cnvs, ctx, cnvs);
+  stringsClient = keyDown(e, stringsClient, socket, ctx, cnvs);
 });
 
 socket.on(

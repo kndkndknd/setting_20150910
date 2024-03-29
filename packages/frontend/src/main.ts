@@ -32,7 +32,7 @@ import {
 
 import { cmdFromServer } from "./cmd";
 
-import { cnvs, ctx, videoElement } from "./globalVariable";
+import { cnvs, ctx, videoElement, frontState } from "./globalVariable";
 
 //import {debugOn} from './socket'
 
@@ -41,7 +41,7 @@ import { keyDown } from "./textInput";
 import { newWindowReqType } from "./types/global";
 import { enableClockMode, disableClockMode } from "./clockMode";
 
-let start = false;
+// let start = false;
 
 let darkFlag = false;
 let cinemaFlag = false;
@@ -59,7 +59,7 @@ let eListener = <HTMLElement>document.getElementById("wrapper");
 eListener.addEventListener(
   "click",
   () => {
-    if (!start) {
+    if (!frontState.start) {
       initialize();
     }
   },
@@ -74,7 +74,11 @@ canvasSizing();
 
 document.addEventListener("keydown", (e) => {
   console.log(e);
-  stringsClient = keyDown(e, stringsClient, socket, ctx, cnvs, ctx, cnvs);
+  if (e.key === "Enter" && !frontState.start) {
+    initialize();
+  } else {
+    stringsClient = keyDown(e, stringsClient, socket, ctx, cnvs);
+  }
 });
 
 socket.on(
@@ -519,7 +523,7 @@ export const initialize = async () => {
     textPrint("not support navigator.mediaDevices.getUserMedia", ctx, cnvs);
   }
 
-  start = true;
+  frontState.start = true;
   streamFlag.timelapse = true;
   timelapseId = window.setInterval(() => {
     streamFlag.timelapse = true;

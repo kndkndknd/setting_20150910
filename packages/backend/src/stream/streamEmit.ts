@@ -57,6 +57,7 @@ export const streamEmit = (
           duration: streams[source].bufferSize / 44100,
         };
         streams[source].index = streams[source].index >= streams[source].audio.length - 1 ? streams[source].index + 1 : 0
+        console.log(streams[source].index)
         // streams[source].audio.push(buff.audio);
         // streams[source].video.push(buff.video);
       } else {

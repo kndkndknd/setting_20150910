@@ -77,7 +77,7 @@ export const ioServer = (
     });
 
     socket.on("chatFromClient", (buffer: buffStateType) => {
-      // console.log("debug chatFromClient", states.current.stream);
+      console.log("debug chatFromClient", states.current.stream);
       // console.log("socket.id: " + String(socket.id));
       if (buffer.from === undefined) buffer.from = String(socket.id);
       chatReceive(io, buffer);

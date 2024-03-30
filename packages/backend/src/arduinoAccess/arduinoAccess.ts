@@ -91,8 +91,9 @@ export const switchCramp = async (source) => {
 
 export const switchOneshot = async (timeout) => {
   const url = `http://${states.arduino.host}:${states.arduino.port}/oneshot`;
+  const params = { timeout: timeout };
   try {
-    const response = await axios.get(url, { params: timeout });
+    const response = await axios.get(url, { params: params });
     console.log(response.data);
     return response.data.success;
   } catch (error) {

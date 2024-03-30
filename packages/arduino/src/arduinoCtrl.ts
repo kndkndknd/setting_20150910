@@ -95,7 +95,7 @@ app.get("/cramp", function (req: Request, res: Response) {
 
 app.get("/oneshot", function (req: Request, res: Response) {
   const unknownParams = req.query as unknown;
-  const timeout = unknownParams as number;
+  const { timeout } = unknownParams as { timeout: number };
   // const { freq, timeout } = queryParams;
   console.log("timeout:", timeout);
 

@@ -27,7 +27,7 @@ export const stopEmit = (
   // stop cmd / sinewave
   if (client !== undefined) {
     // current -> previous && current -> stop
-    state.client.forEach((element) => {
+    Object.keys(state.client).forEach((element) => {
       io.to(element).emit("stopFromServer", {
         target: target === undefined ? "ALL" : target,
         fadeOutVal: state.cmd.FADE.OUT,
@@ -39,7 +39,7 @@ export const stopEmit = (
     }
     state.previous.sinewave = state.current.sinewave;
     state.current.sinewave = {};
-  } else if (state.client.includes(client)) {
+  } else if (Object.keys(state.client).includes(client)) {
     io.to(client).emit("stopFromServer", {
       target: target === undefined ? "ALL" : target,
       fadeOutVal: state.cmd.FADE.OUT,

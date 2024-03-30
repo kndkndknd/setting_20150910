@@ -90,7 +90,7 @@ export const receiveEnter = (
   } else if (Object.keys(parameterList).includes(strings)) {
     parameterChange(parameterList[strings], io, state, { source: id });
   } else if (strings === "NO" || strings === "NUMBER") {
-    state.client.forEach((id, index) => {
+    Object.keys(state.client).forEach((id, index) => {
       console.log(id);
       io.to(id).emit("stringsFromServer", {
         strings: String(index),

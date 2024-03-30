@@ -133,7 +133,7 @@ export const parameterChange = (
             );
             // propertyが端末番号を指定している場合
           } else if (/^([1-9]\d*|0)(\.\d+)?$/.test(arg.property)) {
-            const target = state.client[Number(arg.property)];
+            const target = Object.keys(state.client)[Number(arg.property)];
             if (Object.keys(state.cmd.METRONOME).includes(target)) {
               state.cmd.METRONOME[target] = latency;
               stringEmit(

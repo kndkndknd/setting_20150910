@@ -24,7 +24,7 @@ export const states: cmdStateType = {
     voiceLang: "en-US",
     METRONOME: {},
   },
-  client: [],
+  client: {},
   sinewaveClient: [],
   current: {
     cmd: {

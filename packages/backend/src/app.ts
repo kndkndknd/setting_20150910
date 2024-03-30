@@ -50,34 +50,35 @@ app.get("/", function (req, res, next) {
   }
 });
 
-// app.get("/:name", function (req, res, next) {
-//   const name = req.params.name;
-//   try {
-//     if (name == "") {
-//       res.sendFile(path.join(__dirname, "..", "static", "html", "index.html"));
-//     } else if (
-//       name == "snowleopard" ||
-//       name == "sl" ||
-//       name === "snow" ||
-//       name == "2008" ||
-//       name == "2009"
-//     ) {
-//       res.sendFile(
-//         path.join(__dirname, "..", "static", "html", "snowleopard.html")
-//       );
-//     }
-//     // res.sendFile(path.join(__dirname, "..", "static", "html", "index.html"));
-//   } catch (error) {
-//     console.log(error);
-//     res.json({ success: false, message: "Something went wrong" });
-//   }
-// });
 app.get("/snowleopard", function (req, res, next) {
   try {
     console.log("snowleopard");
     res.sendFile(
       path.join(__dirname, "..", "static", "html", "snowleopard.html")
     );
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Something went wrong" });
+  }
+});
+
+app.get("/:name", function (req, res, next) {
+  const name = req.params.name;
+  try {
+    // if (name == "" || name === "pi" || name === "pi5") {
+    res.sendFile(path.join(__dirname, "..", "static", "html", "index.html"));
+    // } else if (
+    //   name == "snowleopard" ||
+    //   name == "sl" ||
+    //   name === "snow" ||
+    //   name == "2008" ||
+    //   name == "2009"
+    // ) {
+    //   res.sendFile(
+    //     path.join(__dirname, "..", "static", "html", "snowleopard.html")
+    //   );
+    // }
+    // res.sendFile(path.join(__dirname, "..", "static", "html", "index.html"));
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: "Something went wrong" });

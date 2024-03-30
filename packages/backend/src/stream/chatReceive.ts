@@ -88,69 +88,83 @@ export const chatEmit = async (io, from?) => {
     // const targetId =
     //   states.client[Math.floor(Math.random() * states.client.length)];
     console.log("chatReceive targetId: ", targetId);
-    if (targetId !== "arduino") {
-      if (chats.length > 0) {
-        const chunk = {
-          sampleRate: states.stream.sampleRate.CHAT,
-          glitch: states.stream.glitch.CHAT,
-          ...chats.shift(),
-        };
-        if (states.stream.randomrate.CHAT) {
-          if (states.stream.randomratenote.CHAT) {
-            chunk.sampleRate = 11025 + Math.floor(Math.random() * 10) * 11025;
-          } else {
-            chunk.sampleRate =
-              states.stream.randomraterange.CHAT.min +
-              Math.floor(
-                Math.random() *
-                  (states.stream.randomraterange.CHAT.max -
-                    states.stream.randomraterange.CHAT.min)
-              );
-          }
-          //          console.log(chunk.sampleRate)
-        }
-        if (states.stream.glitch.CHAT && chunk.video) {
-          chunk.video = await glitchStream(chunk.video);
-          console.log("glitch", chunk.video.slice(0, 50));
-        }
-        if (!states.stream.grid.CHAT) {
-          io.to(targetId).emit("chatFromServer", chunk);
+    // if (targetId !== "arduino") {
+    if (chats.length > 0) {
+      const chunk = {
+        sampleRate: states.stream.sampleRate.CHAT,
+        glitch: states.stream.glitch.CHAT,
+        ...chats.shift(),
+      };
+      if (states.stream.randomrate.CHAT) {
+        if (states.stream.randomratenote.CHAT) {
+          chunk.sampleRate = 11025 + Math.floor(Math.random() * 10) * 11025;
         } else {
-          const timeOutVal =
-            (Math.round(Math.random() * 16) * states.stream.latency.CHAT) / 4;
-          setTimeout(() => {
-            io.to(targetId).emit("chatFromServer", chunk);
-          }, timeOutVal);
+          chunk.sampleRate =
+            states.stream.randomraterange.CHAT.min +
+            Math.floor(
+              Math.random() *
+                (states.stream.randomraterange.CHAT.max -
+                  states.stream.randomraterange.CHAT.min)
+            );
         }
-      } else {
-        io.to(targetId).emit("chatReqFromServer");
+        //          console.log(chunk.sampleRate)
       }
-    } else {
+      if (states.stream.glitch.CHAT && chunk.video) {
+        chunk.video = await glitchStream(chunk.video);
+        console.log("glitch", chunk.video.slice(0, 50));
+      }
       if (!states.stream.grid.CHAT) {
-        const crampResult = await switchCramp();
-        if (crampResult) {
-          await chatEmit(io);
-        } else {
-          setTimeout(() => {
-            chatEmit(io);
-          }, 500);
-        }
+        // io.to(targetId).emit("chatFromServer", chunk);
+        ioEmitChatFromServer(io, chunk, targetId);
       } else {
         const timeOutVal =
           (Math.round(Math.random() * 16) * states.stream.latency.CHAT) / 4;
-        setTimeout(async () => {
-          const crampResult = await switchCramp();
-          if (crampResult) {
-            await chatEmit(io);
-          } else {
-            setTimeout(() => {
-              chatEmit(io);
-            }, 500);
-          }
+        setTimeout(() => {
+          // io.to(targetId).emit("chatFromServer", chunk);
+          ioEmitChatFromServer(io, chunk, targetId);
         }, timeOutVal);
       }
+    } else {
+      io.to(targetId).emit("chatReqFromServer");
     }
+    // } else {
+    //   if (!states.stream.grid.CHAT) {
+    //     const crampResult = await switchCramp("CHAT");
+    //     if (crampResult) {
+    //       await chatEmit(io);
+    //     } else {
+    //       setTimeout(() => {
+    //         chatEmit(io);
+    //       }, 500);
+    //     }
+    //   } else {
+    //     const timeOutVal =
+    //       (Math.round(Math.random() * 16) * states.stream.latency.CHAT) / 4;
+    //     setTimeout(async () => {
+    //       const crampResult = await switchCramp("CHAT");
+    //       if (crampResult) {
+    //         await chatEmit(io);
+    //       } else {
+    //         setTimeout(() => {
+    //           chatEmit(io);
+    //         }, 500);
+    //       }
+    //     }, timeOutVal);
+    //   }
+    // }
   } else {
     io.emit("erasePrintFromServer");
   }
+};
+
+const ioEmitChatFromServer = async (io, chunk, targetId) => {
+  console.log("machine", states.client[targetId].urlPathName);
+  if (
+    states.client[targetId].urlPathName.includes("pi") &&
+    states.arduino.connected
+  ) {
+    const result = await switchCramp("CHAT");
+    console.log("switchCramp", result);
+  }
+  io.to(targetId).emit("chatFromServer", chunk);
 };

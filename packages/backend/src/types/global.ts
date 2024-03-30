@@ -15,7 +15,12 @@ export type cmdType = {
 };
 
 export type cmdStateType = {
-  client: Array<string>;
+  client: {
+    [key: string]: {
+      ipAddress: string;
+      urlPathName: string;
+    };
+  };
   sinewaveClient: Array<string>;
   current: {
     cmd: {

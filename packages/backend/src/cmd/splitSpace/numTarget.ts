@@ -13,7 +13,7 @@ export const numTarget = (
   console.log(stringArr);
   // 送信先を指定したコマンド/SINEWAVE
   // 20230923 sinewave modeの動作を記載
-  const target = state.client[Number(stringArr[0])];
+  const target = Object.keys(state.client)[Number(stringArr[0])];
   console.log(state.client);
   console.log(target);
   if (

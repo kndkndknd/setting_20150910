@@ -44,9 +44,9 @@ export const switchCtrl = async () => {
   }
 };
 
-export const switchCramp = async () => {
-  const freq = 1000 / (20 * (states.stream.sampleRate.CHAT / 44100));
-  const timeout = (1000 * basisBufferSize) / states.stream.sampleRate.CHAT;
+export const switchCramp = async (source) => {
+  const freq = 1000 / (20 * (states.stream.sampleRate[source] / 44100));
+  const timeout = (1000 * basisBufferSize) / states.stream.sampleRate[source];
   const params = { freq: freq, timeout: timeout };
   // const body = JSON.stringify({ freq: freq, timeout: timeout });
   // console.log(body);
@@ -87,4 +87,16 @@ export const switchCramp = async () => {
   // const data = await response.json();
   // console.log(data);
   // return data.success;
+};
+
+export const switchOneshot = async (timeout) => {
+  const url = `http://${states.arduino.host}:${states.arduino.port}/oneshot`;
+  try {
+    const response = await axios.get(url, { params: timeout });
+    console.log(response.data);
+    return response.data.success;
+  } catch (error) {
+    console.error("error fetching data:", error);
+    return false;
+  }
 };

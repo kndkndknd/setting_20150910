@@ -92,3 +92,20 @@ app.get("/cramp", function (req: Request, res: Response) {
   }, timeout);
   res.json({ success: true });
 });
+
+app.get("/oneshot", function (req: Request, res: Response) {
+  const unknownParams = req.query as unknown;
+  const timeout = unknownParams as number;
+  // const { freq, timeout } = queryParams;
+  console.log("timeout:", timeout);
+
+  // console.log("cramp");
+  // console.log(req);
+  // const param = req.body;
+  // console.log(param);
+  relay.on();
+  setTimeout(() => {
+    relay.off();
+  }, timeout);
+  res.json({ success: true });
+});

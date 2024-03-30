@@ -25,14 +25,20 @@ export const pickupCmdTarget = (
   } else {
     switch (cmd) {
       case "CLICK":
-        return [state.client[Math.floor(Math.random() * state.client.length)]];
+        return [
+          Object.keys(state.client)[
+            Math.floor(Math.random() * Object.keys(state.client).length)
+          ],
+        ];
         break;
       case "BASS":
       case "WHITENOISE":
       case "FEEDBACK":
         if (state.current.cmd[cmd].length === 0) {
           return [
-            state.client[Math.floor(Math.random() * state.client.length)],
+            Object.keys(state.client)[
+              Math.floor(Math.random() * Object.keys(state.client).length)
+            ],
           ];
         } else {
           return [state.current.cmd[cmd]];
@@ -42,7 +48,9 @@ export const pickupCmdTarget = (
         if (Object.keys(state.current.sinewave).length === 0) {
           //どの端末も音を出していない場合
           return [
-            state.client[Math.floor(Math.random() * state.client.length)],
+            Object.keys(state.client)[
+              Math.floor(Math.random() * Object.keys(state.client).length)
+            ],
           ];
         } else {
           if (option.value !== undefined) {
@@ -60,12 +68,16 @@ export const pickupCmdTarget = (
 
             // 同じ周波数の音を出している端末がない場合（上記でreturnされなかった場合）
             // 音が出ていない端末があれば、その中からランダムに発音、全部音が出てたら完全にランダム
-            const unsoundArr = state.client.filter(
+            const unsoundArr = Object.keys(state.client).filter(
               (client) => !Object.keys(state.current.sinewave).includes(client)
             );
             return unsoundArr.length > 0
               ? [unsoundArr[Math.floor(Math.random() * unsoundArr.length)]]
-              : [state.client[Math.floor(Math.random() * state.client.length)]];
+              : [
+                  Object.keys(state.client)[
+                    Math.floor(Math.random() * Object.keys(state.client).length)
+                  ],
+                ];
           } else {
             return ["target is undefined"];
           }

@@ -12,7 +12,7 @@ export const chatPreparation = async (
 ) => {
   console.log(state.current.stream.CHAT);
   if (!state.current.stream.CHAT) {
-    console.log(state.client);
+    // console.log(state.client);
     state.current.stream.CHAT = true;
     const targetId = pickupStreamTarget(state, "CHAT");
     console.log(targetId);

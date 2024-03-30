@@ -189,11 +189,11 @@ export const splitSpace = async (
     }
   } else if (stringArr[0] === "ALL") {
     if (arrTypeArr[1] === "string") {
-      state.client.forEach((target) => {
+      Object.keys(state.client).forEach((target) => {
         cmdEmit(stringArr[1], io, state, target);
       });
     } else if (arrTypeArr[1] === "number") {
-      state.client.forEach((target) => {
+      Object.keys(state.client).forEach((target) => {
         sinewaveEmit(Number(stringArr[1]), io, state, target);
       });
     }
@@ -252,7 +252,7 @@ export const splitSpace = async (
     ) {
       timerCmd(io, state, stringArr, timeStampArr);
     }
-  } else if (stringArr[0] === "SWITCH") {
+  } else if (stringArr[0] === "SWITCH" || stringArr[0] === "ARDUINO") {
     if (stringArr[1] === "TEST") {
       console.log("switch test");
       connectTest().then((result) => {
@@ -286,7 +286,7 @@ export const splitSpace = async (
     ) {
       console.log("targetArr", targetArr);
       const targetIdArr = targetArr.map((el) => {
-        return state.client[Number(el)];
+        return Object.keys(state.client)[Number(el)];
       });
       console.log("targetIdArr", targetIdArr);
       state.stream.target[stringArr[1]] = targetIdArr;

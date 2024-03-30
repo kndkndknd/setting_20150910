@@ -39,7 +39,7 @@ export const splitStop = (stringArr: string[], state: cmdStateType, io) => {
       }
       console.log(cmdTarget, stringArr);
       putCmd(io, [cmdTarget], cmd, state);
-      notTargetEmit(cmdTarget, state.client, io);
+      notTargetEmit(cmdTarget, Object.keys(state.client), io);
     });
     state.current.cmd[stringArr[1]] = [];
   } else if (stringArr.length === 2 && stringArr[1] === "SINEWAVE") {
@@ -54,7 +54,7 @@ export const splitStop = (stringArr: string[], state: cmdStateType, io) => {
         gain: state.cmd.GAIN.SINEWAVE,
       };
       putCmd(io, [target], sinewaveCmd, state);
-      notTargetEmit(target, state.client, io);
+      notTargetEmit(target, Object.keys(state.client), io);
     });
     state.current.sinewave = {};
   } else if (

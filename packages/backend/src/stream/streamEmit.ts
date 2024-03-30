@@ -2,6 +2,7 @@ import SocketIO from "socket.io";
 import { cmdStateType, buffStateType } from "../types/global";
 import { streams, states, basisBufferSize } from "../states";
 import { pickupStreamTarget } from "./pickupStreamTarget";
+import { switchCramp } from "../arduinoAccess/arduinoAccess";
 
 export const streamEmit = (
   source: string,
@@ -62,8 +63,8 @@ export const streamEmit = (
           duration: streams[source].bufferSize / 44100,
         };
         if (
-          streams[source].index < streams[source].audio.length &&
-          streams[source].index < streams[source].video.length
+          streams[source].index < streams[source].audio.length - 1 &&
+          streams[source].index < streams[source].video.length - 1
         ) {
           streams[source].index++;
         } else {
@@ -111,12 +112,13 @@ export const streamEmit = (
 
     if (!stream.video) console.log("not video");
     if (!state.stream.grid[source]) {
-      io.to(targetId).emit("streamFromServer", stream);
+      // io.to(targetId).emit("streamFromServer", stream);
+      ioEmitStreamFromServer(io, stream, targetId, source);
     } else {
       const timeOutVal =
         (Math.round(Math.random() * 16) * states.stream.latency[source]) / 4;
       setTimeout(() => {
-        io.to(targetId).emit("streamFromServer", stream);
+        ioEmitStreamFromServer(io, stream, targetId, source);
       }, timeOutVal);
     }
   } else {
@@ -127,4 +129,16 @@ export const streamEmit = (
     io.emit('stringsFromServer',{strings: "NO BUFFER", timeout: true})
   }
   */
+};
+
+const ioEmitStreamFromServer = async (io, stream, targetId, source) => {
+  console.log("pi or not pi", states.client[targetId].urlPathName);
+  if (
+    states.client[targetId].urlPathName.includes("pi") &&
+    states.arduino.connected
+  ) {
+    const result = await switchCramp(source);
+    console.log("switchCramp", result);
+  }
+  io.to(targetId).emit("streamFromServer", stream);
 };

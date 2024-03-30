@@ -515,7 +515,10 @@ export const initialize = async () => {
     await initVideoStream(stream, videoElement);
     await console.log(stream);
     await textPrint("initialized", ctx, cnvs);
-    await socket.emit("connectFromClient", "client");
+    await socket.emit("connectFromClient", {
+      clientMode: "client",
+      urlPathName: window.location.pathname,
+    });
     await setTimeout(() => {
       erasePrint(ctx, cnvs);
     }, 500);

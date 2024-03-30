@@ -10,7 +10,7 @@ export const metronomeBpmSet = (
   state: cmdStateType,
   sourceId: string
 ) => {
-  if (state.client.includes(sourceId)) {
+  if (Object.keys(state.client).includes(sourceId)) {
     if (metronomeArr.length === 3) {
       const interval1 = metronomeArr[1] - metronomeArr[0];
       const interval2 = metronomeArr[2] - metronomeArr[1];

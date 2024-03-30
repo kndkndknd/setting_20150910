@@ -25,7 +25,7 @@ export const splitPlus = (
   });
 
   stringArr.forEach((string, index) => {
-    const target = state.client[Number(stringArr[0])];
+    const target = Object.keys(state.client)[Number(stringArr[0])];
     if (string === "CHAT") {
       chatPreparation(io, state);
     } else if (string === "RECORD" || string === "REC") {

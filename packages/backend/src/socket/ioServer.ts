@@ -37,7 +37,10 @@ export const ioServer = (
   io.sockets.on("connection", (socket) => {
     socket.on("connectFromClient", (data) => {
       let sockId = String(socket.id);
-      if (data === "client") {
+      const ipAddress = socket.handshake.address;
+      console.log("ipAddress: " + ipAddress);
+      console.log("urlPathName", data.urlPathName);
+      if (data.clientMode === "client") {
         if (!states.stream.timelapse) states.stream.timelapse = true;
         console.log(
           'socket.on("connectFromClient", (data) => {data:' +
@@ -46,16 +49,18 @@ export const ioServer = (
             sockId +
             "}"
         );
-        if (!states.client.includes(sockId)) states.client.push(sockId);
-        states.client = states.client.filter((id) => {
-          //console.log(io.sockets.adapter.rooms.has(id))
-          if (io.sockets.adapter.rooms.has(id)) {
-            return id;
-          }
-        });
+        if (!Object.keys(states.client).includes(sockId))
+          states.client[sockId] = { ipAddress, urlPathName: data.urlPathName };
+        // あとでオブジェクト向けに作り直す
+        // states.client = states.client.filter((id) => {
+        //   //console.log(io.sockets.adapter.rooms.has(id))
+        //   if (io.sockets.adapter.rooms.has(id)) {
+        //     return id;
+        //   }
+        // });
         // METRONOMEは接続時に初期値を作る
         states.cmd.METRONOME[sockId] = 1000;
-      } else if (data === "sinewaveClient") {
+      } else if (data.clientMode === "sinewaveClient") {
         console.log(sockId + " is sinewaveClient");
         if (!states.sinewaveClient.includes(sockId))
           states.sinewaveClient.push(sockId);
@@ -109,12 +114,13 @@ export const ioServer = (
     socket.on("disconnect", () => {
       console.log("disconnect: " + String(socket.id));
       let sockId = String(socket.id);
-      states.client = states.client.filter((id) => {
-        if (io.sockets.adapter.rooms.has(id) && id !== sockId) {
-          console.log(id);
-          return id;
-        }
-      });
+      if (states.client[sockId]) delete states.client[sockId];
+      // states.client = states.client.filter((id) => {
+      //   if (io.sockets.adapter.rooms.has(id) && id !== sockId) {
+      //     console.log(id);
+      //     return id;
+      //   }
+      // });
       console.log(states.client);
       // io.emit("statusFromServer", statusList);
     });

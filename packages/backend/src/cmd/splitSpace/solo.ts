@@ -23,7 +23,9 @@ export const solo = (
         ? states.current.cmd[cmd][
             Math.floor(Math.random() * states.current.cmd[cmd].length)
           ]
-        : states.client[Math.floor(Math.random() * states.client.length)];
+        : Object.keys(states.client)[
+            Math.floor(Math.random() * Object.keys(states.client).length)
+          ];
     for (let stream in states.current.stream) {
       states.current.stream[stream] = false;
     }

@@ -142,11 +142,12 @@ export const cmdEmit = (
       if (target) {
         targetId = target;
       } else {
-        targetId =
-          state.client[Math.floor(Math.random() * state.client.length)];
+        targetId = Object.keys(state.client)[
+          Math.floor(Math.random() * Object.keys(state.client).length)
+        ];
       }
       putCmd(io, [targetId], cmd, state);
-      notTargetEmit(targetId, state.client, io);
+      notTargetEmit(targetId, Object.keys(state.client), io);
       break;
     case "METRONOME":
       cmd = {
@@ -174,8 +175,9 @@ export const cmdEmit = (
         if (state.current.cmd.METRONOME.length === 0) {
           cmd.flag = true;
           cmd.gain = state.cmd.GAIN.METRONOME;
-          target =
-            state.client[Math.floor(Math.random() * state.client.length)];
+          target = Object.keys(state.client)[
+            Math.floor(Math.random() * Object.keys(state.client).length)
+          ];
           state.current.cmd[cmd.cmd].push(target);
           cmd.value = state.cmd.METRONOME[target];
         } else {
@@ -186,7 +188,7 @@ export const cmdEmit = (
         }
       }
       putCmd(io, [target], cmd, state);
-      notTargetEmit(target, state.client, io);
+      notTargetEmit(target, Object.keys(state.client), io);
       console.log("metronome");
       break;
     case "PREVIOUS":

@@ -54,6 +54,7 @@ export const sinewaveEmit = (
       delete state.current.sinewave[id];
     }
   });
+  console.log(targetIdArr);
   /*
   if (target) {
     targetId = target;

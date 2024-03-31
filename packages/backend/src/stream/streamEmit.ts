@@ -3,8 +3,9 @@ import { cmdStateType, buffStateType } from "../types/global";
 import { streams, states, basisBufferSize } from "../states";
 import { pickupStreamTarget } from "./pickupStreamTarget";
 import { switchCramp } from "../arduinoAccess/arduinoAccess";
+import { glitchStream } from "./glitchStream";
 
-export const streamEmit = (
+export const streamEmit = async (
   source: string,
   io: SocketIO.Server,
   state: cmdStateType,
@@ -105,6 +106,9 @@ export const streamEmit = (
       glitch: state.stream.glitch[source] ? state.stream.glitch[source] : false,
       ...buff,
     };
+    if (state.stream.glitch[source] && stream.video.length > 0) {
+      stream.video = await glitchStream(stream.video);
+    }
 
     if (state.stream.randomrate[source]) {
       stream.sampleRate = 11025 + Math.floor(Math.random() * 10) * 11025;

@@ -9,42 +9,43 @@ import { putVideoStream } from "./uploadModule/putVideoStream";
 import { pushStateStream } from "./pushStateStream";
 
 export const getLiveStream = async (stream: string, qWord?: string) => {
-  if (!Object.keys(streams).includes(stream)) {
-    streams[stream] = {
-      video: [],
-      audio: [],
-      bufferSize: basisBufferSize,
-      index: 0,
-    };
-    pushStateStream(stream, states);
-  }
-  states.stream.random[stream] = true;
+  try {
+    const streamName = stream.includes(" ") ? stream.replace(" ", "") : stream;
+    if (!Object.keys(streams).includes(stream)) {
+      streams[streamName] = {
+        video: [],
+        audio: [],
+        bufferSize: basisBufferSize,
+        index: 0,
+      };
+      pushStateStream(stream, states);
+    }
+    states.stream.random[stream] = true;
 
-  let streamData: { dirPath: string; fileName: string; audio: boolean }[];
-  if (qWord !== undefined && qWord !== null) {
-    const response = await axios.post("http://127.0.0.1:8088/liveStream", {
-      qWord: qWord,
-    });
-    console.log(response.data);
-    streamData = response.data;
-  } else {
-    if (stream === "LIVESTREAM") {
-      const response = await axios.get(streamApiUrl);
-      console.log(response.data);
-      streamData = response.data;
-    } else {
+    let streamData: { dirPath: string; fileName: string; audio: boolean }[];
+    if (qWord !== undefined && qWord !== null) {
       const response = await axios.post("http://127.0.0.1:8088/liveStream", {
-        qWord: stream,
+        qWord: qWord,
       });
       console.log(response.data);
       streamData = response.data;
+    } else {
+      if (stream === "LIVESTREAM") {
+        const response = await axios.get(streamApiUrl);
+        console.log(response.data);
+        streamData = response.data;
+      } else {
+        const response = await axios.post("http://127.0.0.1:8088/liveStream", {
+          qWord: stream,
+        });
+        console.log(response.data);
+        streamData = response.data;
+      }
     }
-  }
-  // const streamData = <{ dirPath: string; fileName: string; audio: boolean }[]>(
-  //   response.data
-  // );
+    // const streamData = <{ dirPath: string; fileName: string; audio: boolean }[]>(
+    //   response.data
+    // );
 
-  try {
     for (let i = 0; i < streamData.length; i++) {
       const tsFileName = streamData[i].fileName;
       const mediaDirPath = streamData[i].dirPath;
@@ -52,7 +53,7 @@ export const getLiveStream = async (stream: string, qWord?: string) => {
       const putStreamResult = await putVideoStream(
         tsFileName,
         mediaDirPath,
-        stream
+        streamName
       );
       if (putStreamResult !== "success") {
         console.log("putStreamResult error ", putStreamResult);
@@ -70,7 +71,7 @@ export const getLiveStream = async (stream: string, qWord?: string) => {
             tmpBuff[buffIndex] = sample;
             buffIndex++;
             if (buffIndex === basisBufferSize) {
-              streams[stream].audio.push(tmpBuff);
+              streams[streamName].audio.push(tmpBuff);
               tmpBuff = new Float32Array(basisBufferSize);
               buffIndex = 0;
             }

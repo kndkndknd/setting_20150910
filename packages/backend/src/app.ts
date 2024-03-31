@@ -10,6 +10,8 @@ import { spawn } from "child_process";
 // import { switchCtrl } from "./arduinoAccess/switch";
 import { networkInterfaces } from "os";
 
+import { getLiveStream } from "./stream/getLiveStream";
+
 const port = 8000;
 const app = Express();
 // const __filename = fileURLToPath(import.meta.url);
@@ -101,3 +103,9 @@ const socketOptions = {
 // const io = new Server(httpsserver, socketOptions)
 
 ioServer(httpserver);
+
+try {
+  getLiveStream("LIVECAM");
+} catch (error) {
+  console.log("get LIVECAM error:", error);
+}

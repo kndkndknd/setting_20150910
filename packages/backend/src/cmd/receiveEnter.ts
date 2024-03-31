@@ -5,7 +5,7 @@ import { cmdList, streamList, parameterList } from "../states";
 import { streamEmit } from "../stream/streamEmit";
 import { cmdEmit } from "./cmdEmit";
 import { stopEmit } from "./stopEmit";
-import { splitSpace } from "./splitSpace";
+import { splitSpace } from "./splitSpace/splitSpace";
 import { splitPlus } from "./splitPlus";
 import { sinewaveEmit } from "./sinewaveEmit";
 import { sinewaveChange } from "./sinewaveChange";

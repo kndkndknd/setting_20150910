@@ -476,8 +476,8 @@ export const initialize = async () => {
 
   const SUPPORTS_MEDIA_DEVICES = "mediaDevices" in navigator;
   if (SUPPORTS_MEDIA_DEVICES && navigator.mediaDevices.getUserMedia) {
-    /*
     const devices = await navigator.mediaDevices.enumerateDevices();
+    /*
     const cameras = devices.filter((device) => device.kind === "videoinput");
     if (cameras.length === 0) {
       throw "No camera found on this device.";
@@ -485,8 +485,10 @@ export const initialize = async () => {
     //    const camera = cameras[cameras.length - 1]
     const camera = cameras[0];
     */
-    /*
     const mics = devices.filter((device) => device.kind === "audioinput");
+    console.log(mics);
+    console.log("mic length", mics.length);
+    /*
     const mic = mics.filter((element)=>{
       if(element.label.includes("Microphone Array")){
         console.log(element.label)
@@ -496,6 +498,21 @@ export const initialize = async () => {
     console.log(mics)
     console.log(mic)
     */
+    const audioOption = window.location.pathname.includes("pi")
+      ? {
+          sampleRate: { ideal: 44100 },
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+          deviceId: mics[2].deviceId,
+        }
+      : {
+          sampleRate: { ideal: 44100 },
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+        };
+
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
         //facingMode: 'environment'
@@ -504,12 +521,7 @@ export const initialize = async () => {
         // height: {ideal: 1080},
         // width: {ideal: 1920}
       },
-      audio: {
-        sampleRate: { ideal: 44100 },
-        echoCancellation: false,
-        noiseSuppression: false,
-        autoGainControl: false,
-      },
+      audio: audioOption,
     });
     await initAudioStream(stream);
     await initVideoStream(stream, videoElement);

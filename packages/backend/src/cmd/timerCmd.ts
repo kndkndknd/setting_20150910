@@ -39,7 +39,7 @@ export const timerCmd = (
     setTimeout(() => {
       timerExec(state, io, cmdString, stringArr);
     }, timerVal);
-  } else if (state.timer && timerVal > 0) {
+  } else {
     const timerValue =
       timeStampArr.length === 2
         ? (Number(timeStampArr[0]) * 60 + Number(timeStampArr[1])) * 1000

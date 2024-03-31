@@ -1,31 +1,37 @@
 import SocketIO from "socket.io";
-import { cmdStateType } from "../types/global";
-import { cmdList, streamList, parameterList, states, streams } from "../states";
-import { cmdEmit } from "./cmdEmit";
-import { uploadStream } from "../stream/uploadModule/upload";
-import { sinewaveEmit } from "./sinewaveEmit";
-import { parameterChange } from "./parameterChange";
+import { cmdStateType } from "../../types/global";
+import {
+  cmdList,
+  streamList,
+  parameterList,
+  states,
+  streams,
+} from "../../states";
+import { cmdEmit } from "../cmdEmit";
+import { uploadStream } from "../../stream/uploadModule/upload";
+import { sinewaveEmit } from "../sinewaveEmit";
+import { parameterChange } from "../parameterChange";
 
-import { putCmd } from "./putCmd";
+import { putCmd } from "../putCmd";
 // import { putString } from "./putString";
 
-import { insertStream } from "../mongoAccess/insertStream";
-import { findStream } from "../mongoAccess/findStream";
-import { timerCmd } from "./timerCmd";
-import { stopEmit } from "./stopEmit";
-import { numTarget } from "./splitSpace/numTarget";
-import { fadeCmd } from "./splitSpace/fadeCmd";
-import { splitStop } from "./splitSpace/splitStop";
-import { solo } from "./splitSpace/solo";
+import { insertStream } from "../../mongoAccess/insertStream";
+import { findStream } from "../../mongoAccess/findStream";
+import { timerCmd } from "../timerCmd";
+import { stopEmit } from "../stopEmit";
+import { numTarget } from "./numTarget";
+import { fadeCmd } from "./fadeCmd";
+import { splitStop } from "./splitStop";
+import { solo } from "./solo";
 
-import { recordEmit, recordAsOtherEmit } from "../stream/recordEmit";
-import { chatPreparation } from "../stream/chatPreparation";
-import { streamEmit } from "../stream/streamEmit";
-import { helpPrint } from "./help";
-import { stringEmit } from "../socket/ioEmit";
-import { getLiveStream } from "../stream/getLiveStream";
-import { getTimeLine } from "./splitSpace/getTimeLine";
-import { connectTest, switchCramp } from "../arduinoAccess/arduinoAccess";
+import { recordEmit, recordAsOtherEmit } from "../../stream/recordEmit";
+import { chatPreparation } from "../../stream/chatPreparation";
+import { streamEmit } from "../../stream/streamEmit";
+import { helpPrint } from "../help";
+import { stringEmit } from "../../socket/ioEmit";
+import { getLiveStream } from "../../stream/getLiveStream";
+import { getTimeLine } from "./getTimeLine";
+import { connectTest, switchCramp } from "../../arduinoAccess/arduinoAccess";
 
 export const splitSpace = async (
   stringArr: Array<string>,
@@ -47,7 +53,7 @@ export const splitSpace = async (
   if (arrTypeArr[0] === "number") {
     numTarget(stringArr, arrTypeArr, io, state);
   } else if (stringArr[0] === "HELP") {
-    helpPrint(stringArr.toSpliced(0, 1), io);
+    helpPrint(stringArr.slice(1), io);
   } else if (stringArr[1] === "SOLO") {
     solo(stringArr, arrTypeArr, state, io);
   } else if (stringArr[0] === "CLEAR") {
@@ -67,6 +73,10 @@ export const splitSpace = async (
     } else if (streamList.includes(stringArr[1])) {
       streams[stringArr[1]].audio = [];
       streams[stringArr[1]].video = [];
+    } else if (stringArr[1] === "INDEX") {
+      for (let stream in streams) {
+        streams[stream].index = 0;
+      }
     }
     // } else if (stringArr[0] === "FADE" && Object.keys(cmdList).includes(stringArr[1])) {
   } else if (stringArr[0] === "FADE") {
@@ -259,7 +269,7 @@ export const splitSpace = async (
         console.log(result);
         states.arduino.connected = result;
         io.emit("stringsFromServer", {
-          strings: "SWITCH: " + String(states.arduino.connected),
+          strings: `${stringArr[0]}: ${String(states.arduino.connected)}`,
           timeout: true,
         });
       });
@@ -268,7 +278,15 @@ export const splitSpace = async (
         state.arduino.host = stringArr[2];
       }
       io.emit("stringsFromServer", {
-        strings: "SWITCH HOST: " + states.arduino.host,
+        // strings: "SWITCH HOST: " + states.arduino.host,
+        strings: `${stringArr[0]} HOST: ${String(states.arduino.host)}`,
+        timeout: true,
+      });
+    } else if (stringArr[1] === "FALSE") {
+      states.arduino.connected = false;
+      io.emit("stringsFromServer", {
+        // strings: "SWITCH: " + String(states.arduino.connected),
+        strings: `${stringArr[0]}: ${String(states.arduino.connected)}`,
         timeout: true,
       });
     }
@@ -305,7 +323,7 @@ export const splitSpace = async (
   ) {
     recordAsOtherEmit(io, state, stringArr[2]);
   } else if (stringArr[0] === "GET" || stringArr[0] === "YOUTUBE") {
-    stringEmit(io, `GETTING ${stringArr[1]}...`, true);
+    stringEmit(io, `GETTING ${stringArr.slice(1).join(" ")}...`, true);
     if (stringArr[1] === "LIVESTREAM") {
       if (stringArr.length === 2) {
         const result = await getLiveStream("LIVESTREAM");
@@ -316,7 +334,7 @@ export const splitSpace = async (
           stringEmit(io, "GET LIVESTREAM: FAILED");
         }
       } else {
-        const qWord = stringArr.slice(2).join(" ");
+        const qWord = stringArr.slice(1).join(" ");
         console.log("qWord", qWord);
         const result = await getLiveStream("LIVESTREAM", qWord);
         console.log("get livestream", result);

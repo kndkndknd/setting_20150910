@@ -14,7 +14,7 @@
     "socket.io-client": "4.7.2",
     "node-emoji": "2.1.3",
     "typescript": "^5.3.3",
-    "vite": "^5.0.10"
+    "vite": "^5.1.7"
   },
   "dependencies": {
     "http-proxy-middleware": "2.0.6",

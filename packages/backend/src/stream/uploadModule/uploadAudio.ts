@@ -26,8 +26,9 @@ export const uploadAudio = async (f: string, mediaDirPath: string) => {
   try {
     await pushStateStream(fSplit[0], states);
     // const result = <boolean>await getPcmData(filePath, fSplit[0], option);
-    const result = await promiseGetPcmData(filePath, 8192, option);
+    const result = <Float32Array[]>await promiseGetPcmData(filePath, 8192, option);
     if (result) {
+      streams[fSplit[0]].audio = result
       return true;
     } else {
       return false;

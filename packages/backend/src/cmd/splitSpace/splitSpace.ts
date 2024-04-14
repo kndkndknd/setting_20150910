@@ -13,6 +13,7 @@ import { sinewaveEmit } from "../sinewaveEmit";
 import { parameterChange } from "../parameterChange";
 
 import { putCmd } from "../putCmd";
+import { stringEmit } from '../../socket/ioEmit'
 // import { putString } from "./putString";
 
 import { insertStream } from "../../mongoAccess/insertStream";
@@ -28,7 +29,6 @@ import { recordEmit, recordAsOtherEmit } from "../../stream/recordEmit";
 import { chatPreparation } from "../../stream/chatPreparation";
 import { streamEmit } from "../../stream/streamEmit";
 import { helpPrint } from "../help";
-import { stringEmit } from "../../socket/ioEmit";
 import { getLiveStream } from "../../stream/getLiveStream";
 import { getTimeLine } from "./getTimeLine";
 import { connectTest, switchCramp } from "../../arduinoAccess/arduinoAccess";
@@ -216,7 +216,7 @@ export const splitSpace = async (
     // uploadStream(stringArr, io);
     const result = await uploadStreamModule(stringArr);
     console.log(result);
-    // stringEmit(io, uploadResult, true);
+    stringEmit(io, result, true);
   } else if (
     stringArr[0] === "GAIN" &&
     stringArr.length === 3 &&

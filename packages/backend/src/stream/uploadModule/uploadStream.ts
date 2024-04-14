@@ -25,7 +25,7 @@ import {
 import { getFilePath } from "./getFilePath";
 import { getDuration } from "./getDuration";
 import { durationPattern } from "./durationPattern";
-// import { uploadVideo } from "./uploadVideo";
+import { uploadVideo } from "./uploadVideo";
 import { uploadAudio } from "./uploadAudio";
 
 export const uploadStreamModule = async (stringArr) => {
@@ -60,14 +60,15 @@ export const uploadStreamModule = async (stringArr) => {
     case "mp4":
     case "m4v":
     case "webm":
-    // const duration = <number>await getDuration(mediaDirPath, f);
-    // const durationArr = durationPattern(duration, stringArr);
-    // const videoUploadResult = await uploadVideo(f, durationArr, mediaDirPath);
-    // if (videoUploadResult) {
-    //   return `${f.split(".")[0]} UPLOADED`;
-    // } else {
-    //   return `FAILED: ${f.split(".")[0]} NOT UPLOADED`;
-    // }
+    const duration = <number>await getDuration(mediaDirPath, f);
+    const durationArr = durationPattern(duration, stringArr);
+    console.log('durationArr', durationArr)
+    const videoUploadResult = await uploadVideo(f, durationArr, mediaDirPath);
+    if (videoUploadResult) {
+      return `${f.split(".")[0]} UPLOADED`;
+    } else {
+      return `FAILED: ${f.split(".")[0]} NOT UPLOADED`;
+    }
     case "aac":
     case "m4a":
     case "mp3":

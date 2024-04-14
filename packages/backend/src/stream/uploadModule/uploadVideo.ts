@@ -1,9 +1,10 @@
 import * as fs from "fs";
-import { execa } from "execa";
+// import { execa } from "execa";
+import { spawn } from "child_process";
 
 import { streams, states, basisBufferSize } from "../../states";
 
-import { awaitGetPcmData } from "./getPcmData";
+import { promiseGetPcmData } from "./getPcmData";
 import { pushStateStream } from "../pushStateStream";
 
 // import SocketIO from "socket.io";
@@ -38,9 +39,10 @@ export const uploadVideo = async (f: string, durationArr, mediaDirPath) => {
         ss: duration.ss,
         t: duration.t,
       };
-      const getPcmResult = await awaitGetPcmData(
+      const getPcmResult = <Float32Array[]>await promiseGetPcmData(
         `${mediaDirPath}/${f}`,
-        fName,
+        8192,
+        // fName,
         getPcmOption
       );
       const ffmpegOption = [
@@ -57,7 +59,46 @@ export const uploadVideo = async (f: string, durationArr, mediaDirPath) => {
         `${mediaDirPath}/tmp/${fName}%06d.jpg`,
       ];
       console.log(ffmpegOption);
-      const { stdout } = await execa("ffmpeg", ffmpegOption);
+      const proc = spawn("ffmpeg", ffmpegOption);
+      proc.stdout.on("end", async () =>{
+        try {
+          const files = await fs.readdirSync(mediaDirPath + "/tmp");
+          console.log(files);
+          let jpgs = <Array<string>>[];
+          await files.forEach(async (file) => {
+            if (file.includes(fName) && file.includes(".jpg")) {
+              await jpgs.push(file);
+            }
+          });
+          // console.log(jpgs)
+          // const jpgs = await readDir(uploadParams.mediaDir);
+          await jpgs.forEach(async (element) => {
+            const img = await fs.readFileSync(mediaDirPath + "/tmp/" + element);
+            const base64str = await new Buffer(img).toString("base64");
+            // console.log(base64str)
+            streams[fSplit[0]].video.push(
+              "data:image/jpeg;base64," + String(base64str)
+            );
+            console.log('video length: ', streams[fSplit[0]].video.length)
+          });
+          await console.log('total video length: ', streams[fSplit[0]].video.length)
+          streams[fSplit[0]].audio = getPcmResult
+          return await true;  
+        } catch (e) {
+          console.error(e);
+          return false;
+        }
+          // await execPromise("rm " + mediaDirPath + "/" + element);
+          // await execPromise(`rm ${mediaDirPath}/tmp/${fName}.aac`);
+          /*
+      io.emit("stringsFromServer", {
+        strings: "UPLOADED",
+        timeout: true,
+      });
+      */
+      })
+
+      // const { stdout } = await execa("ffmpeg", ffmpegOption);
 
       // await execPromise(soundFFmpeg);
       // await execPromise(imageFFmpeg);
@@ -140,40 +181,41 @@ export const uploadVideo = async (f: string, durationArr, mediaDirPath) => {
       //     // execPromise(`rm ${aacFilePath}`);
       //   }
       // );
-      const files = await fs.readdirSync(mediaDirPath + "/tmp");
-      console.log(files);
-      let jpgs = <Array<string>>[];
-      await files.forEach(async (file) => {
-        if (file.includes(fName) && file.includes(".jpg")) {
-          await jpgs.push(file);
-        }
-      });
-      // console.log(jpgs)
-      // const jpgs = await readDir(uploadParams.mediaDir);
-      await jpgs.forEach(async (element) => {
-        const img = await fs.readFileSync(mediaDirPath + "/tmp/" + element);
-        const base64str = await new Buffer(img).toString("base64");
-        // console.log(base64str)
-        streams[fSplit[0]].video.push(
-          "data:image/jpeg;base64," + String(base64str)
-        );
-        // await execPromise("rm " + mediaDirPath + "/" + element);
-        // await execPromise(`rm ${mediaDirPath}/tmp/${fName}.aac`);
-        /*
-    io.emit("stringsFromServer", {
-      strings: "UPLOADED",
-      timeout: true,
-    });
-    */
-      });
+    //   const files = await fs.readdirSync(mediaDirPath + "/tmp");
+    //   console.log(files);
+    //   let jpgs = <Array<string>>[];
+    //   await files.forEach(async (file) => {
+    //     if (file.includes(fName) && file.includes(".jpg")) {
+    //       await jpgs.push(file);
+    //     }
+    //   });
+    //   // console.log(jpgs)
+    //   // const jpgs = await readDir(uploadParams.mediaDir);
+    //   await jpgs.forEach(async (element) => {
+    //     const img = await fs.readFileSync(mediaDirPath + "/tmp/" + element);
+    //     const base64str = await new Buffer(img).toString("base64");
+    //     // console.log(base64str)
+    //     streams[fSplit[0]].video.push(
+    //       "data:image/jpeg;base64," + String(base64str)
+    //     );
+    //     // await execPromise("rm " + mediaDirPath + "/" + element);
+    //     // await execPromise(`rm ${mediaDirPath}/tmp/${fName}.aac`);
+    //     /*
+    // io.emit("stringsFromServer", {
+    //   strings: "UPLOADED",
+    //   timeout: true,
+    // });
+    // */
+    //   });
     });
 
-    console.log("video file uploaded");
+    // console.log("video file uploaded");
     //コマンド、パラメータにUPLOAD対象を追加
     // streamList.push(streamName);
     // pushStateStream(fName, states);
-    return true;
+    // return true;
   } catch (err) {
+    console.log('1st catch')
     console.error(err);
     return false;
   }

@@ -16,7 +16,7 @@ export const promiseGetPcmData = (
     var gotData = false;
 
     let channels = 2;
-    let sampleRate = 44100;
+    let sampleRate = 22050;
     const ffmpegPath = "ffmpeg";
     let value;
     let i = 0;
@@ -66,6 +66,124 @@ export const promiseGetPcmData = (
       // console.log(data);
       var buffLen = buff.length;
       // console.log(buff.length);
+      /*
+      for (let buffIndex = 0; buffIndex + 1 < buffLen; buffIndex++) {
+        value = buff.readInt16LE(buffIndex, true) / (327670);
+        tmpBuff[chunkIndex] = value;
+        // console.log(chunkIndex, value);
+        chunkIndex++;
+        if (chunkIndex === bufferSize) {
+          buffArr.push(tmpBuff);
+          tmpBuff = new Float32Array(bufferSize);
+          chunkIndex = 0;
+        }
+      }
+      */
+
+      if (oddByte !== null) {
+        value = ((buff.readInt8(i++, true) << 8) | oddByte) / 32767.0;
+        tmpBuff[chunkIndex] = value;
+        // console.log(chunkIndex, value);
+        chunkIndex++;
+        if (chunkIndex === bufferSize) {
+          buffArr.push(tmpBuff);
+          tmpBuff = new Float32Array(bufferSize);
+          chunkIndex = 0;
+        }        // sampleCallback(value, channel);
+        channel = ++channel % 2;
+      }
+      
+      for (; i < buffLen; i += 2) {
+        value = buff.readInt16LE(i, true) / 32767.0;
+        tmpBuff[chunkIndex] = value;
+        // console.log(chunkIndex, value);
+        chunkIndex++;
+        if (chunkIndex === bufferSize) {
+          buffArr.push(tmpBuff);
+          tmpBuff = new Float32Array(bufferSize);
+          chunkIndex = 0;
+        }
+        channel = ++channel % 2;
+      }
+      
+      oddByte = (i < buffLen) ? buff.readUInt8(i, true) : null;
+
+
+      // return await buffArr;
+    });
+
+    proc.stdout.on("end", () => {
+      resolve(buffArr);
+    });
+    proc.stdout.on("error", (err) => {
+      reject(err);
+    });
+  });
+};
+
+
+export const promiseGetBitCrashed = (
+  filePath: string,
+  bufferSize: number,
+  options
+) => {
+  return new Promise((resolve, reject) => {
+    var outputStr = "";
+    var oddByte = null;
+    var channel = 0;
+    var gotData = false;
+
+    let channels = 2;
+    let sampleRate = 44100;
+    const ffmpegPath = "ffmpeg";
+    let value;
+    let i = 0;
+
+    // options = options || {};
+    // if (typeof options.stereo !== "undefined") channels = options.stereo ? 2 : 1;
+    // if (typeof options.sampleRate !== "undefined")
+    //   sampleRate = options.sampleRate;
+    // if (typeof options.ffmpegPath !== "undefined")
+    //   ffmpegPath = options.ffmpegPath;
+
+    let tmpBuff = new Float32Array(bufferSize);
+    // let buffIndex = 0;
+    let chunkIndex = 0;
+
+    const ffmpegOption: string[] = [
+      "-i",
+      filePath,
+      "-f",
+      "s16le",
+      "-ac",
+      String(channels),
+      "-acodec",
+      "pcm_s16le",
+      "-ar",
+      String(sampleRate),
+      "-y",
+      "pipe:1",
+    ];
+
+    if (typeof options.ss !== "undefined") {
+      ffmpegOption.push("-ss");
+      ffmpegOption.push(options.ss);
+    }
+    if (typeof options.t !== "undefined") {
+      ffmpegOption.push("-t");
+      ffmpegOption.push(options.t);
+    }
+    console.log(ffmpegOption);
+
+    const proc = spawn("ffmpeg", ffmpegOption);
+    const buffArr: Float32Array[] = [];
+    proc.stdout.on("data", (buff) => {
+      // const { stdout } = await execa(ffmpegPath, [
+      // await execa(ffmpegPath, ffmpegOption).then((execaReturnData) => {
+      // const data = Buffer.from(execaReturnData.stdout);
+      // console.log(data);
+      var buffLen = buff.length;
+      console.log(buff.length);
       for (let buffIndex = 0; buffIndex + 1 < buffLen; buffIndex++) {
         value = buff.readInt16LE(buffIndex, true) / 32767.0;
         tmpBuff[chunkIndex] = value;
@@ -97,6 +215,7 @@ const main = () => {
     console.log("result");
   });
 };
+
 
 main();
 

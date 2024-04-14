@@ -1,6 +1,7 @@
 import SocketIO from "socket.io";
 
 import { cmdStateType } from "../types/global";
+import { stringEmit } from "../socket/ioEmit";
 // import { putCmd } from './putCmd'
 
 const metronomeArr: number[] = [];
@@ -15,8 +16,26 @@ export const metronomeBpmSet = (
       const interval1 = metronomeArr[1] - metronomeArr[0];
       const interval2 = metronomeArr[2] - metronomeArr[1];
       const interval3 = new Date().getTime() - metronomeArr[2];
-      const averageInterval = (interval1 + interval2 + interval3) / 3;
-      state.bpm[sourceId] = 60000 / averageInterval;
+      const latency = (interval1 + interval2 + interval3) / 3;
+      // state.bpm[sourceId] = 60000 / latency;
+      // for (let target in state.stream.latency) {
+      //   state.stream.latency[target] = latency;
+      // }
+      // for (let target in state.cmd.METRONOME) {
+      //   state.cmd.METRONOME[target] = latency;
+      // }
+      state.cmd.METRONOME[sourceId] = latency;
+      const targetIndex = Object.keys(state.client).map((element, index) => {
+        if (element === sourceId) return index;
+      });
+
+      stringEmit(
+        io,
+        `${String(targetIndex)} BPM: ${String(60000 / latency)}`,
+        true,
+        sourceId
+      );
+
       // gridをきかせる制御
 
       metronomeArr.length = 0;
@@ -28,4 +47,5 @@ export const metronomeBpmSet = (
       }, 10000);
     }
   }
+  console.log(metronomeArr);
 };

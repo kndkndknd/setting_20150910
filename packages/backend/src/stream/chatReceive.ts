@@ -117,8 +117,13 @@ export const chatEmit = async (io, from?) => {
         // io.to(targetId).emit("chatFromServer", chunk);
         ioEmitChatFromServer(io, chunk, targetId);
       } else {
-        const timeOutVal =
-          (Math.round(Math.random() * 16) * states.stream.latency.CHAT) / 4;
+        const timeOutVal = Object.keys(states.cmd.METRONOME).includes(targetId)
+          ? (Math.round(Math.random() * 16) * states.cmd.METRONOME[targetId]) /
+            4
+          : (Math.round(Math.random() * 16) * states.stream.latency.CHAT) / 4;
+
+        // const timeOutVal =
+        //   (Math.round(Math.random() * 16) * states.stream.latency.CHAT) / 4;
         setTimeout(() => {
           // io.to(targetId).emit("chatFromServer", chunk);
           ioEmitChatFromServer(io, chunk, targetId);

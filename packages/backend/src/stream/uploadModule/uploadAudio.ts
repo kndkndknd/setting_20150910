@@ -1,6 +1,6 @@
 // const pcm = require("pcm");
-import { execa } from "execa";
-import { awaitGetPcmData } from "./getPcmData";
+// import { execa } from "execa";
+import { promiseGetPcmData } from "./getPcmData";
 import { pushStateStream } from "../pushStateStream";
 
 import {
@@ -26,7 +26,7 @@ export const uploadAudio = async (f: string, mediaDirPath: string) => {
   try {
     await pushStateStream(fSplit[0], states);
     // const result = <boolean>await getPcmData(filePath, fSplit[0], option);
-    const result = await awaitGetPcmData(filePath, fSplit[0], option);
+    const result = await promiseGetPcmData(filePath, 8192, option);
     if (result) {
       return true;
     } else {

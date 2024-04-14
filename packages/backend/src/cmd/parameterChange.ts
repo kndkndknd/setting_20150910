@@ -126,6 +126,7 @@ export const parameterChange = (
           // propertyがSTREAMを指定している場合
           if (Object.keys(state.stream.latency).includes(arg.property)) {
             state.stream.latency[arg.property] = latency;
+            // state.cmd.METRONOME = {};
             stringEmit(
               io,
               "BPM: " + String(arg.value) + "(" + arg.property + ")"

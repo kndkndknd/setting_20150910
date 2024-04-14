@@ -274,6 +274,7 @@ export const uploadStream = async (stringArr, io) => {
             // const samples = await getSample(mediaDirPath, f);
             const samples = 100000;
             if (samples > 32768) {
+              /*
               await pcm.getPcmData(
                 mediaDirPath + "/" + f,
                 { stereo: true, sampleRate: 22050 },
@@ -302,6 +303,7 @@ export const uploadStream = async (stringArr, io) => {
                   });
                 }
               );
+              */
             } else {
               const oneshotBuff = new Float32Array(samples);
 

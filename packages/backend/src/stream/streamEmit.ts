@@ -48,6 +48,8 @@ export const streamEmit = async (
       */
   } else {
     // console.log(streams[source]);
+    console.log('audio length:', streams[source].audio.length)
+    console.log('video length:', streams[source].audio.length)
     if (streams[source].audio.length > 0 || streams[source].video.length > 0) {
       if (!state.stream.random[source]) {
         buff = {

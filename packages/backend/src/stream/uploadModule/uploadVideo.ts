@@ -60,7 +60,7 @@ export const uploadVideo = async (f: string, durationArr, mediaDirPath) => {
       ];
       console.log(ffmpegOption);
       const proc = spawn("ffmpeg", ffmpegOption);
-      proc.stdout.on("end", async () =>{
+      await proc.stdout.on("end", async () =>{
         try {
           const files = await fs.readdirSync(mediaDirPath + "/tmp");
           console.log(files);

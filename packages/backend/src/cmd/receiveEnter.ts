@@ -18,8 +18,9 @@ import { recordEmit } from "../stream/recordEmit";
 import { switchCtrl } from "../arduinoAccess/arduinoAccess";
 import { stringEmit } from "../socket/ioEmit";
 import { previousCmd } from "./previousCmd";
+import { getLiveStream } from "../stream/getLiveStream";
 
-export const receiveEnter = (
+export const receiveEnter = async (
   strings: string,
   id: string,
   io: SocketIO.Server,
@@ -150,6 +151,14 @@ export const receiveEnter = (
       }
     });
 */
+    // } else if (strings === "TWITCH") {
+    //   const result = await getLiveStream("TWITCH");
+    //   console.log("get livestream as ", strings, result);
+    //   if (result) {
+    //     stringEmit(io, "GET TWITCH: SUCCESS");
+    //   } else {
+    //     stringEmit(io, "GET TWITCH: FAILED");
+    //   }
   }
 
   if (strings !== "STOP") {

@@ -22,13 +22,16 @@ export const uploadAudio = async (f: string, mediaDirPath: string) => {
   console.log("debug start");
   const filePath = `${mediaDirPath}/${f}`;
   const option = { stereo: true, sampleRate: 22050 };
-
+  console.log("debug start2");
   try {
     await pushStateStream(fSplit[0], states);
     // const result = <boolean>await getPcmData(filePath, fSplit[0], option);
-    const result = <Float32Array[]>await promiseGetPcmData(filePath, 8192, option);
+    const result = <Float32Array[]>(
+      await promiseGetPcmData(filePath, 8192, option)
+    );
+    console.log("result", result.length);
     if (result) {
-      streams[fSplit[0]].audio = result
+      streams[fSplit[0]].audio = result;
       return true;
     } else {
       return false;

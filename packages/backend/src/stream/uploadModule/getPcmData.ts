@@ -83,31 +83,36 @@ export const promiseGetPcmData = (
       if (oddByte !== null) {
         value = ((buff.readInt8(i++, true) << 8) | oddByte) / 32767.0;
         tmpBuff[chunkIndex] = value;
+        // tmpBuff.push(value);
         // console.log(chunkIndex, value);
         chunkIndex++;
+        console.log("chunkIndex(oddByte)", chunkIndex);
         if (chunkIndex === bufferSize) {
           buffArr.push(tmpBuff);
           tmpBuff = new Float32Array(bufferSize);
           chunkIndex = 0;
-        }        // sampleCallback(value, channel);
+          console.log("buffArr(oddByte)", buffArr.length);
+        } // sampleCallback(value, channel);
         channel = ++channel % 2;
       }
-      
+
       for (; i < buffLen; i += 2) {
         value = buff.readInt16LE(i, true) / 32767.0;
         tmpBuff[chunkIndex] = value;
         // console.log(chunkIndex, value);
         chunkIndex++;
+        console.log("chunkIndex", chunkIndex);
+
         if (chunkIndex === bufferSize) {
           buffArr.push(tmpBuff);
           tmpBuff = new Float32Array(bufferSize);
           chunkIndex = 0;
+          console.log("buffArr", buffArr.length);
         }
         channel = ++channel % 2;
       }
-      
-      oddByte = (i < buffLen) ? buff.readUInt8(i, true) : null;
 
+      oddByte = i < buffLen ? buff.readUInt8(i, true) : null;
 
       // return await buffArr;
     });
@@ -120,7 +125,6 @@ export const promiseGetPcmData = (
     });
   });
 };
-
 
 export const promiseGetBitCrashed = (
   filePath: string,
@@ -193,6 +197,7 @@ export const promiseGetBitCrashed = (
           buffArr.push(tmpBuff);
           tmpBuff = new Float32Array(bufferSize);
           chunkIndex = 0;
+          console.log("buffArr", buffArr.length);
         }
       }
       // return await buffArr;
@@ -215,7 +220,6 @@ const main = () => {
     console.log("result");
   });
 };
-
 
 main();
 

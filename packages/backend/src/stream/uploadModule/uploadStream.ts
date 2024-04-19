@@ -56,19 +56,22 @@ export const uploadStreamModule = async (stringArr) => {
   }
 
   switch (f.split(".")[1].toLowerCase()) {
+    /*
     case "mov":
     case "mp4":
     case "m4v":
     case "webm":
-    const duration = <number>await getDuration(mediaDirPath, f);
-    const durationArr = durationPattern(duration, stringArr);
-    console.log('durationArr', durationArr)
-    const videoUploadResult = await uploadVideo(f, durationArr, mediaDirPath);
-    if (videoUploadResult) {
-      return `${f.split(".")[0]} UPLOADED`;
-    } else {
-      return `FAILED: ${f.split(".")[0]} NOT UPLOADED`;
-    }
+      const duration = <number>await getDuration(mediaDirPath, f);
+      const durationArr = durationPattern(duration, stringArr);
+      console.log("durationArr", durationArr);
+      const videoUploadResult = await uploadVideo(f, durationArr, mediaDirPath);
+      if (videoUploadResult) {
+        return `${f.split(".")[0]} UPLOADED`;
+      } else {
+        return `FAILED: ${f.split(".")[0]} NOT UPLOADED`;
+      }
+      break;
+    */
     case "aac":
     case "m4a":
     case "mp3":
@@ -79,11 +82,11 @@ export const uploadStreamModule = async (stringArr) => {
       const audioUploadResult = await uploadAudio(f, mediaDirPath);
       if (audioUploadResult) {
         await console.log("audioUploadResult", audioUploadResult);
-        console.log(
+        await console.log(
           `${f.split(".")[0]} length: `,
           streams[f.split(".")[0]].audio.length
         );
-        pushStateStream(f.split(".")[0], states, true);
+        // pushStateStream(f.split(".")[0], states, true);
 
         return await `${f.split(".")[0]} UPLOADED`;
       } else {

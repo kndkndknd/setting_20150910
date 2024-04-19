@@ -8,12 +8,11 @@ import {
   streams,
 } from "../../states";
 import { cmdEmit } from "../cmdEmit";
-import { uploadStream } from "../../stream/uploadModule/upload";
 import { sinewaveEmit } from "../sinewaveEmit";
 import { parameterChange } from "../parameterChange";
 
 import { putCmd } from "../putCmd";
-import { stringEmit } from '../../socket/ioEmit'
+import { stringEmit } from "../../socket/ioEmit";
 // import { putString } from "./putString";
 
 import { insertStream } from "../../mongoAccess/insertStream";
@@ -32,7 +31,8 @@ import { helpPrint } from "../help";
 import { getLiveStream } from "../../stream/getLiveStream";
 import { getTimeLine } from "./getTimeLine";
 import { connectTest, switchCramp } from "../../arduinoAccess/arduinoAccess";
-import { uploadStreamModule } from "../../stream/uploadModule/uploadStream";
+// import { uploadStreamModule } from "../../stream/uploadModule/uploadStream";
+import { uploadStream } from "../../stream/uploadModule/upload";
 
 export const splitSpace = async (
   stringArr: Array<string>,
@@ -213,10 +213,10 @@ export const splitSpace = async (
     // } else if (stringArr[0] === "FADE") {
   } else if (stringArr[0] === "UPLOAD" && stringArr.length == 2) {
     // const uploadResult = await uploadStream(stringArr);
-    // uploadStream(stringArr, io);
-    const result = await uploadStreamModule(stringArr);
-    console.log(result);
-    stringEmit(io, result, true);
+    uploadStream(stringArr, io);
+    // const result = await uploadStreamModule(stringArr);
+    // console.log(result);
+    // stringEmit(io, result, true);
   } else if (
     stringArr[0] === "GAIN" &&
     stringArr.length === 3 &&

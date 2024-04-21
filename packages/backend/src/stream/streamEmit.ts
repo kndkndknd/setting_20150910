@@ -48,8 +48,8 @@ export const streamEmit = async (
       */
   } else {
     // console.log(streams[source]);
-    console.log('audio length:', streams[source].audio.length)
-    console.log('video length:', streams[source].audio.length)
+    console.log("audio length:", streams[source].audio.length);
+    console.log("video length:", streams[source].audio.length);
     if (streams[source].audio.length > 0 || streams[source].video.length > 0) {
       if (!state.stream.random[source]) {
         buff = {
@@ -66,8 +66,11 @@ export const streamEmit = async (
           duration: streams[source].bufferSize / 44100,
         };
         if (
-          streams[source].index < streams[source].audio.length - 1 &&
-          streams[source].index < streams[source].video.length - 1
+          ((streams[source].video === undefined ||
+            streams[source].video.length === 0) &&
+            streams[source].index < streams[source].audio.length - 1) ||
+          (streams[source].index < streams[source].audio.length - 1 &&
+            streams[source].index < streams[source].video.length - 1)
         ) {
           streams[source].index++;
         } else {

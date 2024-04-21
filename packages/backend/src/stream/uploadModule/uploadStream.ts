@@ -28,7 +28,7 @@ import { durationPattern } from "./durationPattern";
 import { uploadVideo } from "./uploadVideo";
 import { uploadAudio } from "./uploadAudio";
 
-export const uploadStreamModule = async (stringArr) => {
+export const uploadStream = async (stringArr) => {
   //  let ss = "00:00:00"
   //  let t = "00:00:20"
   // const __filename = fileURLToPath(import.meta.url);
@@ -56,7 +56,6 @@ export const uploadStreamModule = async (stringArr) => {
   }
 
   switch (f.split(".")[1].toLowerCase()) {
-    /*
     case "mov":
     case "mp4":
     case "m4v":
@@ -70,8 +69,6 @@ export const uploadStreamModule = async (stringArr) => {
       } else {
         return `FAILED: ${f.split(".")[0]} NOT UPLOADED`;
       }
-      break;
-    */
     case "aac":
     case "m4a":
     case "mp3":

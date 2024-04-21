@@ -72,7 +72,7 @@ export const pcm2arr = (url) => {
 //   states.stream.target[streamName] = [];
 // };
 
-export const uploadStream = async (stringArr, io) => {
+export const upload = async (stringArr, io) => {
   //  let ss = "00:00:00"
   //  let t = "00:00:20"
   switch (stringArr.length) {

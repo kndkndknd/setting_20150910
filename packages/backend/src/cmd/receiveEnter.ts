@@ -19,6 +19,8 @@ import { switchCtrl } from "../arduinoAccess/arduinoAccess";
 import { stringEmit } from "../socket/ioEmit";
 import { previousCmd } from "./previousCmd";
 import { getLiveStream } from "../stream/getLiveStream";
+import { loadScenario } from "../scenario/loadScenario";
+import { execScenario } from "../scenario/execScenario";
 
 export const receiveEnter = async (
   strings: string,
@@ -151,7 +153,9 @@ export const receiveEnter = async (
       }
     });
 */
-    // } else if (strings === "TWITCH") {
+  } else if (strings === "START" || strings === "SCENARIO") {
+    const scenario = await loadScenario();
+    await execScenario(scenario, io);
     //   const result = await getLiveStream("TWITCH");
     //   console.log("get livestream as ", strings, result);
     //   if (result) {

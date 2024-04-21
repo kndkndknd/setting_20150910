@@ -32,7 +32,7 @@ import { getLiveStream } from "../../stream/getLiveStream";
 import { getTimeLine } from "./getTimeLine";
 import { connectTest, switchCramp } from "../../arduinoAccess/arduinoAccess";
 // import { uploadStreamModule } from "../../stream/uploadModule/uploadStream";
-import { uploadStream } from "../../stream/uploadModule/upload";
+import { uploadStream } from "../../stream/uploadModule/uploadStream";
 
 export const splitSpace = async (
   stringArr: Array<string>,
@@ -213,10 +213,10 @@ export const splitSpace = async (
     // } else if (stringArr[0] === "FADE") {
   } else if (stringArr[0] === "UPLOAD" && stringArr.length == 2) {
     // const uploadResult = await uploadStream(stringArr);
-    uploadStream(stringArr, io);
-    // const result = await uploadStreamModule(stringArr);
-    // console.log(result);
-    // stringEmit(io, result, true);
+    // uploadStream(stringArr, io);
+    const result = await uploadStream(stringArr);
+    console.log(result);
+    stringEmit(io, result, true);
   } else if (
     stringArr[0] === "GAIN" &&
     stringArr.length === 3 &&

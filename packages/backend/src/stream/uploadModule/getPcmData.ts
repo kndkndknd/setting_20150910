@@ -65,7 +65,7 @@ export const promiseGetPcmData = (
       // const data = Buffer.from(execaReturnData.stdout);
       // console.log(data);
       var buffLen = buff.length;
-      // console.log(buff.length);
+      console.log("buffLen", buff.length);
       /*
       for (let buffIndex = 0; buffIndex + 1 < buffLen; buffIndex++) {
         value = buff.readInt16LE(buffIndex, true) / (327670);
@@ -91,7 +91,7 @@ export const promiseGetPcmData = (
           buffArr.push(tmpBuff);
           tmpBuff = new Float32Array(bufferSize);
           chunkIndex = 0;
-          console.log("buffArr(oddByte)", buffArr.length);
+          // console.log("buffArr(oddByte)", buffArr.length);
         } // sampleCallback(value, channel);
         channel = ++channel % 2;
       }
@@ -101,18 +101,19 @@ export const promiseGetPcmData = (
         tmpBuff[chunkIndex] = value;
         // console.log(chunkIndex, value);
         chunkIndex++;
-        console.log("chunkIndex", chunkIndex);
+        // console.log("chunkIndex", chunkIndex);
 
         if (chunkIndex === bufferSize) {
           buffArr.push(tmpBuff);
           tmpBuff = new Float32Array(bufferSize);
           chunkIndex = 0;
-          console.log("buffArr", buffArr.length);
+          // console.log("buffArr", buffArr.length);
         }
         channel = ++channel % 2;
       }
 
       oddByte = i < buffLen ? buff.readUInt8(i, true) : null;
+      i = i === buffLen ? 0 : i;
 
       // return await buffArr;
     });

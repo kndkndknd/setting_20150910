@@ -27,7 +27,7 @@ export const execScenario = async (
     if (now.getTime() - execTime.getTime() < 0) {
       setTimeout(() => {
         console.log(scenario[key]);
-        receiveEnter(scenario[key], "", io, states);
+        receiveEnter(scenario[key], "all", io, states);
       }, execTime.getTime() - now.getTime());
     }
   }

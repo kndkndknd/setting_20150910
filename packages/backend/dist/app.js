@@ -31,10 +31,11 @@ const express_1 = __importDefault(require("express"));
 const path = __importStar(require("path"));
 const serve_favicon_1 = __importDefault(require("serve-favicon"));
 const Https = __importStar(require("https"));
-const ioServer_js_1 = require("./socket/ioServer.js");
+const ioServer_1 = require("./socket/ioServer");
 // import { states } from "./states";
 // import { switchCtrl } from "./arduinoAccess/switch";
 const os_1 = require("os");
+const getLiveStream_1 = require("./stream/getLiveStream");
 const port = 8000;
 const app = (0, express_1.default)();
 // const __filename = fileURLToPath(import.meta.url);
@@ -75,6 +76,29 @@ app.get("/snowleopard", function (req, res, next) {
         res.json({ success: false, message: "Something went wrong" });
     }
 });
+app.get("/:name", function (req, res, next) {
+    const name = req.params.name;
+    try {
+        // if (name == "" || name === "pi" || name === "pi5") {
+        res.sendFile(path.join(__dirname, "..", "static", "html", "index.html"));
+        // } else if (
+        //   name == "snowleopard" ||
+        //   name == "sl" ||
+        //   name === "snow" ||
+        //   name == "2008" ||
+        //   name == "2009"
+        // ) {
+        //   res.sendFile(
+        //     path.join(__dirname, "..", "static", "html", "snowleopard.html")
+        //   );
+        // }
+        // res.sendFile(path.join(__dirname, "..", "static", "html", "index.html"));
+    }
+    catch (error) {
+        console.log(error);
+        res.json({ success: false, message: "Something went wrong" });
+    }
+});
 /*
 const socketOptions = {
   cors: {
@@ -88,5 +112,11 @@ const socketOptions = {
 };
 */
 // const io = new Server(httpsserver, socketOptions)
-(0, ioServer_js_1.ioServer)(httpserver);
+(0, ioServer_1.ioServer)(httpserver);
+try {
+    (0, getLiveStream_1.getLiveStream)("LIVECAM");
+}
+catch (error) {
+    console.log("get LIVECAM error:", error);
+}
 //# sourceMappingURL=app.js.map

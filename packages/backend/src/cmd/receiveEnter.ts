@@ -29,7 +29,9 @@ export const receiveEnter = async (
   state: cmdStateType
 ) => {
   //VOICE
-  voiceEmit(io, strings, state);
+  if (!strings.includes("VOICE ")) {
+    voiceEmit(io, strings, id, state);
+  }
 
   /*
   if(strings === 'INSERT') {
@@ -59,7 +61,7 @@ export const receiveEnter = async (
     }
     */
   } else if (strings.includes(" ") /*&& strings.split(" ").length < 4*/) {
-    splitSpace(strings.split(" "), io, state);
+    splitSpace(strings.split(" "), io, state, id);
   } else if (strings.includes("+")) {
     splitPlus(strings.split("+"), io, state);
   } else if (streamList.includes(strings)) {
@@ -73,7 +75,7 @@ export const receiveEnter = async (
     sinewaveEmit(Number(strings), io, state);
   } else if (strings === "STOP") {
     console.log("stop");
-    stopEmit(io, state, "ALL");
+    stopEmit(io, state, id, "ALL");
   } else if (strings === "QUANTIZE") {
     state.stream.quantize = !state.stream.quantize;
     for (let key in state.bpm) {

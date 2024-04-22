@@ -90,6 +90,6 @@ export const splitStop = (stringArr: string[], state: cmdStateType, io) => {
     });
     state.current.sinewave = {};
   } else if (stringArr[1] === "ALL") {
-    stopEmit(io, state, "ALL");
+    stopEmit(io, state, "", "ALL");
   }
 };

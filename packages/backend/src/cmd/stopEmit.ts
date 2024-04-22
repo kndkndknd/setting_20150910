@@ -1,9 +1,11 @@
 import SocketIO from "socket.io";
 import { cmdStateType } from "../types/global";
+import { voiceEmit } from "./voiceEmit";
 
 export const stopEmit = (
   io: SocketIO.Server,
   state: cmdStateType,
+  source: string,
   target?: "ALL" | "STREAM" | "CMD",
   client?: string
 ) => {
@@ -14,18 +16,22 @@ export const stopEmit = (
   })
   */
   // STOPは個別の関数があるのでVOICEはそこに相乗り
-  if (state.cmd.VOICE.length > 0) {
-    state.cmd.VOICE.forEach((element) => {
-      //      io.to(element).emit('voiceFromServer', "STOP")
-      io.to(element).emit("voiceFromServer", {
-        text: "STOP",
-        lang: state.cmd.voiceLang,
-      });
-    });
+
+  // if (state.cmd.VOICE.length > 0) {
+  //   state.cmd.VOICE.forEach((element) => {
+  //     //      io.to(element).emit('voiceFromServer', "STOP")
+  //     io.to(element).emit("voiceFromServer", {
+  //       text: "STOP",
+  //       lang: state.cmd.voiceLang,
+  //     });
+  //   });
+  // }
+  if (source !== undefined) {
+    voiceEmit(io, "STOP", source, state);
   }
 
   // stop cmd / sinewave
-  if (client !== undefined) {
+  if (client === undefined) {
     // current -> previous && current -> stop
     Object.keys(state.client).forEach((element) => {
       io.to(element).emit("stopFromServer", {

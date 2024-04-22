@@ -51,7 +51,7 @@ export const timerCmd = (
       } else if (stringArr[1] === "STOP") {
         if (stringArr.length === 2) {
           const client = "all";
-          stopEmit(io, state, "ALL", client);
+          stopEmit(io, state, "", "ALL", client);
           /*
         } else if(stringArr.length === 3) {
           if(stringArr[2] === 'SINEWAVECLIENT') {

@@ -57,7 +57,7 @@ export const splitPlus = (
     } else if (Object.keys(parameterList).includes(string)) {
       parameterChange(parameterList[string], io, state, { source: target });
     } else if (string === "STOP") {
-      stopEmit(io, state, "ALL");
+      stopEmit(io, state, "", "ALL");
     }
   });
 };

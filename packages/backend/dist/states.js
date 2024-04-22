@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.helpList = exports.uploadParams = exports.parameterList = exports.streamList = exports.cmdList = exports.chat_web = exports.streams = exports.basisBufferSize = exports.states = void 0;
+exports.streamApiUrl = exports.helpList = exports.uploadParams = exports.parameterList = exports.streamList = exports.cmdList = exports.chat_web = exports.streams = exports.oneshots = exports.chats = exports.basisBufferSize = exports.states = void 0;
 exports.states = {
     cmd: {
         GAIN: {
@@ -25,7 +25,7 @@ exports.states = {
         voiceLang: "en-US",
         METRONOME: {},
     },
-    client: [],
+    client: {},
     sinewaveClient: [],
     current: {
         cmd: {
@@ -129,15 +129,19 @@ exports.states = {
     bpm: {},
     clockMode: false,
     arduino: {
-        host: "localhost",
+        // host: "localhost",
+        host: "pi5.local",
+        // host: "192.168.15.166",
         port: 5050,
         connected: false,
         relay: "off",
     },
+    emoji: false,
+    timer: true,
 };
 exports.basisBufferSize = 8192;
-exports.streams = {
-    CHAT: [],
+exports.chats = [];
+exports.oneshots = {
     KICK: {
         audio: [],
         video: [],
@@ -158,7 +162,14 @@ exports.streams = {
         video: [],
         bufferSize: exports.basisBufferSize,
     },
-    PLAYBACK: [],
+};
+exports.streams = {
+    PLAYBACK: {
+        audio: [],
+        video: [],
+        index: 0,
+        bufferSize: exports.basisBufferSize,
+    },
     TIMELAPSE: {
         audio: [],
         video: [],
@@ -169,11 +180,13 @@ exports.streams = {
         audio: [],
         video: [],
         index: 0,
+        bufferSize: exports.basisBufferSize,
     },
     EMPTY: {
         audio: [],
         video: [],
-        index: [],
+        index: 0,
+        bufferSize: exports.basisBufferSize,
     },
 };
 exports.chat_web = true;
@@ -225,4 +238,5 @@ exports.helpList = {
     PREVIOUS: "STOPする直前に再生されていた内容をまとめて再生する。PREVでも可",
     INSERT: "自宅のサーバのDBにPLAYBACK等を保存する INSERT (STREAM名) (場所) (日付)の形式で実行する",
 };
+exports.streamApiUrl = "http://127.0.0.1:8088/getLiveStream";
 //# sourceMappingURL=states.js.map

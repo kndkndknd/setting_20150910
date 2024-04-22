@@ -33,11 +33,13 @@ import { getTimeLine } from "./getTimeLine";
 import { connectTest, switchCramp } from "../../arduinoAccess/arduinoAccess";
 // import { uploadStreamModule } from "../../stream/uploadModule/uploadStream";
 import { uploadStream } from "../../stream/uploadModule/uploadStream";
+import { voiceEmit } from "../voiceEmit";
 
 export const splitSpace = async (
   stringArr: Array<string>,
   io: SocketIO.Server,
-  state: cmdStateType
+  state: cmdStateType,
+  source?: string
 ) => {
   const arrTypeArr = stringArr.map((string) => {
     if (/^([1-9]\d*|0)(\.\d+)?$/.test(string)) {
@@ -162,13 +164,15 @@ export const splitSpace = async (
       }
     } else if (stringArr[0] === "VOICE") {
       //  } else if (stringArr[0] === 'VOICE' && stringArr.length === 2 && arrTypeArr[1] === 'string') {
-      console.log("debt");
       if (stringArr[1] === "JA" || stringArr[1] === "JP") {
         state.cmd.voiceLang = "ja-JP";
         stringEmit(io, "VOICE: ja-JP");
       } else if (stringArr[1] === "EN" || stringArr[1] === "US") {
         state.cmd.voiceLang = "en-US";
         stringEmit(io, "VOICE: en-US");
+      } else {
+        const voiceText = stringArr.slice(1).join(" ");
+        voiceEmit(io, voiceText, "all", state);
       }
     } else {
       let argVal: number;

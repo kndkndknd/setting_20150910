@@ -5,6 +5,7 @@ import { cmdStateType } from "../types/global";
 import { cmdList, streamList, parameterList, states, streams } from "../states";
 import { putCmd } from "./putCmd";
 import { stringEmit } from "../socket/ioEmit";
+import { notTargetEmit } from "./notTargetEmit";
 
 export const parameterChange = (
   param: string,
@@ -236,7 +237,8 @@ export const parameterChange = (
           flag = true;
         }
         // io.emit('stringsFromServer',{strings: 'VOICE: ' + String(flag), timeout: true})
-        stringEmit(io, "VOICE: " + String(flag));
+        stringEmit(io, "VOICE: " + String(flag), true, arg.source);
+        notTargetEmit(arg.source, Object.keys(state.client), io);
       }
       break;
   }

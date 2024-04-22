@@ -18,19 +18,39 @@ const stopEmit = (io, state, target, client) => {
             });
         });
     }
-    // current -> previous && current -> stop
-    state.client.forEach((element) => {
-        io.to(element).emit("stopFromServer", {
+    // stop cmd / sinewave
+    if (client !== undefined) {
+        // current -> previous && current -> stop
+        Object.keys(state.client).forEach((element) => {
+            io.to(element).emit("stopFromServer", {
+                target: target === undefined ? "ALL" : target,
+                fadeOutVal: state.cmd.FADE.OUT,
+            });
+        });
+        for (let cmd in state.current.cmd) {
+            state.previous.cmd[cmd] = state.current.cmd[cmd];
+            state.current.cmd[cmd] = [];
+        }
+        state.previous.sinewave = state.current.sinewave;
+        state.current.sinewave = {};
+    }
+    else if (Object.keys(state.client).includes(client)) {
+        io.to(client).emit("stopFromServer", {
             target: target === undefined ? "ALL" : target,
             fadeOutVal: state.cmd.FADE.OUT,
         });
-    });
-    for (let cmd in state.current.cmd) {
-        state.previous.cmd[cmd] = state.current.cmd[cmd];
-        state.current.cmd[cmd] = [];
+        for (let cmd in state.current.cmd) {
+            if (state.current.cmd[cmd].includes(client)) {
+                state.previous.cmd[cmd] = state.current.cmd[cmd];
+                state.current.cmd[cmd] = state.current.cmd[cmd].filter((element) => element !== client);
+            }
+        }
+        if (state.current.sinewave[client] !== undefined) {
+            state.previous.sinewave[client] = state.current.sinewave[client];
+            delete state.current.sinewave[client];
+        }
     }
-    state.previous.sinewave = state.current.sinewave;
-    state.current.sinewave = {};
+    // stop stream
     for (let stream in state.current.stream) {
         state.previous.stream[stream] = state.current.stream[stream];
         state.current.stream[stream] = false;

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.voiceEmit = void 0;
-const voiceEmit = (io, strings, state) => {
+const voiceEmit = (io, strings, source, state) => {
     if (state.cmd.VOICE.length > 0) {
         state.cmd.VOICE.forEach((element) => {
             io.to(element).emit("voiceFromServer", {

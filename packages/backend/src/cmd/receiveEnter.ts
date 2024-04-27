@@ -165,6 +165,25 @@ export const receiveEnter = async (
     //   } else {
     //     stringEmit(io, "GET TWITCH: FAILED");
     //   }
+  } else if (strings === "HLS") {
+    const cmd: {
+      cmd: string;
+      property: string;
+      value: number;
+      flag: boolean;
+      target?: string;
+      overlay?: boolean;
+      fade?: number;
+      portament?: number;
+      gain?: number;
+      solo?: boolean;
+    } = {
+      cmd: "HLS",
+      property: "HLS",
+      value: 0,
+      flag: true,
+    };
+    io.emit("cmdFromServer", cmd);
   }
 
   if (strings !== "STOP") {

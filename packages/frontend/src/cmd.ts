@@ -9,6 +9,7 @@ import {
   stopCmd,
 } from "./webaudio";
 import { textPrint, erasePrint } from "./imageEvent";
+import { hlsVideoPlay } from "./hlsVideoPlay";
 
 export const cmdFromServer = (
   cmd: {
@@ -122,6 +123,10 @@ export const cmdFromServer = (
     case "METRONOME":
       console.log("METRONOME");
       metronome(cmd.flag, cmd.value, cmd.gain);
+      break;
+    case "HLS":
+      console.log("HLS");
+      hlsVideoPlay();
       break;
     default:
       break;

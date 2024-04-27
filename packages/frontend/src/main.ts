@@ -41,6 +41,27 @@ import { keyDown } from "./textInput";
 import { newWindowReqType } from "./types/global";
 import { enableClockMode, disableClockMode } from "./clockMode";
 
+// hls.js
+import Hls from "hls.js";
+const hlsVideo = document.getElementById("hls") as HTMLVideoElement;
+const hlsVideoSource = "https://localhost:8000/parkconcert/Nature.m3u8";
+if (Hls.isSupported()) {
+  console.log("hls is supported");
+  const hls = new Hls();
+  hls.loadSource(hlsVideoSource);
+  hls.attachMedia(hlsVideo);
+  hlsVideo.play();
+  // hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+  //   console.log("manifest loaded, found " + data.levels.length + " quality level");
+  // });
+} else if (videoElement.canPlayType("application/vnd.apple.mpegurl")) {
+  console.log("apple.mpegurl");
+  hlsVideo.src = hlsVideoSource;
+  hlsVideo.addEventListener("loadedmetadata", function () {
+    hlsVideo.play();
+  });
+}
+
 // let start = false;
 
 let darkFlag = false;

@@ -1,6 +1,7 @@
 import { io, Socket } from "socket.io-client";
 import { erasePrint, textPrint, toBase64 } from "./imageEvent";
 import { cnvs, ctx } from "./globalVariable";
+import { hlsVideoStop } from "./hlsVideoPlay";
 
 export let streamFlag = {
   chat: false,
@@ -425,6 +426,8 @@ export const stopCmd = (fade: number, except?: string) => {
     clearInterval(metronomeIntervId);
   }
   streamFlag.simulate = false;
+  // const hlsVideo = document.getElementById("hls") as HTMLVideoElement;
+  hlsVideoStop();
 };
 
 export const simulate = (gain: number) => {

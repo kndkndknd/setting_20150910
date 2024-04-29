@@ -7,19 +7,31 @@ const bckcnvsElement = <HTMLCanvasElement>document.getElementById("bckcnvs");
 const bckcnvsContext = bckcnvsElement.getContext("2d");
 let emojiFlag = false;
 
+const hlsElement = <HTMLVideoElement>document.getElementById("hls");
+
 export function textPrint(
   text: string,
   stx: CanvasRenderingContext2D,
-  strCnvs: HTMLCanvasElement
+  strCnvs: HTMLCanvasElement,
+  clear?: boolean
 ) {
-  stx.fillStyle = "white";
-  stx.fillRect(0, 0, strCnvs.width, strCnvs.height);
+  if (clear) {
+    stx.clearRect(0, 0, strCnvs.width, strCnvs.height);
+  } else {
+    stx.fillStyle = "white";
+    stx.fillRect(0, 0, strCnvs.width, strCnvs.height);
+  }
   console.log("textPrint", text);
   console.log("emojiFlag:", emojiFlag);
   if (!emojiFlag) {
     print(text, stx, strCnvs);
   } else {
     print(emoji.random().emoji, stx, strCnvs);
+  }
+  if (hlsElement.played.length > 0) {
+    setTimeout(() => {
+      eraseText(stx, strCnvs);
+    }, 100);
   }
 }
 

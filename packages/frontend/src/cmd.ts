@@ -9,7 +9,7 @@ import {
   stopCmd,
 } from "./webaudio";
 import { textPrint, erasePrint } from "./imageEvent";
-import { hlsVideoPlay } from "./hlsVideoPlay";
+import { hlsVideoPlay } from "./hlsVideo";
 
 export const cmdFromServer = (
   cmd: {
@@ -126,6 +126,7 @@ export const cmdFromServer = (
       break;
     case "HLS":
       console.log("HLS");
+      erasePrint(ctx, cnvs);
       hlsVideoPlay();
       break;
     default:

@@ -3,6 +3,7 @@ import { cmdEmit } from "../cmdEmit";
 import { recordEmit } from "../../stream/recordEmit";
 import { sinewaveEmit } from "../sinewaveEmit";
 import { streamEmit } from "../../stream/streamEmit";
+import { parameterChange } from "../parameterChange";
 
 export const numTarget = (
   stringArr: Array<string>,
@@ -30,5 +31,8 @@ export const numTarget = (
     recordEmit(io, state, target);
   } else if (arrTypeArr[1] === "number") {
     sinewaveEmit(Number(stringArr[1]), io, state, target);
+  } else if (stringArr[1] === "VOICE") {
+    // console.log("VOICE", target);
+    parameterChange("VOICE", io, state, { source: target });
   }
 };

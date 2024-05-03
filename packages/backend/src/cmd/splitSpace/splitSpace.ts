@@ -379,5 +379,11 @@ export const splitSpace = async (
       `${stringArr[1]} GAIN: ${String(state.cmd.GAIN[stringArr[1]])}`,
       true
     );
+  } else {
+    stringEmit(io, stringArr.join(" "), true);
+    if (state.cmd.VOICE.length > 0) {
+      console.log("voiceEmit split space");
+      voiceEmit(io, stringArr.join(" "), "scenario", state);
+    }
   }
 };

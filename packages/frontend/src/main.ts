@@ -345,40 +345,14 @@ socket.on("voiceFromServer", (data: { text: string; lang: string }) => {
     for (let i = 0; i < voices.length; i++) {
       console.log(voices[i]);
       if (voices[i].lang === "en-US") {
-        console.log("hit");
+        // console.log("hit");
         console.log(voices[i]);
         uttr.voice = voices[i];
+        // break;
       }
     }
   };
-  /*
-  speechSynthesis.onvoiceschanged = getVoices
-  var voices
-  function getVoices () {
-    voices = speechSynthesis.getVoices()
-  }
-  console.log(voices)
-  for (let i = 0; i < voices.length; i++)  {
-    console.log(voices[i])
-    if (voices[i].lang === 'en-US') {
-      uttr.voice = voices[i]
-    }
-  }
-  */
-
-  /*
-  speechSynthesis.onvoiceschanged = function(){
-    const voices = speechSynthesis.getVoices()
-    for (let i = 0; i < voices.length; i++)  {
-      console.log(voices[i])
-      if (voices[i].name === 'Google US English') {
-        console.log(voices)
-        uttr.voice = voices[i]
-      }
-    }
-
-  };
-*/
+  console.log(uttr);
   speechSynthesis.speak(uttr);
 });
 

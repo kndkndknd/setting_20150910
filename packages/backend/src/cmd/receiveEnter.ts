@@ -29,7 +29,7 @@ export const receiveEnter = async (
   state: cmdStateType
 ) => {
   //VOICE
-  if (!strings.includes("VOICE ")) {
+  if (strings.includes("VOICE ")) {
     voiceEmit(io, strings, id, state);
   }
 
@@ -184,6 +184,13 @@ export const receiveEnter = async (
       flag: true,
     };
     io.emit("cmdFromServer", cmd);
+  } else if (id === "scenario") {
+    console.log("scenario", strings);
+    if (state.cmd.VOICE.length > 0) {
+      console.log("voiceEmit scenario");
+      voiceEmit(io, strings, "scenario", state);
+    }
+    stringEmit(io, strings);
   }
 
   if (strings !== "STOP") {

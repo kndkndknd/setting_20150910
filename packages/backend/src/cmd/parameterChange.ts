@@ -48,7 +48,7 @@ export const parameterChange = (
         }
       }
       if (arg && arg.property) {
-        console.log("hit source");
+        // console.log("hit source");
         state.stream.sampleRate[arg.property] = sampleRate;
         // io.emit('stringsFromServer',{strings: 'SampleRate: ' + String(state.stream.sampleRate[arg.source]) + 'Hz', timeout: true})
         stringEmit(
@@ -58,8 +58,8 @@ export const parameterChange = (
         );
       } else {
         console.log(arg);
-        for (let source in state.stream.sampleRate) {
-          state.stream.sampleRate[source] = sampleRate;
+        for (let target in state.stream.sampleRate) {
+          state.stream.sampleRate[target] = sampleRate;
         }
         // io.emit('stringsFromServer',{strings: 'SampleRate: ' + String(state.stream.sampleRate.CHAT) + 'Hz', timeout: true})
         stringEmit(
@@ -88,8 +88,8 @@ export const parameterChange = (
         if (Object.values(states.stream.glitch).includes(false)) {
           flag = true;
         }
-        for (let source in state.stream.glitch) {
-          state.stream.glitch[source] = flag;
+        for (let target in state.stream.glitch) {
+          state.stream.glitch[target] = flag;
         }
         // io.emit('stringsFromServer',{strings: 'GLITCH: ' + String(state.stream.glitch.CHAT), timeout: true})
         stringEmit(io, "GLITCH: " + String(state.stream.glitch.CHAT), true);
@@ -113,8 +113,8 @@ export const parameterChange = (
         if (Object.values(states.stream.grid).includes(false)) {
           flag = true;
         }
-        for (let source in state.stream.grid) {
-          state.stream.grid[source] = flag;
+        for (let target in state.stream.grid) {
+          state.stream.grid[target] = flag;
         }
         // io.emit('stringsFromServer',{strings: 'GRID: ' + String(state.stream.grid.CHAT), timeout: true})
         stringEmit(io, "GRID: " + String(state.stream.grid.CHAT));

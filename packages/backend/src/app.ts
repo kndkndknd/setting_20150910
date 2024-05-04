@@ -9,11 +9,20 @@ import { spawn } from "child_process";
 // import { states } from "./states";
 // import { switchCtrl } from "./arduinoAccess/switch";
 import { networkInterfaces } from "os";
+import SocketIO from "socket.io";
 
 import { getLiveStream } from "./stream/getLiveStream";
+import { stringEmit } from "./socket/ioEmit";
+
+// import { cors } from "cors";
+// const corsOptions = {
+//   origin: "http://127.0.0.1:5173",
+//   optionsSuccessStatus: 200,
+// };
 
 const port = 8000;
 const app = Express();
+app.use(Express.json());
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
 // const __dirname = import.meta.dirname;
@@ -21,6 +30,22 @@ const app = Express();
 
 app.use(Express.static(path.join(__dirname, "..", "static")));
 app.use(favicon(path.join(__dirname, "..", "lib/favicon.ico")));
+
+const allowCrossDomain = function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, access_token"
+  );
+  // intercept OPTIONS method
+  if ("OPTIONS" === req.method) {
+    res.send(200);
+  } else {
+    next();
+  }
+};
+app.use(allowCrossDomain);
 
 //const httpsserver = Https.createServer(options,app).listen(port);
 const options = {
@@ -42,6 +67,8 @@ function getIpAddress() {
 
 const host = getIpAddress();
 console.log(`Server listening on ${host}:${port}`);
+
+const io: SocketIO.Server = ioServer(httpserver);
 
 app.get("/", function (req, res, next) {
   try {
@@ -97,6 +124,17 @@ app.get("/:name", function (req, res, next) {
   }
 });
 
+app.post("/api/form", function (req, res, next) {
+  console.log("POST /api/form", req.body);
+  if (req.body.enter) {
+    console.log("enter");
+  } else {
+    console.log("chat:", req.body.chat);
+    stringEmit(io, req.body.chat, false);
+  }
+  res.json({ success: true, message: "Data received" });
+});
+
 /*
 const socketOptions = {
   cors: {
@@ -111,11 +149,3 @@ const socketOptions = {
 */
 
 // const io = new Server(httpsserver, socketOptions)
-
-ioServer(httpserver);
-
-try {
-  getLiveStream("LIVECAM");
-} catch (error) {
-  console.log("get LIVECAM error:", error);
-}

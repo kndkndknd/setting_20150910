@@ -19,6 +19,7 @@ import { charProcess } from "../cmd/charProcess";
 // import { sinewaveEmit } from "../cmd/sinewaveEmit";
 import { streamEmit } from "../stream/streamEmit";
 import { states, chat_web } from "../states";
+import { stringEmit } from "./ioEmit";
 // import { DefaultEventsMap } from "socket.io/dist/typed-events";
 
 let strings = "";
@@ -125,4 +126,5 @@ export const ioServer = (
       // io.emit("statusFromServer", statusList);
     });
   });
+  return io;
 };

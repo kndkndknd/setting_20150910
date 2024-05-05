@@ -35,6 +35,9 @@ import { connectTest, switchCramp } from "../../arduinoAccess/arduinoAccess";
 import { uploadStream } from "../../stream/uploadModule/uploadStream";
 import { voiceEmit } from "../voiceEmit";
 
+import { loadScenario } from "../../scenario/loadScenario";
+import { execScenario } from "../../scenario/execScenario";
+
 export const splitSpace = async (
   stringArr: Array<string>,
   io: SocketIO.Server,
@@ -55,6 +58,7 @@ export const splitSpace = async (
 
   if (arrTypeArr[0] === "number") {
     numTarget(stringArr, arrTypeArr, io, state);
+    voiceEmit(io, stringArr.slice(1).join(" "), source, state);
   } else if (stringArr[0] === "HELP") {
     helpPrint(stringArr.slice(1), io);
   } else if (stringArr[1] === "SOLO") {
@@ -84,6 +88,7 @@ export const splitSpace = async (
     // } else if (stringArr[0] === "FADE" && Object.keys(cmdList).includes(stringArr[1])) {
   } else if (stringArr[0] === "FADE") {
     fadeCmd(stringArr, arrTypeArr, io, state);
+    voiceEmit(io, stringArr.join(" "), source, state);
   } else if (Object.keys(parameterList).includes(stringArr[0])) {
     // RANDOMのみRATEとSTREAMがあるので個別処理
     if (stringArr[0] === "RANDOM") {
@@ -203,6 +208,8 @@ export const splitSpace = async (
       // stringEmit(io, stringArr[0] + " " + stringArr[1]);
     }
   } else if (stringArr[0] === "ALL") {
+    voiceEmit(io, stringArr.join(" "), source, state);
+
     if (arrTypeArr[1] === "string") {
       Object.keys(state.client).forEach((target) => {
         cmdEmit(stringArr[1], io, state, target);
@@ -213,9 +220,13 @@ export const splitSpace = async (
       });
     }
   } else if (stringArr[0] === "STOP") {
+    voiceEmit(io, stringArr.join(" "), source, state);
+
     splitStop(stringArr, state, io);
     // } else if (stringArr[0] === "FADE") {
   } else if (stringArr[0] === "UPLOAD" && stringArr.length == 2) {
+    voiceEmit(io, stringArr.join(" "), source, state);
+
     // const uploadResult = await uploadStream(stringArr);
     // uploadStream(stringArr, io);
     const result = await uploadStream(stringArr);
@@ -261,6 +272,8 @@ export const splitSpace = async (
   } else if (stringArr[0] === "FIND") {
     findStream("test", "test", io);
   } else if (stringArr[0].includes(":")) {
+    voiceEmit(io, stringArr.join(" "), source, state);
+
     let timeStampArr = stringArr[0].split(":");
     if (
       timeStampArr.every((item) => {
@@ -379,8 +392,11 @@ export const splitSpace = async (
       `${stringArr[1]} GAIN: ${String(state.cmd.GAIN[stringArr[1]])}`,
       true
     );
+  } else if (stringArr[0] === "SCENARIO" || stringArr[0] === "START") {
+    const scenario = await loadScenario(stringArr[1]);
+    await execScenario(scenario, io);
   } else {
-    stringEmit(io, stringArr.join(" "), true);
+    stringEmit(io, stringArr.join(" "), false);
     if (state.cmd.VOICE.length > 0) {
       console.log("voiceEmit split space");
       voiceEmit(io, stringArr.join(" "), "scenario", state);

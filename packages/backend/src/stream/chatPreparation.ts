@@ -18,11 +18,11 @@ export const chatPreparation = async (
     console.log(targetId);
     // if (targetId !== "arduino") {
     io.to(targetId).emit("chatReqFromServer");
-    if (state.cmd.VOICE.length > 0) {
-      state.cmd.VOICE.forEach((element) => {
-        io.to(element).emit("voiceFromServer", "CHAT");
-      });
-    }
+    // if (state.cmd.VOICE.length > 0) {
+    //   state.cmd.VOICE.forEach((element) => {
+    //     io.to(element).emit("voiceFromServer", "CHAT");
+    //   });
+    // }
     // } else {
     //   const crampResult = await switchCramp();
     //   if (crampResult) {

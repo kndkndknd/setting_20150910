@@ -29,9 +29,9 @@ export const receiveEnter = async (
   state: cmdStateType
 ) => {
   //VOICE
-  if (strings.includes("VOICE ")) {
-    voiceEmit(io, strings, id, state);
-  }
+  // if (strings.includes("VOICE ")) {
+  // voiceEmit(io, strings, id, state);
+  // }
 
   /*
   if(strings === 'INSERT') {
@@ -41,8 +41,10 @@ export const receiveEnter = async (
 
   if (strings === "CHAT") {
     chatPreparation(io, state);
+    voiceEmit(io, strings, id, state);
   } else if (strings === "RECORD" || strings === "REC") {
     recordEmit(io, state);
+    voiceEmit(io, "RECORD", id, state);
     /*
     if (!state.current.RECORD) {
       state.current.RECORD = true;
@@ -67,14 +69,18 @@ export const receiveEnter = async (
   } else if (streamList.includes(strings)) {
     console.log("in stream");
     streamEmit(strings, io, state);
+    voiceEmit(io, strings, id, state);
   } else if (Object.keys(cmdList).includes(strings)) {
     console.log("in cmd");
+    voiceEmit(io, cmdList[strings], id, state);
     cmdEmit(cmdList[strings], io, state);
   } else if (Number.isFinite(Number(strings))) {
     console.log("sinewave");
+    voiceEmit(io, strings + "Hz", id, state);
     sinewaveEmit(Number(strings), io, state);
   } else if (strings === "STOP") {
     console.log("stop");
+    voiceEmit(io, strings, id, state);
     stopEmit(io, state, id, "ALL");
   } else if (strings === "QUANTIZE") {
     state.stream.quantize = !state.stream.quantize;
@@ -91,6 +97,7 @@ export const receiveEnter = async (
   } else if (strings === "TWICE" || strings === "HALF") {
     sinewaveChange(strings, io, state);
   } else if (strings === "PREVIOUS" || strings === "PREV") {
+    voiceEmit(io, "PREVIOUS", id, state);
     previousCmd(io, state);
   } else if (Object.keys(parameterList).includes(strings)) {
     parameterChange(parameterList[strings], io, state, { source: id });
@@ -190,7 +197,9 @@ export const receiveEnter = async (
       console.log("voiceEmit scenario");
       voiceEmit(io, strings, "scenario", state);
     }
-    stringEmit(io, strings);
+    stringEmit(io, strings, false);
+  } else {
+    voiceEmit(io, strings, id, state);
   }
 
   if (strings !== "STOP") {

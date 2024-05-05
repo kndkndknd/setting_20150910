@@ -218,27 +218,43 @@ export const parameterChange = (
       break;
     case "VOICE":
       if (arg && arg.source) {
-        let flag = false;
-        if (state.cmd.VOICE.includes(arg.source)) {
-          const arr = [];
-          for (let i = 0; i < state.cmd.VOICE.length; i++) {
-            if (state.cmd.VOICE[i] === arg.source) {
-              continue;
-            } else {
-              arr.push(state.cmd.VOICE[i]);
+        if (arg.value === undefined) {
+          let flag = false;
+          if (state.cmd.VOICE.includes(arg.source)) {
+            // sourceが既にVOICEに含まれている場合取り除く
+            const arr = [];
+            for (let i = 0; i < state.cmd.VOICE.length; i++) {
+              if (state.cmd.VOICE[i] === arg.source) {
+                continue;
+              } else {
+                arr.push(state.cmd.VOICE[i]);
+              }
             }
+            state.cmd.VOICE = arr;
+            // state.cmd.VOICE.filter((id) => {
+            // })
+            console.log(state.cmd.VOICE);
+          } else {
+            state.cmd.VOICE.push(arg.source);
+            flag = true;
           }
-          state.cmd.VOICE = arr;
-          // state.cmd.VOICE.filter((id) => {
-          // })
-          console.log(state.cmd.VOICE);
+          // io.emit('stringsFromServer',{strings: 'VOICE: ' + String(flag), timeout: true})
+          stringEmit(io, "VOICE: " + String(flag), true, arg.source);
+          notTargetEmit(arg.source, Object.keys(state.client), io);
         } else {
-          state.cmd.VOICE.push(arg.source);
-          flag = true;
+          if (arg.value === 0) {
+            let filtered: string[] = state.cmd.VOICE.filter(
+              (element) => element !== arg.source
+            );
+            state.cmd.VOICE = filtered;
+          } else {
+            if (!state.cmd.VOICE.includes(arg.source)) {
+              state.cmd.VOICE.push(arg.source);
+            }
+            stringEmit(io, "VOICE: " + String(arg.value), true, arg.source);
+            notTargetEmit(arg.source, Object.keys(state.client), io);
+          }
         }
-        // io.emit('stringsFromServer',{strings: 'VOICE: ' + String(flag), timeout: true})
-        stringEmit(io, "VOICE: " + String(flag), true, arg.source);
-        notTargetEmit(arg.source, Object.keys(state.client), io);
       }
       break;
   }

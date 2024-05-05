@@ -33,6 +33,18 @@ export const numTarget = (
     sinewaveEmit(Number(stringArr[1]), io, state, target);
   } else if (stringArr[1] === "VOICE") {
     // console.log("VOICE", target);
-    parameterChange("VOICE", io, state, { source: target });
+    if (stringArr.length === 2) {
+      parameterChange("VOICE", io, state, { source: target });
+    } else {
+      if (
+        stringArr[2] === "ON" ||
+        stringArr[2] === "TRUE" ||
+        stringArr[2] === "ENABLE"
+      ) {
+        parameterChange("VOICE", io, state, { source: target, value: 1 });
+      } else {
+        parameterChange("VOICE", io, state, { source: target, value: 0 });
+      }
+    }
   }
 };

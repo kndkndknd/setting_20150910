@@ -25,6 +25,7 @@ export const cmdEmit = (
     fade?: number;
     gain?: number;
   };
+
   switch (cmdStrings) {
     case "STOP":
       const client = "all";

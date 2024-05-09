@@ -5,6 +5,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: "./html/index.html",
+        form: "./html/form.html",
         // snowleopard: "./src/snowleopard/snowLeopardClient.js",
       },
       output: {
@@ -17,7 +18,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/socket.io": {
-        target: "ws://localhost:8888",
+        target: "ws://localhost:8000",
         ws: true,
       },
     },

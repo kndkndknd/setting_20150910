@@ -91,6 +91,16 @@ app.get("/snowleopard", function (req, res, next) {
   }
 });
 
+app.get("/form", function (req, res, next) {
+  try {
+    console.log("snowleopard");
+    res.sendFile(path.join(__dirname, "..", "static", "html", "form.html"));
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Something went wrong" });
+  }
+});
+
 app.get("/hls", function (req, res, next) {
   try {
     console.log("hls test");

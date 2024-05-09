@@ -52,6 +52,16 @@ export const ioServer = (
         );
         if (!Object.keys(states.client).includes(sockId))
           states.client[sockId] = { ipAddress, urlPathName: data.urlPathName };
+        if (!data.urlPathName.includes("exc")) {
+          if (!Object.keys(states.cmdClient).includes(sockId)) {
+            states.cmdClient.push(sockId);
+          }
+          // exceptにstreamを流すかは要審議
+          if (!Object.keys(states.streamClient).includes(sockId)) {
+            states.streamClient.push(sockId);
+          }
+        }
+
         // あとでオブジェクト向けに作り直す
         // states.client = states.client.filter((id) => {
         //   //console.log(io.sockets.adapter.rooms.has(id))
@@ -110,6 +120,14 @@ export const ioServer = (
       console.log(gain);
       states.cmd.GAIN[gain.target] = gain.val;
       io.emit("gainFromServer", states.cmd.GAIN);
+    });
+
+    socket.on("stringFromForm", (strings: string) => {
+      stringEmit(io, strings, false);
+    });
+
+    socket.on("enterFromForm", (strings: string) => {
+      console.log("enterFromForm", strings);
     });
 
     socket.on("disconnect", () => {

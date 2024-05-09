@@ -186,7 +186,7 @@ export const receiveEnter = async (
       solo?: boolean;
     } = {
       cmd: "HLS",
-      property: "HLS",
+      property: "OGAWA",
       value: 0,
       flag: true,
     };

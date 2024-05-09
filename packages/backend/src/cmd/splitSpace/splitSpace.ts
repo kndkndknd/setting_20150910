@@ -58,7 +58,9 @@ export const splitSpace = async (
 
   if (arrTypeArr[0] === "number") {
     numTarget(stringArr, arrTypeArr, io, state);
-    voiceEmit(io, stringArr.slice(1).join(" "), source, state);
+    if (stringArr[1] !== "VOICE") {
+      voiceEmit(io, stringArr.slice(1).join(" "), source, state);
+    }
   } else if (stringArr[0] === "HELP") {
     helpPrint(stringArr.slice(1), io);
   } else if (stringArr[1] === "SOLO") {
@@ -395,6 +397,25 @@ export const splitSpace = async (
   } else if (stringArr[0] === "SCENARIO" || stringArr[0] === "START") {
     const scenario = await loadScenario(stringArr[1]);
     await execScenario(scenario, io);
+  } else if (stringArr[0] === "VIDEO") {
+    const cmd: {
+      cmd: string;
+      property: string;
+      value: number;
+      flag: boolean;
+      target?: string;
+      overlay?: boolean;
+      fade?: number;
+      portament?: number;
+      gain?: number;
+      solo?: boolean;
+    } = {
+      cmd: "HLS",
+      property: stringArr[1],
+      value: 0,
+      flag: true,
+    };
+    io.emit("cmdFromServer", cmd);
   } else {
     stringEmit(io, stringArr.join(" "), false);
     if (state.cmd.VOICE.length > 0) {

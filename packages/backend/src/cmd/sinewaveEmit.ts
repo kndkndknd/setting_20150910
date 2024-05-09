@@ -27,6 +27,7 @@ export const sinewaveEmit = (
     gain: state.cmd.GAIN.SINEWAVE,
   };
 
+  console.log("target;", target);
   if (target !== undefined) {
     state.previous.sinewave[target] = state.current.sinewave[target];
   } else {
@@ -37,6 +38,8 @@ export const sinewaveEmit = (
       ? pickupCmdTarget(state, "SINEWAVE", { value: frequencyStr, target })
       : pickupCmdTarget(state, "SINEWAVE", { value: frequencyStr });
   console.log("targetArr", targetIdArr);
+  console.log("client", state.client);
+  console.log("cmdClient", state.cmdClient);
 
   targetIdArr.forEach((id) => {
     console.log("id", id);

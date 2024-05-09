@@ -2,7 +2,7 @@ import { cnvs, ctx, videoElement } from "./globalVariable";
 import * as emoji from "node-emoji";
 
 //const videoElement = <HTMLVideoElement>document.getElementById('video');
-const cinemaElement = <HTMLVideoElement>document.getElementById("cinema");
+// const cinemaElement = <HTMLVideoElement>document.getElementById("cinema");
 const bckcnvsElement = <HTMLCanvasElement>document.getElementById("bckcnvs");
 const bckcnvsContext = bckcnvsElement.getContext("2d");
 let emojiFlag = false;
@@ -28,11 +28,13 @@ export function textPrint(
   } else {
     print(emoji.random().emoji, stx, strCnvs);
   }
+  /*
   if (hlsElement.played.length > 0) {
     setTimeout(() => {
       eraseText(stx, strCnvs);
     }, 100);
   }
+  */
 }
 
 export function eraseText(
@@ -228,7 +230,7 @@ const print = (
   }
   target.restore();
 };
-
+/*
 export function playbackCinema() {
   cinemaElement.play();
   console.log(cinemaElement.width);
@@ -257,7 +259,7 @@ export function stopCinema() {
   cinemaElement.pause();
   erasePrint(bckcnvsContext, bckcnvsElement);
 }
-
+*/
 export function emojiState(state: boolean) {
   emojiFlag = state;
 }

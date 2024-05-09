@@ -213,25 +213,6 @@ export const promiseGetBitCrashed = (
   });
 };
 
-const main = () => {
-  promiseGetPcmData("/Users/knd/chat_upload/IPHONE.aac", 8192, {
-    ss: 0,
-    t: 20,
-  }).then((result) => {
-    console.log("result");
-  });
-};
-
-main();
-
-/*awaitGetPcmData("/Users/knd/chat_upload/TEST.mp3", "TEST", {
-  stereo: true,
-  sampleRate: 22050,
-}).then((result) => {
-  console.log(result);
-});
-*/
-
 export const awaitGetBitCracshedData = async (
   filePath,
   streamName,

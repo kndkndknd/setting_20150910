@@ -1,18 +1,35 @@
 // hls.js
 import Hls from "hls.js";
 
-export const hlsVideoPlay = () => {
+export const hlsVideoPlay = (m3u8Name: string) => {
+  console.log(m3u8Name);
   const hlsVideo = document.getElementById("hls") as HTMLVideoElement;
-  const hlsVideoSource = "https://localhost:8000/parkconcert/Nature.m3u8";
+  const hlsVideoSource = `https://localhost:8000/hls/${m3u8Name}/${m3u8Name}.m3u8`;
+  // const hlsVideoSource = "https://localhost:8000/hls/Nature.m3u8";
   hlsVideo.style.display = "block";
   console.log("played", hlsVideo.played);
   console.log("paused", hlsVideo.paused);
   console.log("ended", hlsVideo.ended);
   const originalSize = { width: hlsVideo.width, height: hlsVideo.height };
-  const width = window.innerWidth * Math.random();
+  const width =
+    (window.innerWidth * Math.random() * 2) / 3 + window.innerWidth / 3;
   const height = (width * originalSize.height) / originalSize.width;
+  const left = (window.innerWidth - width) * Math.random();
+  const top = (window.innerHeight - height) * Math.random();
+  let degree = 0;
+  let randomize = Math.random();
+  if (randomize > 0.75) {
+    degree = 90;
+  } else if (randomize > 0.5) {
+    degree = -90;
+  }
+
   hlsVideo.width = width;
   hlsVideo.height = height;
+  hlsVideo.style.top = String(top) + "px";
+  hlsVideo.style.left = String(left) + "px";
+  hlsVideo.style.transform = `rotate(${degree}deg)`;
+  // hlsVideo.style.rotate = String(degree) + "deg";
 
   if (Hls.isSupported()) {
     console.log("hls is supported");

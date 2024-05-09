@@ -25,6 +25,8 @@ export const states: cmdStateType = {
     METRONOME: {},
   },
   client: {},
+  cmdClient: [],
+  streamClient: [],
   sinewaveClient: [],
   current: {
     cmd: {

@@ -21,6 +21,8 @@ export type cmdStateType = {
       urlPathName: string;
     };
   };
+  cmdClient: string[];
+  streamClient: string[];
   sinewaveClient: Array<string>;
   current: {
     cmd: {

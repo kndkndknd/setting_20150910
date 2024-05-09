@@ -247,11 +247,13 @@ export const parameterChange = (
               (element) => element !== arg.source
             );
             state.cmd.VOICE = filtered;
+            stringEmit(io, "VOICE: false", true, arg.source);
+            notTargetEmit(arg.source, Object.keys(state.client), io);
           } else {
             if (!state.cmd.VOICE.includes(arg.source)) {
               state.cmd.VOICE.push(arg.source);
             }
-            stringEmit(io, "VOICE: " + String(arg.value), true, arg.source);
+            stringEmit(io, "VOICE: true", true, arg.source);
             notTargetEmit(arg.source, Object.keys(state.client), io);
           }
         }

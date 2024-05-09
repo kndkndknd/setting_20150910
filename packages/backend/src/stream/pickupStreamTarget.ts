@@ -47,7 +47,7 @@ export const pickupStreamTarget = (
   } else {
     // targetがなければランダムに返す
     console.log("random");
-    let targetArr = Object.keys(states.client);
+    let targetArr = states.streamClient;
     // if (states.arduino.connected) {
     //   targetArr = [...targetArr, ...targetArr, ...targetArr];
     //   console.log("push arduino");

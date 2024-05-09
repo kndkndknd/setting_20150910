@@ -127,7 +127,7 @@ export const cmdFromServer = (
     case "HLS":
       console.log("HLS");
       erasePrint(ctx, cnvs);
-      hlsVideoPlay();
+      hlsVideoPlay(cmd.property);
       break;
     default:
       break;

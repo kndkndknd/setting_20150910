@@ -15,12 +15,14 @@ export function textPrint(
   strCnvs: HTMLCanvasElement,
   clear?: boolean
 ) {
-  if (clear) {
-    stx.clearRect(0, 0, strCnvs.width, strCnvs.height);
-  } else {
-    stx.fillStyle = "white";
-    stx.fillRect(0, 0, strCnvs.width, strCnvs.height);
-  }
+  stx.clearRect(0, 0, strCnvs.width, strCnvs.height);
+
+  // if (clear) {
+  //   stx.clearRect(0, 0, strCnvs.width, strCnvs.height);
+  // } else {
+  //   stx.fillStyle = "white";
+  //   stx.fillRect(0, 0, strCnvs.width, strCnvs.height);
+  // }
   console.log("textPrint", text);
   console.log("emojiFlag:", emojiFlag);
   if (!emojiFlag) {

@@ -6,7 +6,7 @@ export const stopEmit = (
   io: SocketIO.Server,
   state: cmdStateType,
   source: string,
-  target?: "ALL" | "STREAM" | "CMD",
+  target?: "ALL" | "STREAM" | "CMD" | "ExceptHls",
   client?: string
 ) => {
   /*
@@ -45,6 +45,10 @@ export const stopEmit = (
     }
     state.previous.sinewave = state.current.sinewave;
     state.current.sinewave = {};
+    if (target !== "ExceptHls") {
+      state.hls = [];
+    }
+    // state.hls = [];
   } else if (Object.keys(state.client).includes(client)) {
     io.to(client).emit("stopFromServer", {
       target: target === undefined ? "ALL" : target,
@@ -62,6 +66,10 @@ export const stopEmit = (
       state.previous.sinewave[client] = state.current.sinewave[client];
       delete state.current.sinewave[client];
     }
+    if (target !== "ExceptHls") {
+      state.hls = state.hls.filter((element) => element !== client);
+    }
+    // state.hls = state.hls.filter((element) => element !== client);
   }
 
   // stop stream
@@ -72,4 +80,7 @@ export const stopEmit = (
   Object.keys(state.stream.target).forEach((element) => {
     state.stream.target[element] = [];
   });
+  console.log("client", state.client);
+  console.log("hls", state.hls);
+  console.log("previous", state.previous);
 };

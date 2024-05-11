@@ -21,6 +21,8 @@ import { streamEmit } from "../stream/streamEmit";
 import { states, chat_web } from "../states";
 import { stringEmit } from "./ioEmit";
 // import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import { enterFromForm } from "../cmd/form/enterFromForm";
+import { stopEmit } from "../cmd/stopEmit";
 
 let strings = "";
 const previousFace = { x: 0, y: 0 };
@@ -127,7 +129,12 @@ export const ioServer = (
     });
 
     socket.on("enterFromForm", (strings: string) => {
-      console.log("enterFromForm", strings);
+      const formResult = enterFromForm(strings, io);
+      console.log("enterFromForm", formResult);
+    });
+
+    socket.on("escapeFromForm", () => {
+      stopEmit(io, states, "form", "ExceptHls");
     });
 
     socket.on("disconnect", () => {

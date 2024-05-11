@@ -29,6 +29,27 @@ export const hlsVideoPlay = (m3u8Name: string) => {
   hlsVideo.style.top = String(top) + "px";
   hlsVideo.style.left = String(left) + "px";
   hlsVideo.style.transform = `rotate(${degree}deg)`;
+
+  const canvasSize = {
+    width: width,
+    height: height,
+    left: (window.innerWidth - width) * Math.random(),
+    top: (window.innerHeight - height) * Math.random(),
+    degree: degree,
+  };
+  const cnvsElement = <HTMLCanvasElement>document.getElementById("cnvs");
+  cnvsElement.setAttribute("height", String(canvasSize.height) + "px");
+  cnvsElement.setAttribute("width", String(canvasSize.width) + "px");
+  cnvsElement.style.top = String(canvasSize.top) + "px";
+  cnvsElement.style.left = String(canvasSize.left) + "px";
+  cnvsElement.style.transform = `rotate(${canvasSize.degree}deg)`;
+  const bckcnvsElement = <HTMLCanvasElement>document.getElementById("bckcnvs");
+  bckcnvsElement.setAttribute("height", String(canvasSize.height) + "px");
+  bckcnvsElement.setAttribute("width", String(canvasSize.width) + "px");
+  bckcnvsElement.style.top = String(canvasSize.top) + "px";
+  bckcnvsElement.style.left = String(canvasSize.left) + "px";
+  bckcnvsElement.style.transform = `rotate(${canvasSize.degree}deg)`;
+
   // hlsVideo.style.rotate = String(degree) + "deg";
 
   if (Hls.isSupported()) {

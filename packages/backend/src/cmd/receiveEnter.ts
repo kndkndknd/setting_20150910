@@ -78,6 +78,10 @@ export const receiveEnter = async (
     console.log("sinewave");
     voiceEmit(io, strings + "Hz", id, state);
     sinewaveEmit(Number(strings), io, state);
+  } else if (strings === "SINEWAVE") {
+    const frequency = 20 + Math.random() * 19980;
+    voiceEmit(io, frequency + "Hz", id, state);
+    sinewaveEmit(frequency, io, state);
   } else if (strings === "STOP") {
     console.log("stop");
     voiceEmit(io, strings, id, state);
@@ -172,25 +176,25 @@ export const receiveEnter = async (
     //   } else {
     //     stringEmit(io, "GET TWITCH: FAILED");
     //   }
-  } else if (strings === "HLS") {
-    const cmd: {
-      cmd: string;
-      property: string;
-      value: number;
-      flag: boolean;
-      target?: string;
-      overlay?: boolean;
-      fade?: number;
-      portament?: number;
-      gain?: number;
-      solo?: boolean;
-    } = {
-      cmd: "HLS",
-      property: "OGAWA",
-      value: 0,
-      flag: true,
-    };
-    io.emit("cmdFromServer", cmd);
+    // } else if (strings === "HLS") {
+    //   const cmd: {
+    //     cmd: string;
+    //     property: string;
+    //     value: number;
+    //     flag: boolean;
+    //     target?: string;
+    //     overlay?: boolean;
+    //     fade?: number;
+    //     portament?: number;
+    //     gain?: number;
+    //     solo?: boolean;
+    //   } = {
+    //     cmd: "HLS",
+    //     property: "OGAWA",
+    //     value: 0,
+    //     flag: true,
+    //   };
+    //   io.emit("cmdFromServer", cmd);
   } else if (id === "scenario") {
     console.log("scenario", strings);
     if (state.cmd.VOICE.length > 0) {

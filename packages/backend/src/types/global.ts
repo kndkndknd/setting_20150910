@@ -84,6 +84,14 @@ export type cmdStateType = {
       [key: string]: number;
     };
   };
+  form: {
+    hls: {
+      [key: string]: string;
+    };
+    cmd: {
+      [key: string]: string;
+    };
+  };
   stream: {
     sampleRate: {
       [key: string]: number;
@@ -137,6 +145,7 @@ export type cmdStateType = {
   };
   emoji: boolean;
   timer: boolean;
+  hls: string[];
 };
 export type buffArrayType = {
   KICK: {

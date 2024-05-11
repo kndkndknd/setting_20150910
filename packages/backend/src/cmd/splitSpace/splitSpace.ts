@@ -397,7 +397,7 @@ export const splitSpace = async (
   } else if (stringArr[0] === "SCENARIO" || stringArr[0] === "START") {
     const scenario = await loadScenario(stringArr[1]);
     await execScenario(scenario, io);
-  } else if (stringArr[0] === "VIDEO") {
+  } else if (stringArr[0] === "VIDEO" || stringArr[0] === "HLS") {
     const cmd: {
       cmd: string;
       property: string;

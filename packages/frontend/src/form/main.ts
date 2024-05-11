@@ -1,8 +1,8 @@
 import { io, Socket } from "socket.io-client";
 const socket: Socket = io();
 
-import { cnvs, ctx } from "../globalVariable";
-import { canvasSizing, textPrint, erasePrint } from "../imageEvent";
+// import { cnvs, ctx } from "../globalVariable";
+// import { canvasSizing, textPrint, erasePrint } from "../imageEvent";
 
 const clientMode = "form";
 let stringsClient = "";
@@ -25,6 +25,8 @@ formElement.addEventListener("keydown", (e) => {
     const inputValue = inputElement.value;
     socket.emit("enterFromForm", inputValue);
     inputElement.value = ""; // フォームの内容を削除する
+  } else if (e.key === "Escape") {
+    socket.emit("escapeFromForm");
   }
 });
 
@@ -32,18 +34,18 @@ socket.on(
   "stringsFromServer",
   (data: { strings: string; timeout: boolean }) => {
     // erasePrint(stx, strCnvs);
-    erasePrint(ctx, cnvs);
+    // erasePrint(ctx, cnvs);
     console.log("stringsFromServer", data);
-    stringsClient = data.strings;
-    textPrint(stringsClient, ctx, cnvs);
-    if (data.timeout) {
-      setTimeout(() => {
-        erasePrint(ctx, cnvs);
-      }, 500);
-    }
+    // stringsClient = data.strings;
+    // textPrint(stringsClient, ctx, cnvs);
+    // if (data.timeout) {
+    //   setTimeout(() => {
+    //     erasePrint(ctx, cnvs);
+    //   }, 500);
+    // }
   }
 );
 socket.on("erasePrintFromServer", () => {
   // erasePrint(stx, strCnvs)
-  erasePrint(ctx, cnvs);
+  // erasePrint(ctx, cnvs);
 });

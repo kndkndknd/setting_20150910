@@ -425,9 +425,11 @@ export const stopCmd = (fade: number, except?: string) => {
   if (metronomeIntervId && except !== "METRONOME") {
     clearInterval(metronomeIntervId);
   }
+  if (except !== "HLS") {
+    hlsVideoStop();
+  }
   streamFlag.simulate = false;
   // const hlsVideo = document.getElementById("hls") as HTMLVideoElement;
-  hlsVideoStop();
 };
 
 export const simulate = (gain: number) => {

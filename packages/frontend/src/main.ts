@@ -231,7 +231,11 @@ socket.on(
 
 socket.on("stopFromServer", (data: { fadeOutVal: number; target?: string }) => {
   erasePrint(ctx, cnvs);
-  stopCmd(data.fadeOutVal);
+  if (data.target === undefined || data.target === "ALL") {
+    stopCmd(data.fadeOutVal);
+  } else if (data.target === "ExceptHls") {
+    stopCmd(data.fadeOutVal, "HLS");
+  }
   // erasePrint(stx, strCnvs)
   textPrint("STOP", ctx, cnvs);
   setTimeout(() => {

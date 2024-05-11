@@ -8,7 +8,7 @@ import {
   metronome,
   stopCmd,
 } from "./webaudio";
-import { textPrint, erasePrint } from "./imageEvent";
+import { textPrint, erasePrint, canvasSizing } from "./imageEvent";
 import { hlsVideoPlay } from "./hlsVideo";
 
 export const cmdFromServer = (

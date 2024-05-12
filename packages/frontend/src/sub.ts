@@ -361,7 +361,7 @@ socket.on(
   "quantizeFromServer",
   (data: { flag: boolean; bpm: number; bar: number; eightNote: number }) => {
     if (data.flag) {
-      quantize(data.bar, data.eightNote);
+      quantize(data.bar);
       textPrint("QUANTIZE(BPM:" + String(data.bpm) + ")", ctx, cnvs);
       setTimeout(() => {
         erasePrint(ctx, cnvs);

@@ -141,11 +141,12 @@ export const streamEmit = async (
 };
 
 const ioEmitStreamFromServer = async (io, stream, targetId, source) => {
-  console.log("pi or not pi", states.client[targetId].urlPathName);
   if (
+    states.client[targetId].urlPathName !== undefined &&
     states.client[targetId].urlPathName.includes("pi") &&
     states.arduino.connected
   ) {
+    console.log("pi or not pi", states.client[targetId].urlPathName);
     const result = await switchCramp(source);
     console.log("switchCramp", result);
   }

@@ -88,9 +88,11 @@ export const receiveEnter = async (
     stopEmit(io, state, id, "ALL");
   } else if (strings === "QUANTIZE") {
     state.stream.quantize = !state.stream.quantize;
+    console.log('state.bpm', state.bpm)
     for (let key in state.bpm) {
       const bar = millisecondsPerBar(state.bpm[key]);
       const eighthNote = secondsPerEighthNote(state.bpm[key]);
+      console.log('quantize bar', bar)
       io.to(key).emit("quantizeFromServer", {
         flag: state.stream.quantize,
         bpm: state.bpm[key],

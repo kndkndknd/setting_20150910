@@ -28,6 +28,7 @@ import {
   gainChange,
   quantize,
   stopQuantize,
+  streamPlay,
 } from "./webaudio";
 
 import { cmdFromServer } from "./cmd";
@@ -40,7 +41,7 @@ import { keyDown } from "./textInput";
 
 import { newWindowReqType } from "./types/global";
 import { enableClockMode, disableClockMode } from "./clockMode";
-import { hlsVideoPlay, hlsSizing } from "./hlsVideoPlay";
+import { hlsVideoPlay, hlsSizing } from "./hlsVideo";
 
 // let start = false;
 
@@ -124,107 +125,6 @@ socket.on(
     solo?: boolean;
   }) => {
     cmdFromServer(cmd, ctx, cnvs);
-    //   switch (cmd.cmd) {
-    //     case "WHITENOISE":
-    //       // erasePrint(stx, strCnvs);
-    //       erasePrint(ctx, cnvs);
-    //       if(cmd.flag) {
-    //         textPrint(cmd.cmd, ctx, cnvs);
-    //       } else {
-    //         textPrint(`STOP ${cmd.cmd}`, ctx, cnvs)
-    //         setTimeout(() => {
-    //           erasePrint(ctx, cnvs);
-    //         }, 500);
-    //       }
-    //       // if(cmd.fade && cmd.gain)
-    //       whitenoise(cmd.flag, cmd.fade, cmd.gain);
-    //       if (cinemaFlag) {
-    //         setTimeout(() => {
-    //           erasePrint(ctx, cnvs);
-    //         }, 500);
-    //       }
-    //       break;
-    //     case "SINEWAVE":
-    //       // erasePrint(stx, strCnvs);
-    //       erasePrint(ctx, cnvs);
-    //       const cmdString = cmd.flag ? String(cmd.value) + "Hz" : "STOP";
-    //       if(cmd.flag) {
-    //         textPrint(cmdString, ctx, cnvs);
-    //       } else {
-    //         textPrint(`STOP ${cmdString}`, ctx, cnvs)
-    //         setTimeout(() => {
-    //           erasePrint(ctx, cnvs);
-    //         }, 500);
-    //       }
-    //       // textPrint(cmdString, ctx, cnvs);
-    //       // if(cmd.fade && cmd.portament && cmd.gain) {
-    //       sinewave(cmd.flag, cmd.value, cmd.fade, cmd.portament, cmd.gain);
-    //       if (cinemaFlag) {
-    //         setTimeout(() => {
-    //           erasePrint(ctx, cnvs);
-    //         }, 500);
-    //       }
-    //       break;
-    //     case "FEEDBACK":
-    //       // erasePrint(stx, strCnvs);
-    //       erasePrint(ctx, cnvs);
-    //       // textPrint("FEEDBACK", ctx, cnvs);
-    //       if(cmd.flag) {
-    //         textPrint(cmd.cmd, ctx, cnvs);
-    //       } else {
-    //         textPrint(`STOP ${cmd.cmd}`, ctx, cnvs)
-    //         setTimeout(() => {
-    //           erasePrint(ctx, cnvs);
-    //         }, 500);
-    //       }
-    //       // if(cmd.fade && cmd.gain)
-    //       feedback(cmd.flag, cmd.fade, cmd.gain);
-    //       if (cinemaFlag) {
-    //         setTimeout(() => {
-    //           erasePrint(ctx, cnvs);
-    //         }, 500);
-    //       }
-    //       break;
-    //     case "BASS":
-    //       // if(cmd.gain)
-    //       bass(cmd.flag, cmd.gain);
-    //       // erasePrint(stx, strCnvs);
-    //       erasePrint(ctx, cnvs);
-    //       if(cmd.flag) {
-    //         textPrint(cmd.cmd, ctx, cnvs);
-    //       } else {
-    //         textPrint(`STOP ${cmd.cmd}`, ctx, cnvs)
-    //         setTimeout(() => {
-    //           erasePrint(ctx, cnvs);
-    //         }, 500);
-    //       }
-    //       if (cinemaFlag) {
-    //         setTimeout(() => {
-    //           erasePrint(ctx, cnvs);
-    //         }, 500);
-    //       }
-    //       break;
-    //     case "CLICK":
-    //       // if(cmd.gain)
-    //       click(cmd.gain);
-    //       // erasePrint(stx, strCnvs)
-    //       erasePrint(ctx, cnvs);
-    //       textPrint("CLICK", ctx, cnvs);
-    //       setTimeout(() => {
-    //         erasePrint(ctx, cnvs);
-    //       }, 300);
-    //       break;
-    //     case "SIMULATE":
-    //       simulate(cmd.gain);
-    //       break;
-    //     case "METRONOME":
-    //       console.log("METRONOME");
-    //       metronome(cmd.flag, cmd.value, cmd.gain);
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    //   // strings = '';
     stringsClient = "";
   }
 );
@@ -284,16 +184,17 @@ socket.on(
     bufferSize: number;
     duration: number;
   }) => {
-    console.log("chatFromServer");
-    console.log("socket.id(socket.on): " + String(socket.id));
-    // console.log(data.audio);
-    playAudioStream(data.audio, data.sampleRate, data.glitch, data.bufferSize);
-    if (data.video) {
-      showImage(data.video, ctx);
-    }
-    setTimeout(() => {
-      chatReq(String(socket.id));
-    }, (data.bufferSize / data.sampleRate) * 1000);
+    streamPlay("CHAT", socket.id, data)
+    // console.log("chatFromServer");
+    // console.log("socket.id(socket.on): " + String(socket.id));
+    // // console.log(data.audio);
+    // playAudioStream(data.audio, data.sampleRate, data.glitch, data.bufferSize);
+    // if (data.video) {
+    //   showImage(data.video, ctx);
+    // }
+    // setTimeout(() => {
+    //   chatReq(String(socket.id));
+    // }, (data.bufferSize / data.sampleRate) * 1000);
   }
 );
 
@@ -309,32 +210,33 @@ socket.on(
     bufferSize: number;
     duration?: number;
   }) => {
+    streamPlay("STREAM", socket.id, data, cinemaFlag)
     // console.log(data.audio)
-    console.log(data.video);
-    // erasePrint(ctx, cnvs)
-    if (data.audio) {
-      playAudioStream(
-        data.audio,
-        data.sampleRate,
-        data.glitch,
-        data.bufferSize
-      );
-    }
-    // console.log(data.video)
-    if (data.video) {
-      showImage(data.video, ctx);
-      if (cinemaFlag) {
-        setTimeout(() => {
-          erasePrint(ctx, cnvs);
-        }, 300);
-      }
-    } else {
-      textPrint(data.source.toLowerCase(), ctx, cnvs);
-    }
-    console.log(data.source);
-    setTimeout(() => {
-      socket.emit("streamReqFromClient", data.source);
-    }, (data.bufferSize / data.sampleRate) * 1000);
+    // console.log(data.video);
+    // // erasePrint(ctx, cnvs)
+    // if (data.audio) {
+    //   playAudioStream(
+    //     data.audio,
+    //     data.sampleRate,
+    //     data.glitch,
+    //     data.bufferSize
+    //   );
+    // }
+    // // console.log(data.video)
+    // if (data.video) {
+    //   showImage(data.video, ctx);
+    //   if (cinemaFlag) {
+    //     setTimeout(() => {
+    //       erasePrint(ctx, cnvs);
+    //     }, 300);
+    //   }
+    // } else {
+    //   textPrint(data.source.toLowerCase(), ctx, cnvs);
+    // }
+    // console.log(data.source);
+    // setTimeout(() => {
+    //   socket.emit("streamReqFromClient", data.source);
+    // }, (data.bufferSize / data.sampleRate) * 1000);
   }
 );
 
@@ -384,7 +286,7 @@ socket.on(
   "quantizeFromServer",
   (data: { flag: boolean; bpm: number; bar: number; eightNote: number }) => {
     if (data.flag) {
-      quantize(data.bar, data.eightNote);
+      quantize(data.bar);
       textPrint("QUANTIZE(BPM:" + String(data.bpm) + ")", ctx, cnvs);
       setTimeout(() => {
         erasePrint(ctx, cnvs);

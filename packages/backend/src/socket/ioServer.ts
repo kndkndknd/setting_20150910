@@ -21,7 +21,7 @@ import { streamEmit } from "../stream/streamEmit";
 import { states, chat_web } from "../states";
 import { stringEmit } from "./ioEmit";
 // import { DefaultEventsMap } from "socket.io/dist/typed-events";
-import { enterFromForm } from "../cmd/form/enterFromForm";
+// import { enterFromForm } from "../cmd/form/enterFromForm";
 import { stopEmit } from "../cmd/stopEmit";
 
 let strings = "";
@@ -58,10 +58,13 @@ export const ioServer = (
           if (!Object.keys(states.cmdClient).includes(sockId)) {
             states.cmdClient.push(sockId);
           }
-          // exceptにstreamを流すかは要審議
           if (!Object.keys(states.streamClient).includes(sockId)) {
             states.streamClient.push(sockId);
           }
+        }
+
+        if(!Object.keys(states.bpm).includes(sockId)) {
+          states.bpm[sockId] = 60;
         }
 
         // あとでオブジェクト向けに作り直す
@@ -129,8 +132,8 @@ export const ioServer = (
     });
 
     socket.on("enterFromForm", (strings: string) => {
-      const formResult = enterFromForm(strings, io);
-      console.log("enterFromForm", formResult);
+      // const formResult = enterFromForm(strings, io);
+      // console.log("enterFromForm", formResult);
     });
 
     socket.on("escapeFromForm", () => {

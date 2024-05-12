@@ -1,7 +1,8 @@
 import { io, Socket } from "socket.io-client";
-import { erasePrint, textPrint, toBase64 } from "./imageEvent";
+import { erasePrint, textPrint, toBase64, showImage } from "./imageEvent";
 import { cnvs, ctx } from "./globalVariable";
-import { hlsVideoStop } from "./hlsVideoPlay";
+import { hlsVideoStop } from "./hlsVideo";
+import { frontState } from "./globalVariable";
 
 export let streamFlag = {
   chat: false,
@@ -577,17 +578,85 @@ let quantizeInterval: number;
 let quantizerCurrentTime: number = 0;
 let eighthNoteSec: number = 0;
 
-export const quantize = (bar: number, eightNote: number) => {
-  eighthNoteSec = eightNote;
-  quantizeInterval = window.setInterval(() => {
-    console.log("quantize");
-    quantizerCurrentTime = audioContext.currentTime;
-    console.log(quantizerCurrentTime);
-  }, bar);
+export const quantize = (bar: number) => {
+  console.log('bar', bar)
+  frontState.quantize.status = true;
+  frontState.quantize.bar = bar;
+  frontState.quantize.interval = window.setInterval(() => {
+    frontState.quantize.currentTime = audioContext.currentTime;
+    console.log('bar', frontState.quantize.currentTime);
+  }, bar)
+  // eighthNoteSec = eightNote;
+  // quantizeInterval = window.setInterval(() => {
+  //   console.log("quantize");
+  //   quantizerCurrentTime = audioContext.currentTime;
+  //   console.log(quantizerCurrentTime);
+  // }, bar);
 };
 
 export const stopQuantize = () => {
   console.log("stop quantize");
-  clearInterval(quantizeInterval);
-  quantizerCurrentTime = 0;
+  clearInterval(frontState.quantize.interval);
+  frontState.quantize.status = false;
+  frontState.quantize.currentTime = 0;
+  frontState.quantize.bar = 0;
+  console.log('frontState.quantize', frontState.quantize)
+  // quantizerCurrentTime = 0;
+
 };
+
+export const streamPlay = (
+  type: 'CHAT' | 'STREAM', id:string, stream:{
+    audio: Float32Array,
+    sampleRate: number,
+    glitch: boolean,
+    bufferSize: number,
+    duration?: number,
+    video?: string,
+    source?: string,
+  }, cinemaFlag?: boolean) => {
+  if(!frontState.quantize.status) {
+      console.log("chatFromServer");
+      console.log("socket.id(socket.on): " + String(socket.id));
+      // console.log(data.audio);
+      playAudioStream(stream.audio, stream.sampleRate, stream.glitch, stream.bufferSize);
+      if (stream.video) {
+        showImage(stream.video, ctx);
+        if(type === 'STREAM' && cinemaFlag !== undefined && cinemaFlag) {
+          setTimeout(() => {
+            erasePrint(ctx, cnvs);
+          }, 300);
+
+        }
+      } else if(stream.source !== undefined ) {
+        textPrint(stream.source.toLowerCase(), ctx, cnvs);
+      }
+      setTimeout(() => {
+        if(type === 'CHAT') {
+          chatReq(String(id));
+        } else {
+          socket.emit("streamReqFromClient", stream.source);
+        }
+      }, (stream.bufferSize / stream.sampleRate) * 1000);
+  } else {
+    const currentTime = audioContext.currentTime;
+    const timeout = frontState.quantize.bar - (currentTime - frontState.quantize.currentTime) * 1000;
+    console.log('bar', frontState.quantize.bar, 'currentTime', currentTime, 'frontState.currentTime', frontState.quantize.currentTime)
+      if(type === 'CHAT') {
+      setTimeout(()=> {
+        playAudioStream(stream.audio, stream.sampleRate, stream.glitch, stream.bufferSize);
+        if (stream.video) {
+          showImage(stream.video, ctx);
+        } else if(stream.source !== undefined ) {
+          textPrint(stream.source.toLowerCase(), ctx, cnvs);
+        }
+        if(type==='CHAT') {
+          chatReq(String(id));  
+        } else {
+          socket.emit("streamReqFromClient", stream.source);          
+        }
+      },timeout)
+    }
+  }
+
+}

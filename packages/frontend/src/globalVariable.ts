@@ -8,11 +8,13 @@ export const frontState = {
   quantize: {
     status: false,
     bar: 0,
+    beat: 1,
     interval: 0,
     currentTime: 0,
+    timeout: 0,
   },
   metronome: {
     status: false,
     fournote: 0,
-  }
+  },
 };

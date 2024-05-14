@@ -124,7 +124,9 @@ export type cmdStateType = {
     randomratenote: {
       [key: string]: boolean;
     };
-    quantize: boolean;
+    quantize: {
+      [key: string]: number;
+    };
     loop: boolean;
     timelapse: boolean;
   };

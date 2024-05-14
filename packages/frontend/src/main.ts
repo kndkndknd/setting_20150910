@@ -184,7 +184,7 @@ socket.on(
     bufferSize: number;
     duration: number;
   }) => {
-    streamPlay("CHAT", socket.id, data)
+    streamPlay("CHAT", socket.id, data);
     // console.log("chatFromServer");
     // console.log("socket.id(socket.on): " + String(socket.id));
     // // console.log(data.audio);
@@ -210,7 +210,7 @@ socket.on(
     bufferSize: number;
     duration?: number;
   }) => {
-    streamPlay("STREAM", socket.id, data, cinemaFlag)
+    streamPlay("STREAM", socket.id, data, cinemaFlag);
     // console.log(data.audio)
     // console.log(data.video);
     // // erasePrint(ctx, cnvs)
@@ -284,10 +284,14 @@ socket.on("windowReqFromServer", (data: newWindowReqType) => {
 
 socket.on(
   "quantizeFromServer",
-  (data: { flag: boolean; bpm: number; bar: number; eightNote: number }) => {
+  (data: { flag: boolean; bpm: number; bar: number; beat: number }) => {
     if (data.flag) {
-      quantize(data.bar);
-      textPrint("QUANTIZE(BPM:" + String(data.bpm) + ")", ctx, cnvs);
+      quantize(data.bar, data.beat);
+      textPrint(
+        `QUANTIZE(BPM:${String(data.bpm)},Beat:${String(data.beat)})`,
+        ctx,
+        cnvs
+      );
       setTimeout(() => {
         erasePrint(ctx, cnvs);
       }, 800);

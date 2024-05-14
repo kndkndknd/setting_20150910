@@ -46,15 +46,7 @@ export const states: cmdStateType = {
   },
   form: {
     hls: {
-      小池: "KOIKE",
-      齊藤: "SAITO",
-      大城: "OSHIRO",
-      山口: "KAJIRO",
-      直嶋: "NAOSHIMA",
-      ハットコペ: "HATTOKOPE",
-      服部: "HATTOKOPE",
-      神田: "KANDA",
-      knd: "KANDA",
+      knd: "KND",
     },
     cmd: {
       ノイズ: "WHITENOISE",
@@ -147,7 +139,7 @@ export const states: cmdStateType = {
       PLAYBACK: false,
       TIMELAPSE: false,
     },
-    quantize: false,
+    quantize: {},
     loop: false,
     timelapse: false,
   },

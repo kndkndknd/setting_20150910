@@ -359,9 +359,9 @@ socket.on("windowReqFromServer", (data: newWindowReqType) => {
 
 socket.on(
   "quantizeFromServer",
-  (data: { flag: boolean; bpm: number; bar: number; eightNote: number }) => {
+  (data: { flag: boolean; bpm: number; bar: number; beat: number }) => {
     if (data.flag) {
-      quantize(data.bar);
+      quantize(data.bar, data.beat);
       textPrint("QUANTIZE(BPM:" + String(data.bpm) + ")", ctx, cnvs);
       setTimeout(() => {
         erasePrint(ctx, cnvs);

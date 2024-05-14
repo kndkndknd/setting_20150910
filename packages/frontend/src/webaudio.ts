@@ -578,10 +578,11 @@ let quantizeInterval: number;
 let quantizerCurrentTime: number = 0;
 let eighthNoteSec: number = 0;
 
-export const quantize = (bar: number) => {
+export const quantize = (bar: number, beat: number) => {
   console.log("bar", bar);
   frontState.quantize.status = true;
   frontState.quantize.bar = bar;
+  frontState.quantize.beat = beat;
   frontState.quantize.interval = window.setInterval(() => {
     frontState.quantize.currentTime = audioContext.currentTime;
     console.log("bar", frontState.quantize.currentTime);
@@ -646,31 +647,43 @@ export const streamPlay = (
       }
     }, (stream.bufferSize / stream.sampleRate) * 1000);
   } else {
-    const currentTime = audioContext.currentTime;
-    const timeout =
-      frontState.quantize.bar -
-      (currentTime - frontState.quantize.currentTime) * 1000;
-    console.log(
-      "bar",
-      frontState.quantize.bar,
-      "currentTime",
-      currentTime,
-      "frontState.currentTime",
-      frontState.quantize.currentTime
-    );
-    setTimeout(() => {
-      playAudioStream(
-        stream.audio,
-        stream.sampleRate,
-        stream.glitch,
-        stream.bufferSize
+    if (frontState.quantize.timeout === 0) {
+      const currentTime = audioContext.currentTime;
+      const beatTime = frontState.quantize.bar / frontState.quantize.beat;
+
+      // 倍々にして待つ必要がある
+      frontState.quantize.timeout =
+        beatTime > (currentTime - frontState.quantize.currentTime) * 1000
+          ? beatTime - (currentTime - frontState.quantize.currentTime) * 1000
+          : beatTime * 2 -
+            (currentTime - frontState.quantize.currentTime) * 1000;
+      console.log(
+        "bar",
+        frontState.quantize.bar,
+        "currentTime",
+        currentTime,
+        "frontState.currentTime",
+        frontState.quantize.currentTime
       );
-      if (stream.video) {
-        showImage(stream.video, ctx);
-      } else if (stream.source !== undefined) {
-        textPrint(stream.source.toLowerCase(), ctx, cnvs);
-      }
-    }, timeout);
+      setTimeout(() => {
+        console.log("beat", frontState.quantize.timeout);
+        playAudioStream(
+          stream.audio,
+          stream.sampleRate,
+          stream.glitch,
+          stream.bufferSize
+        );
+        if (stream.video) {
+          showImage(stream.video, ctx);
+        } else if (stream.source !== undefined) {
+          textPrint(stream.source.toLowerCase(), ctx, cnvs);
+        }
+        frontState.quantize.timeout = 0;
+      }, frontState.quantize.timeout);
+    } else {
+      console.log("timeout", frontState.quantize.timeout);
+    }
+    console.log("request");
     if (type === "CHAT") {
       chatReq(String(id));
     } else {

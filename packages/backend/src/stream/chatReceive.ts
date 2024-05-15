@@ -6,6 +6,7 @@ import { pushStateStream } from "./pushStateStream";
 // import { pickupTarget } from "../route";
 import { pickupStreamTarget } from "./pickupStreamTarget";
 import { switchCramp } from "../arduinoAccess/arduinoAccess";
+import { stat } from "fs";
 
 export const chatReceive = async (
   io: SocketIO.Server,
@@ -162,8 +163,10 @@ export const chatEmit = async (io, from?) => {
 };
 
 const ioEmitChatFromServer = async (io, chunk, targetId) => {
-  console.log("machine", states.client[targetId].urlPathName);
+  console.log("targetId", targetId);
+  console.log("machine", states.client[targetId]);
   if (
+    states.client[targetId] !== undefined &&
     states.client[targetId].urlPathName.includes("pi") &&
     states.arduino.connected
   ) {

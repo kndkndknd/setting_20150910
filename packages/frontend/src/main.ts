@@ -323,6 +323,12 @@ socket.on("emojiFromServer", (data: { state: boolean; text: string }) => {
   emojiState(data.state);
 });
 
+socket.on("bpmFromServer", (data: { bpm: number; bar: number }) => {
+  console.log("bpmFromServer", data);
+  frontState.metronome.fournote = data.bar / 4;
+  frontState.quantize.bar = data.bar;
+});
+
 /*
 socket.on("clockModeFromServer", (data: { clockMode: boolean }) => {
   console.log(data);

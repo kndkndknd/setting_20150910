@@ -106,8 +106,8 @@ export const receiveEnter = async (
     } else {
       for (let key in state.client) {
         if (state.stream.quantize[key] === undefined) {
-          // 3~9の整数をランダムで生成
-          state.stream.quantize[key] = Math.floor(Math.random() * 9);
+          // 1~7の整数をランダムで生成
+          state.stream.quantize[key] = Math.floor(Math.random() * 6) + 1;
         }
       }
       // state.stream.quantize = !state.stream.quantize;

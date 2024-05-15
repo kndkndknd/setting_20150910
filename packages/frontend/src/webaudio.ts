@@ -648,25 +648,29 @@ export const streamPlay = (
     }, (stream.bufferSize / stream.sampleRate) * 1000);
   } else {
     if (frontState.quantize.timeout === 0) {
-      const currentTime = audioContext.currentTime;
-      const beatTime = frontState.quantize.bar / frontState.quantize.beat;
-
-      // 倍々にして待つ必要がある
-      frontState.quantize.timeout =
-        beatTime > (currentTime - frontState.quantize.currentTime) * 1000
-          ? beatTime - (currentTime - frontState.quantize.currentTime) * 1000
-          : beatTime * 2 -
-            (currentTime - frontState.quantize.currentTime) * 1000;
-      console.log(
-        "bar",
-        frontState.quantize.bar,
-        "currentTime",
-        currentTime,
-        "frontState.currentTime",
+      frontState.quantize.timeout = getBeatTimeout(
+        frontState.quantize.bar / frontState.quantize.beat,
+        audioContext.currentTime,
         frontState.quantize.currentTime
       );
+      console.log("timeout", frontState.quantize.timeout);
+      // const currentTime = audioContext.currentTime;
+      // const beatTime = frontState.quantize.bar / frontState.quantize.beat;
+      // frontState.quantize.timeout =
+      //   beatTime > (currentTime - frontState.quantize.currentTime) * 1000
+      //     ? beatTime - (currentTime - frontState.quantize.currentTime) * 1000
+      //     : beatTime * 2 -
+      //       (currentTime - frontState.quantize.currentTime) * 1000;
+      // console.log(
+      //   "bar",
+      //   frontState.quantize.bar,
+      //   "currentTime",
+      //   currentTime,
+      //   "frontState.currentTime",
+      //   frontState.quantize.currentTime
+      // );
       setTimeout(() => {
-        console.log("beat", frontState.quantize.timeout);
+        console.log("play", frontState.quantize.timeout);
         playAudioStream(
           stream.audio,
           stream.sampleRate,
@@ -681,7 +685,7 @@ export const streamPlay = (
         frontState.quantize.timeout = 0;
       }, frontState.quantize.timeout);
     } else {
-      console.log("timeout", frontState.quantize.timeout);
+      console.log("not timeout", frontState.quantize.timeout);
     }
     console.log("request");
     if (type === "CHAT") {
@@ -690,4 +694,23 @@ export const streamPlay = (
       socket.emit("streamReqFromClient", stream.source);
     }
   }
+};
+
+const getBeatTimeout = (
+  beatTime: number,
+  currentTime: number,
+  quantizeCurrentTime: number
+): number => {
+  let diff = currentTime - quantizeCurrentTime;
+
+  if (beatTime > diff * 1000) {
+    return beatTime - diff * 1000;
+  }
+
+  let n = 2;
+  while (n * beatTime <= diff * 1000) {
+    n++;
+  }
+
+  return n * beatTime - diff * 1000;
 };

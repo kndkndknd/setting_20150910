@@ -6,6 +6,7 @@ import { cmdList, streamList, parameterList, states, streams } from "../states";
 import { putCmd } from "./putCmd";
 import { stringEmit } from "../socket/ioEmit";
 import { notTargetEmit } from "./notTargetEmit";
+import { millisecondsPerBar } from "./bpmCalc";
 
 export const parameterChange = (
   param: string,
@@ -123,6 +124,8 @@ export const parameterChange = (
     case "BPM":
       if (arg && arg.value) {
         const latency = (60 * 1000) / arg.value;
+        const bar = millisecondsPerBar(arg.value);
+
         if (arg.property) {
           // propertyがSTREAMを指定している場合
           if (Object.keys(state.stream.latency).includes(arg.property)) {
@@ -138,6 +141,7 @@ export const parameterChange = (
             const target = Object.keys(state.client)[Number(arg.property)];
             if (Object.keys(state.cmd.METRONOME).includes(target)) {
               state.cmd.METRONOME[target] = latency;
+              state.bpm[target] = arg.value;
               stringEmit(
                 io,
                 "BPM: " + String(arg.value) + "(client " + arg.property + ")"
@@ -159,6 +163,10 @@ export const parameterChange = (
                 value: latency,
               };
               putCmd(io, [target], cmd, state);
+              io.to(target).emit("bpmFromServer", {
+                bpm: arg.value,
+                bar: bar,
+              });
             }
           }
           // io.emit('stringsFromServer',{strings: 'BPM: ' + String(arg.value)  + '(' + arg.property + ')', timeout: true})
@@ -168,6 +176,9 @@ export const parameterChange = (
           }
           for (let target in state.cmd.METRONOME) {
             state.cmd.METRONOME[target] = latency;
+          }
+          for (let target in state.bpm) {
+            state.bpm[target] = arg.value;
           }
           if (state.current.cmd.METRONOME.length > 0) {
             state.current.cmd.METRONOME.forEach((target) => {
@@ -188,6 +199,10 @@ export const parameterChange = (
             });
           }
           stringEmit(io, "BPM: " + String(arg.value));
+          io.emit("bpmFromServer", {
+            bpm: arg.value,
+            bar: bar,
+          });
           // io.emit('stringsFromServer',{strings: 'BPM: ' + String(arg.value), timeout: true})
         }
       }

@@ -20,6 +20,7 @@ export const putCmd = (
     io.to(id).emit("cmdFromServer", cmd);
     console.log(id);
     if (
+      state.client[id] !== undefined &&
       state.client[id].urlPathName.includes("pi") &&
       state.arduino.connected
     ) {

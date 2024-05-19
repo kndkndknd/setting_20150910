@@ -23,6 +23,7 @@ import { stringEmit } from "./ioEmit";
 // import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { enterFromForm } from "../cmd/form/enterFromForm";
 import { stopEmit } from "../cmd/stopEmit";
+import { stat } from "fs";
 
 let strings = "";
 const previousFace = { x: 0, y: 0 };
@@ -141,7 +142,7 @@ export const ioServer = (
     });
 
     socket.on("disconnect", () => {
-      console.log("disconnect: " + String(socket.id));
+      console.log("disconnect:", String(socket.id));
       let sockId = String(socket.id);
       if (states.client[sockId]) delete states.client[sockId];
       // states.client = states.client.filter((id) => {
@@ -150,7 +151,24 @@ export const ioServer = (
       //     return id;
       //   }
       // });
-      console.log(states.client);
+      if (states.streamClient.includes(sockId)) {
+        states.streamClient = states.streamClient.filter((element) => {
+          return element !== sockId;
+        });
+      }
+      if (states.cmdClient.includes(sockId)) {
+        states.cmdClient = states.cmdClient.filter((element) => {
+          return element !== sockId;
+        });
+      }
+      if (Object.keys(states.bpm).includes(sockId)) {
+        delete states.bpm[sockId];
+      }
+
+      console.log("clients:", states.client);
+      console.log("streamClient:", states.streamClient);
+      console.log("cmdClient:", states.cmdClient);
+      console.log("bpm", states.bpm);
       // io.emit("statusFromServer", statusList);
     });
   });

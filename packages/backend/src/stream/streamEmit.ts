@@ -141,6 +141,7 @@ export const streamEmit = async (
 };
 
 const ioEmitStreamFromServer = async (io, stream, targetId, source) => {
+  console.log("targetId", targetId);
   if (
     states.client[targetId].urlPathName !== undefined &&
     states.client[targetId].urlPathName.includes("pi") &&

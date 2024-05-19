@@ -29,7 +29,7 @@ export const pickupStreamTarget = (
     console.log("from", from);
     // console.log("testArr", testArr);
     // const targetArr = states.stream.target[stream];
-
+    console.log("targetArr(target ari)", targetArr);
     // fromを除外した結果targetがなくなればfromを返す、あればtargetの中からランダムに返す
     if (targetArr.length > 0) {
       // if (states.arduino.connected) {
@@ -48,6 +48,7 @@ export const pickupStreamTarget = (
     // targetがなければランダムに返す
     console.log("random");
     let targetArr = states.streamClient;
+    console.log("targetArr", targetArr);
     // if (states.arduino.connected) {
     //   targetArr = [...targetArr, ...targetArr, ...targetArr];
     //   console.log("push arduino");

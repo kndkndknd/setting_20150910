@@ -37,6 +37,7 @@ import { voiceEmit } from "../voiceEmit";
 
 import { loadScenario } from "../../scenario/loadScenario";
 import { execScenario } from "../../scenario/execScenario";
+import { bufferSizeChange } from "../../stream/bufferSizeChange";
 
 export const splitSpace = async (
   stringArr: Array<string>,
@@ -416,6 +417,13 @@ export const splitSpace = async (
       flag: true,
     };
     io.emit("cmdFromServer", cmd);
+  } else if (
+    stringArr[0] === "BUFFER" ||
+    (stringArr[0] === "BUFFERSIZE" && arrTypeArr[1] === "number")
+  ) {
+    const input = Number(stringArr[1]);
+    state.stream.basisBufferSize = bufferSizeChange(input);
+    stringEmit(io, `BufferSize: ${state.stream.basisBufferSize}`);
   } else {
     stringEmit(io, stringArr.join(" "), false);
     if (state.cmd.VOICE.length > 0) {

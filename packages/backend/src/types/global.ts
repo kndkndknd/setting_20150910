@@ -93,6 +93,7 @@ export type cmdStateType = {
     };
   };
   stream: {
+    basisBufferSize: number;
     sampleRate: {
       [key: string]: number;
     };
@@ -121,6 +122,8 @@ export type cmdStateType = {
         max: number;
       };
     };
+    randomratemode: "diatonic" | "serial" | "random" | "randomrange";
+    randomratekey: string;
     randomratenote: {
       [key: string]: boolean;
     };

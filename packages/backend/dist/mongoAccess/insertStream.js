@@ -75,17 +75,22 @@ place, date) => {
             "Content-Type": "application/json",
         },
     };
-    const res = await fetch("http://" + ipaddress + ":3030/insert", options);
-    if (res.body != null) {
-        const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) {
-                console.log(value);
-                return;
+    try {
+        const res = await fetch("http://" + ipaddress + ":3030/insert", options);
+        if (res.body != null) {
+            const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) {
+                    console.log(value);
+                    return;
+                }
+                // console.log(value);
             }
-            // console.log(value);
         }
+    }
+    catch (error) {
+        console.log(error);
     }
 };
 //# sourceMappingURL=insertStream.js.map

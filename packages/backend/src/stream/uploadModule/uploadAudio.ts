@@ -10,12 +10,11 @@ import {
   parameterList,
   states,
   uploadParams,
-  basisBufferSize,
 } from "../../states";
 // import { pushStateStream } from "../pushStateStream.js";
 
 export const uploadAudio = async (f: string, mediaDirPath: string) => {
-  let tmpBuff = new Float32Array(basisBufferSize);
+  let tmpBuff = new Float32Array(states.stream.basisBufferSize);
   let rtnBuff = [];
   let i = 0;
   const fSplit = f.split(".");

@@ -17,7 +17,6 @@ import {
   parameterList,
   states,
   uploadParams,
-  basisBufferSize,
 } from "../../states";
 // import SocketIO from "socket.io";
 // import { cmdStateType } from "../..//types/global.js";
@@ -50,7 +49,7 @@ export const uploadStream = async (stringArr) => {
     streams[f.split(".")[0]] = {
       audio: [],
       video: [],
-      bufferSize: basisBufferSize,
+      bufferSize: states.stream.basisBufferSize,
       index: 0,
     };
   }

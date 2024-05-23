@@ -14,6 +14,7 @@ const sinewaveEmit = (frequencyStr, io, state, target) => {
         portament: state.cmd.PORTAMENT,
         gain: state.cmd.GAIN.SINEWAVE,
     };
+    console.log("target;", target);
     if (target !== undefined) {
         state.previous.sinewave[target] = state.current.sinewave[target];
     }
@@ -24,6 +25,8 @@ const sinewaveEmit = (frequencyStr, io, state, target) => {
         ? (0, pickupCmdTarget_1.pickupCmdTarget)(state, "SINEWAVE", { value: frequencyStr, target })
         : (0, pickupCmdTarget_1.pickupCmdTarget)(state, "SINEWAVE", { value: frequencyStr });
     console.log("targetArr", targetIdArr);
+    console.log("client", state.client);
+    console.log("cmdClient", state.cmdClient);
     targetIdArr.forEach((id) => {
         console.log("id", id);
         if (!Object.keys(state.current.sinewave).includes(id)) {

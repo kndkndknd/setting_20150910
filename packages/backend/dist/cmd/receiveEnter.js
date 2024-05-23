@@ -16,12 +16,15 @@ const bpmCalc_1 = require("./bpmCalc");
 // import { putString } from "./putString";
 const recordEmit_1 = require("../stream/recordEmit");
 const arduinoAccess_1 = require("../arduinoAccess/arduinoAccess");
+const ioEmit_1 = require("../socket/ioEmit");
 const previousCmd_1 = require("./previousCmd");
 const loadScenario_1 = require("../scenario/loadScenario");
 const execScenario_1 = require("../scenario/execScenario");
 const receiveEnter = async (strings, id, io, state) => {
     //VOICE
-    (0, voiceEmit_1.voiceEmit)(io, strings, state);
+    // if (strings.includes("VOICE ")) {
+    // voiceEmit(io, strings, id, state);
+    // }
     /*
     if(strings === 'INSERT') {
       const result = postMongo()
@@ -29,9 +32,11 @@ const receiveEnter = async (strings, id, io, state) => {
     */
     if (strings === "CHAT") {
         (0, chatPreparation_1.chatPreparation)(io, state);
+        (0, voiceEmit_1.voiceEmit)(io, strings, id, state);
     }
     else if (strings === "RECORD" || strings === "REC") {
         (0, recordEmit_1.recordEmit)(io, state);
+        (0, voiceEmit_1.voiceEmit)(io, "RECORD", id, state);
         /*
         if (!state.current.RECORD) {
           state.current.RECORD = true;
@@ -51,7 +56,7 @@ const receiveEnter = async (strings, id, io, state) => {
         */
     }
     else if (strings.includes(" ") /*&& strings.split(" ").length < 4*/) {
-        (0, splitSpace_1.splitSpace)(strings.split(" "), io, state);
+        (0, splitSpace_1.splitSpace)(strings.split(" "), io, state, id);
     }
     else if (strings.includes("+")) {
         (0, splitPlus_1.splitPlus)(strings.split("+"), io, state);
@@ -59,36 +64,71 @@ const receiveEnter = async (strings, id, io, state) => {
     else if (states_1.streamList.includes(strings)) {
         console.log("in stream");
         (0, streamEmit_1.streamEmit)(strings, io, state);
+        (0, voiceEmit_1.voiceEmit)(io, strings, id, state);
     }
     else if (Object.keys(states_1.cmdList).includes(strings)) {
         console.log("in cmd");
+        (0, voiceEmit_1.voiceEmit)(io, states_1.cmdList[strings], id, state);
         (0, cmdEmit_1.cmdEmit)(states_1.cmdList[strings], io, state);
     }
     else if (Number.isFinite(Number(strings))) {
         console.log("sinewave");
+        (0, voiceEmit_1.voiceEmit)(io, strings + "Hz", id, state);
         (0, sinewaveEmit_1.sinewaveEmit)(Number(strings), io, state);
+    }
+    else if (strings === "SINEWAVE") {
+        const frequency = 20 + Math.random() * 19980;
+        (0, voiceEmit_1.voiceEmit)(io, frequency + "Hz", id, state);
+        (0, sinewaveEmit_1.sinewaveEmit)(frequency, io, state);
     }
     else if (strings === "STOP") {
         console.log("stop");
-        (0, stopEmit_1.stopEmit)(io, state, "ALL");
+        (0, voiceEmit_1.voiceEmit)(io, strings, id, state);
+        (0, stopEmit_1.stopEmit)(io, state, id, "ALL");
     }
     else if (strings === "QUANTIZE") {
-        state.stream.quantize = !state.stream.quantize;
-        for (let key in state.bpm) {
-            const bar = (0, bpmCalc_1.millisecondsPerBar)(state.bpm[key]);
-            const eighthNote = (0, bpmCalc_1.secondsPerEighthNote)(state.bpm[key]);
-            io.to(key).emit("quantizeFromServer", {
-                flag: state.stream.quantize,
-                bpm: state.bpm[key],
-                bar: bar,
-                eighthNote: eighthNote,
-            });
+        if (Object.keys(state.stream.quantize).length >
+            Object.keys(state.client).length / 2) {
+            for (let key in state.stream.quantize) {
+                delete state.stream.quantize[key];
+            }
+            for (let key in state.bpm) {
+                const bar = (0, bpmCalc_1.millisecondsPerBar)(state.bpm[key]);
+                io.emit("quantizeFromServer", {
+                    flag: false,
+                    bpm: state.bpm[key],
+                    bar: bar,
+                    beat: 1,
+                });
+            }
+        }
+        else {
+            for (let key in state.client) {
+                if (state.stream.quantize[key] === undefined) {
+                    // 1~7の整数をランダムで生成
+                    state.stream.quantize[key] = Math.floor(Math.random() * 6) + 1;
+                }
+            }
+            // state.stream.quantize = !state.stream.quantize;
+            console.log("state.bpm", state.bpm);
+            for (let key in state.bpm) {
+                const bar = (0, bpmCalc_1.millisecondsPerBar)(state.bpm[key]);
+                // const eighthNote = secondsPerEighthNote(state.bpm[key]);
+                console.log("quantize bar", bar);
+                io.to(key).emit("quantizeFromServer", {
+                    flag: true,
+                    bpm: state.bpm[key],
+                    bar: bar,
+                    beat: state.stream.quantize[key],
+                });
+            }
         }
     }
     else if (strings === "TWICE" || strings === "HALF") {
         (0, sinewaveChange_1.sinewaveChange)(strings, io, state);
     }
     else if (strings === "PREVIOUS" || strings === "PREV") {
+        (0, voiceEmit_1.voiceEmit)(io, "PREVIOUS", id, state);
         (0, previousCmd_1.previousCmd)(io, state);
     }
     else if (Object.keys(states_1.parameterList).includes(strings)) {
@@ -168,6 +208,36 @@ const receiveEnter = async (strings, id, io, state) => {
         //   } else {
         //     stringEmit(io, "GET TWITCH: FAILED");
         //   }
+        // } else if (strings === "HLS") {
+        //   const cmd: {
+        //     cmd: string;
+        //     property: string;
+        //     value: number;
+        //     flag: boolean;
+        //     target?: string;
+        //     overlay?: boolean;
+        //     fade?: number;
+        //     portament?: number;
+        //     gain?: number;
+        //     solo?: boolean;
+        //   } = {
+        //     cmd: "HLS",
+        //     property: "OGAWA",
+        //     value: 0,
+        //     flag: true,
+        //   };
+        //   io.emit("cmdFromServer", cmd);
+    }
+    else if (id === "scenario") {
+        console.log("scenario", strings);
+        if (state.cmd.VOICE.length > 0) {
+            console.log("voiceEmit scenario");
+            (0, voiceEmit_1.voiceEmit)(io, strings, "scenario", state);
+        }
+        (0, ioEmit_1.stringEmit)(io, strings, false);
+    }
+    else {
+        (0, voiceEmit_1.voiceEmit)(io, strings, id, state);
     }
     if (strings !== "STOP") {
         state.previous.text = strings;

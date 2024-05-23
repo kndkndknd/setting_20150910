@@ -2,7 +2,6 @@ import SocketIO from "socket.io";
 import { cmdStateType } from "../types/global";
 import { pickupStreamTarget } from "./pickupStreamTarget";
 import { switchCramp } from "../arduinoAccess/arduinoAccess";
-import { basisBufferSize } from "../states";
 import { time } from "console";
 import { chatEmit } from "./chatReceive";
 

@@ -17,7 +17,10 @@ const charProcess_1 = require("../cmd/charProcess");
 // import { sinewaveEmit } from "../cmd/sinewaveEmit";
 const streamEmit_1 = require("../stream/streamEmit");
 const states_1 = require("../states");
+const ioEmit_1 = require("./ioEmit");
 // import { DefaultEventsMap } from "socket.io/dist/typed-events";
+const enterFromForm_1 = require("../cmd/form/enterFromForm");
+const stopEmit_1 = require("../cmd/stopEmit");
 let strings = "";
 const previousFace = { x: 0, y: 0 };
 const ioServer = (httpserver) => {
@@ -40,6 +43,17 @@ const ioServer = (httpserver) => {
                     "}");
                 if (!Object.keys(states_1.states.client).includes(sockId))
                     states_1.states.client[sockId] = { ipAddress, urlPathName: data.urlPathName };
+                if (!data.urlPathName.includes("exc")) {
+                    if (!Object.keys(states_1.states.cmdClient).includes(sockId)) {
+                        states_1.states.cmdClient.push(sockId);
+                    }
+                    if (!Object.keys(states_1.states.streamClient).includes(sockId)) {
+                        states_1.states.streamClient.push(sockId);
+                    }
+                }
+                if (!Object.keys(states_1.states.bpm).includes(sockId)) {
+                    states_1.states.bpm[sockId] = 60;
+                }
                 // あとでオブジェクト向けに作り直す
                 // states.client = states.client.filter((id) => {
                 //   //console.log(io.sockets.adapter.rooms.has(id))
@@ -78,7 +92,7 @@ const ioServer = (httpserver) => {
             (0, chatReceive_1.chatReceive)(io, buffer);
         });
         socket.on("streamReqFromClient", (source) => {
-            // console.log(source);
+            console.log(source);
             if (states_1.states.current.stream[source]) {
                 // if (states.stream.target[source].length > 0) {
                 //   console.log(`target stream: ${source}`);
@@ -97,8 +111,18 @@ const ioServer = (httpserver) => {
             states_1.states.cmd.GAIN[gain.target] = gain.val;
             io.emit("gainFromServer", states_1.states.cmd.GAIN);
         });
+        socket.on("stringFromForm", (strings) => {
+            (0, ioEmit_1.stringEmit)(io, strings, false);
+        });
+        socket.on("enterFromForm", (strings) => {
+            const formResult = (0, enterFromForm_1.enterFromForm)(strings, io);
+            console.log("enterFromForm", formResult);
+        });
+        socket.on("escapeFromForm", () => {
+            (0, stopEmit_1.stopEmit)(io, states_1.states, "form", "ExceptHls");
+        });
         socket.on("disconnect", () => {
-            console.log("disconnect: " + String(socket.id));
+            console.log("disconnect:", String(socket.id));
             let sockId = String(socket.id);
             if (states_1.states.client[sockId])
                 delete states_1.states.client[sockId];
@@ -108,10 +132,27 @@ const ioServer = (httpserver) => {
             //     return id;
             //   }
             // });
-            console.log(states_1.states.client);
+            if (states_1.states.streamClient.includes(sockId)) {
+                states_1.states.streamClient = states_1.states.streamClient.filter((element) => {
+                    return element !== sockId;
+                });
+            }
+            if (states_1.states.cmdClient.includes(sockId)) {
+                states_1.states.cmdClient = states_1.states.cmdClient.filter((element) => {
+                    return element !== sockId;
+                });
+            }
+            if (Object.keys(states_1.states.bpm).includes(sockId)) {
+                delete states_1.states.bpm[sockId];
+            }
+            console.log("clients:", states_1.states.client);
+            console.log("streamClient:", states_1.states.streamClient);
+            console.log("cmdClient:", states_1.states.cmdClient);
+            console.log("bpm", states_1.states.bpm);
             // io.emit("statusFromServer", statusList);
         });
     });
+    return io;
 };
 exports.ioServer = ioServer;
 //# sourceMappingURL=ioServer.js.map

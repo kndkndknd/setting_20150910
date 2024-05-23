@@ -14,7 +14,6 @@ import {
   parameterList,
   states,
   uploadParams,
-  basisBufferSize,
 } from "../../states";
 
 export const getFilePath = async (fileString, mediaDirPath) => {

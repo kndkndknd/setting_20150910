@@ -1,9 +1,10 @@
 import SocketIO from "socket.io";
 import { cmdStateType, buffStateType } from "../types/global";
-import { streams, states, basisBufferSize } from "../states";
+import { streams, states } from "../states";
 import { pickupStreamTarget } from "./pickupStreamTarget";
 import { switchCramp } from "../arduinoAccess/arduinoAccess";
 import { glitchStream } from "./glitchStream";
+import { sampleRateRandomize } from "./sampleRateRandomize";
 
 export const streamEmit = async (
   source: string,
@@ -23,16 +24,16 @@ export const streamEmit = async (
   //   state.client[Math.floor(Math.random() * state.client.length)];
   let buff: buffStateType;
   if (source === "EMPTY") {
-    let audioBuff = new Float32Array(basisBufferSize);
-    for (let i = 0; i < basisBufferSize; i++) {
+    let audioBuff = new Float32Array(states.stream.basisBufferSize);
+    for (let i = 0; i < states.stream.basisBufferSize; i++) {
       audioBuff[i] = 1.0;
     }
     buff = {
       source: source,
-      bufferSize: basisBufferSize,
+      bufferSize: states.stream.basisBufferSize,
       audio: audioBuff,
       video: streams[source].video.shift(),
-      duration: basisBufferSize / 44100,
+      duration: states.stream.basisBufferSize / 44100,
     };
     /*
     } else if(source === 'TIMELAPSE') {
@@ -116,7 +117,8 @@ export const streamEmit = async (
     }
 
     if (state.stream.randomrate[source]) {
-      stream.sampleRate = 11025 + Math.floor(Math.random() * 10) * 11025;
+      stream.sampleRate = sampleRateRandomize(source);
+      console.log("samplerate", stream.sampleRate);
     }
 
     if (!stream.video) console.log("not video");

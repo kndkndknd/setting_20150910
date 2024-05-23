@@ -6,7 +6,8 @@ const putCmd = (io, idArr, cmd, state) => {
     idArr.forEach((id) => {
         io.to(id).emit("cmdFromServer", cmd);
         console.log(id);
-        if (state.client[id].urlPathName.includes("pi") &&
+        if (state.client[id] !== undefined &&
+            state.client[id].urlPathName.includes("pi") &&
             state.arduino.connected) {
             let timeout = cmd.cmd === "CLICK" || cmd.cmd === "STOP" ? 100 : 500;
             const result = (0, arduinoAccess_1.switchOneshot)(timeout);

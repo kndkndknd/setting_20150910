@@ -45,6 +45,9 @@ let chatGain: GainNode;
 let convolver: ConvolverNode;
 let glitchGain: GainNode;
 
+let feedbackReverve: ConvolverNode;
+let feedbackReverveGain: GainNode;
+
 let simulateOsc: OscillatorNode;
 let simulateGain: GainNode;
 let simFilter: BiquadFilterNode;
@@ -120,6 +123,10 @@ export const initAudio = () => {
 
   feedbackGain = audioContext.createGain();
   feedbackGain.gain.setValueAtTime(0, 0);
+  feedbackReverveGain = audioContext.createGain();
+  feedbackReverveGain.gain.setValueAtTime(0, 0);
+  feedbackReverve = audioContext.createConvolver();
+  feedbackReverve.connect(feedbackReverveGain);
 
   chatGain = audioContext.createGain();
   chatGain.gain.setValueAtTime(chatGainVal, 0);
@@ -149,11 +156,11 @@ export const initAudio = () => {
 };
 
 export const initAudioStream = (stream) => {
-  console.log("debug2");
   let mediastreamsource: MediaStreamAudioSourceNode;
   mediastreamsource = audioContext.createMediaStreamSource(stream);
   mediastreamsource.connect(javascriptnode);
   mediastreamsource.connect(feedbackGain);
+  mediastreamsource.connect(feedbackReverveGain);
   feedbackGain.connect(masterGain);
   javascriptnode.onaudioprocess = onAudioProcess;
   javascriptnode.connect(masterGain);
@@ -182,7 +189,7 @@ const onAudioProcess = (e: AudioProcessingEvent) => {
       bufferData["from"] = socketId;
     }
     socket.emit("chatFromClient", bufferData);
-    console.log("chatFromClient");
+    // console.log("chatFromClient");
     streamFlag.chat = false;
   }
   if (streamFlag.record) {
@@ -195,7 +202,7 @@ const onAudioProcess = (e: AudioProcessingEvent) => {
       duration: e.inputBuffer.duration,
     };
     e.inputBuffer.copyFromChannel(bufferData.audio, 0);
-    console.log(bufferData);
+    // console.log(bufferData);
     socket.emit("chatFromClient", bufferData);
   }
   if (streamFlag.other !== "") {
@@ -324,13 +331,26 @@ export const whitenoise = (flag: boolean, fade: number, gain: number) => {
   }
 };
 
-export const feedback = (flag: boolean, fade: number, gain: number) => {
+export const feedback = (
+  flag: boolean,
+  fade: number,
+  gain: number,
+  type?: "normal" | "reverve"
+) => {
   const currentTime = audioContext.currentTime;
+  // if (type === undefined || type === "normal") {
   if (flag) {
     feedbackGain.gain.setTargetAtTime(gain, currentTime, fade);
   } else {
     feedbackGain.gain.setTargetAtTime(0, currentTime, fade);
   }
+  // } else if (type === "reverve") {
+  // if (flag) {
+  //   feedbackReverveGain.gain.setTargetAtTime(gain, currentTime, fade);
+  // } else {
+  //   feedbackReverveGain.gain.setTargetAtTime(gain, currentTime, fade);
+  // }
+  // }
 };
 
 export const bass = (flag: boolean, gain: number) => {
@@ -639,13 +659,21 @@ export const streamPlay = (
     } else if (stream.source !== undefined) {
       textPrint(stream.source.toLowerCase(), ctx, cnvs);
     }
-    setTimeout(() => {
+    if (frontState.recLatency) {
+      setTimeout(() => {
+        if (type === "CHAT") {
+          chatReq(String(id));
+        } else {
+          socket.emit("streamReqFromClient", stream.source);
+        }
+      }, (stream.bufferSize / stream.sampleRate) * 1000);
+    } else {
       if (type === "CHAT") {
         chatReq(String(id));
       } else {
         socket.emit("streamReqFromClient", stream.source);
       }
-    }, (stream.bufferSize / stream.sampleRate) * 1000);
+    }
   } else {
     if (frontState.quantize.timeout === 0) {
       frontState.quantize.timeout = getBeatTimeout(

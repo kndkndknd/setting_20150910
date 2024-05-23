@@ -1,11 +1,12 @@
 import SocketIO from "socket.io";
 import { cmdStateType, buffStateType } from "../types/global";
-import { chats, streams, states, basisBufferSize } from "../states";
+import { chats, streams, states } from "../states";
 import { glitchStream } from "./glitchStream";
 import { pushStateStream } from "./pushStateStream";
 // import { pickupTarget } from "../route";
 import { pickupStreamTarget } from "./pickupStreamTarget";
 import { switchCramp } from "../arduinoAccess/arduinoAccess";
+import { sampleRateRandomize } from "./sampleRateRandomize";
 import { stat } from "fs";
 
 export const chatReceive = async (
@@ -62,7 +63,7 @@ export const chatReceive = async (
           streams[buffer.source] = {
             audio: [],
             video: [],
-            bufferSize: basisBufferSize,
+            bufferSize: states.stream.basisBufferSize,
             index: 0,
           };
         }
@@ -96,6 +97,7 @@ export const chatEmit = async (io, from?) => {
         ...chats.shift(),
       };
       if (states.stream.randomrate.CHAT) {
+        /*
         if (states.stream.randomratenote.CHAT) {
           chunk.sampleRate = 11025 + Math.floor(Math.random() * 10) * 11025;
         } else {
@@ -107,6 +109,8 @@ export const chatEmit = async (io, from?) => {
                   states.stream.randomraterange.CHAT.min)
             );
         }
+        */
+        chunk.sampleRate = sampleRateRandomize("CHAT");
         //          console.log(chunk.sampleRate)
       }
       if (states.stream.glitch.CHAT && chunk.video) {

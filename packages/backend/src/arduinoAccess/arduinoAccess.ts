@@ -1,5 +1,5 @@
 import { time } from "console";
-import { states, basisBufferSize } from "../states";
+import { states } from "../states";
 import axios from "axios";
 
 export const connectTest = async () => {
@@ -46,7 +46,8 @@ export const switchCtrl = async () => {
 
 export const switchCramp = async (source) => {
   const freq = 1000 / (20 * (states.stream.sampleRate[source] / 44100));
-  const timeout = (1000 * basisBufferSize) / states.stream.sampleRate[source];
+  const timeout =
+    (1000 * states.stream.basisBufferSize) / states.stream.sampleRate[source];
   const params = { freq: freq, timeout: timeout };
   // const body = JSON.stringify({ freq: freq, timeout: timeout });
   // console.log(body);

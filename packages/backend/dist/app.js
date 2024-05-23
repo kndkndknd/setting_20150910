@@ -35,15 +35,34 @@ const ioServer_1 = require("./socket/ioServer");
 // import { states } from "./states";
 // import { switchCtrl } from "./arduinoAccess/switch";
 const os_1 = require("os");
-const getLiveStream_1 = require("./stream/getLiveStream");
+const ioEmit_1 = require("./socket/ioEmit");
+// import { cors } from "cors";
+// const corsOptions = {
+//   origin: "http://127.0.0.1:5173",
+//   optionsSuccessStatus: 200,
+// };
 const port = 8000;
 const app = (0, express_1.default)();
+app.use(express_1.default.json());
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
 // const __dirname = import.meta.dirname;
 // console.log(__dirname);
 app.use(express_1.default.static(path.join(__dirname, "..", "static")));
 app.use((0, serve_favicon_1.default)(path.join(__dirname, "..", "lib/favicon.ico")));
+const allowCrossDomain = function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, access_token");
+    // intercept OPTIONS method
+    if ("OPTIONS" === req.method) {
+        res.send(200);
+    }
+    else {
+        next();
+    }
+};
+app.use(allowCrossDomain);
 //const httpsserver = Https.createServer(options,app).listen(port);
 const options = {
     key: fs.readFileSync(path.join(__dirname, "../../../..", "keys/chat/privkey.pem")),
@@ -57,6 +76,7 @@ function getIpAddress() {
 }
 const host = getIpAddress();
 console.log(`Server listening on ${host}:${port}`);
+const io = (0, ioServer_1.ioServer)(httpserver);
 app.get("/", function (req, res, next) {
     try {
         res.sendFile(path.join(__dirname, "..", "static", "html", "index.html"));
@@ -70,6 +90,26 @@ app.get("/snowleopard", function (req, res, next) {
     try {
         console.log("snowleopard");
         res.sendFile(path.join(__dirname, "..", "static", "html", "snowleopard.html"));
+    }
+    catch (error) {
+        console.log(error);
+        res.json({ success: false, message: "Something went wrong" });
+    }
+});
+app.get("/form", function (req, res, next) {
+    try {
+        console.log("snowleopard");
+        res.sendFile(path.join(__dirname, "..", "static", "html", "form.html"));
+    }
+    catch (error) {
+        console.log(error);
+        res.json({ success: false, message: "Something went wrong" });
+    }
+});
+app.get("/hls", function (req, res, next) {
+    try {
+        console.log("hls test");
+        res.sendFile(path.join(__dirname, "..", "static", "html", "hlstest.html"));
     }
     catch (error) {
         console.log(error);
@@ -99,6 +139,17 @@ app.get("/:name", function (req, res, next) {
         res.json({ success: false, message: "Something went wrong" });
     }
 });
+app.post("/api/form", function (req, res, next) {
+    console.log("POST /api/form", req.body);
+    if (req.body.enter) {
+        console.log("enter");
+    }
+    else {
+        console.log("chat:", req.body.chat);
+        (0, ioEmit_1.stringEmit)(io, req.body.chat, false);
+    }
+    res.json({ success: true, message: "Data received" });
+});
 /*
 const socketOptions = {
   cors: {
@@ -112,11 +163,4 @@ const socketOptions = {
 };
 */
 // const io = new Server(httpsserver, socketOptions)
-(0, ioServer_1.ioServer)(httpserver);
-try {
-    (0, getLiveStream_1.getLiveStream)("LIVECAM");
-}
-catch (error) {
-    console.log("get LIVECAM error:", error);
-}
 //# sourceMappingURL=app.js.map

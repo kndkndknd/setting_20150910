@@ -83,6 +83,7 @@ export const states: cmdStateType = {
     RECORD: false,
   },
   stream: {
+    basisBufferSize: 8192,
     sampleRate: {
       CHAT: 44100,
       PLAYBACK: 44100,
@@ -120,6 +121,8 @@ export const states: cmdStateType = {
       PLAYBACK: false,
       TIMELAPSE: false,
     },
+    randomratemode: "random",
+    randomratekey: "A",
     randomraterange: {
       CHAT: {
         min: 5000,
@@ -162,30 +165,28 @@ export const states: cmdStateType = {
   timer: true,
 };
 
-export let basisBufferSize = 8192;
-
 export const chats = [];
 
 export const oneshots = {
   KICK: {
     audio: [],
     video: [],
-    bufferSize: basisBufferSize,
+    bufferSize: states.stream.basisBufferSize,
   },
   SNARE: {
     audio: [],
     video: [],
-    bufferSize: basisBufferSize,
+    bufferSize: states.stream.basisBufferSize,
   },
   HAT: {
     audio: [],
     video: [],
-    bufferSize: basisBufferSize,
+    bufferSize: states.stream.basisBufferSize,
   },
   SILENCE: {
     audio: [],
     video: [],
-    bufferSize: basisBufferSize,
+    bufferSize: states.stream.basisBufferSize,
   },
 };
 
@@ -194,25 +195,25 @@ export const streams: StreamsType = {
     audio: [],
     video: [],
     index: 0,
-    bufferSize: basisBufferSize,
+    bufferSize: states.stream.basisBufferSize,
   },
   TIMELAPSE: {
     audio: [],
     video: [],
     index: 0,
-    bufferSize: basisBufferSize,
+    bufferSize: states.stream.basisBufferSize,
   },
   INTERNET: {
     audio: [],
     video: [],
     index: 0,
-    bufferSize: basisBufferSize,
+    bufferSize: states.stream.basisBufferSize,
   },
   EMPTY: {
     audio: [],
     video: [],
     index: 0,
-    bufferSize: basisBufferSize,
+    bufferSize: states.stream.basisBufferSize,
   },
 };
 

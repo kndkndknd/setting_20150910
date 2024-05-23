@@ -7,11 +7,10 @@ import {
   parameterList,
   states,
   uploadParams,
-  basisBufferSize,
 } from "../../states";
 
 export const pcm2arr = (url) => {
-  let tmpBuff = new Float32Array(basisBufferSize);
+  let tmpBuff = new Float32Array(states.stream.basisBufferSize);
   let rtnBuff = <Array<Float32Array>>[];
   var i = 0;
   pcm.getPcmData(
@@ -20,9 +19,9 @@ export const pcm2arr = (url) => {
     function (sample, channel) {
       tmpBuff[i] = sample;
       i++;
-      if (i === basisBufferSize) {
+      if (i === states.stream.basisBufferSize) {
         rtnBuff.push(tmpBuff);
-        tmpBuff = new Float32Array(basisBufferSize);
+        tmpBuff = new Float32Array(states.stream.basisBufferSize);
         i = 0;
       }
     },

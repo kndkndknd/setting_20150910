@@ -107,7 +107,8 @@ export const receiveEnter = async (
       for (let key in state.client) {
         if (state.stream.quantize[key] === undefined) {
           // 1~7の整数をランダムで生成
-          state.stream.quantize[key] = Math.floor(Math.random() * 6) + 1;
+          // state.stream.quantize[key] = Math.floor(Math.random() * 6) + 1;
+          state.stream.quantize[key] = 4;
         }
       }
       // state.stream.quantize = !state.stream.quantize;
@@ -228,6 +229,11 @@ export const receiveEnter = async (
       voiceEmit(io, strings, "scenario", state);
     }
     stringEmit(io, strings, false);
+  } else if (strings === "SOLFEGGIO") {
+    const solfeggioArr = [285, 396, 417, 528, 639, 741, 852, 963];
+    const frequency =
+      solfeggioArr[Math.floor(Math.random() * solfeggioArr.length)];
+    sinewaveEmit(frequency, io, state);
   } else {
     voiceEmit(io, strings, id, state);
   }

@@ -97,7 +97,6 @@ export const chatEmit = async (io, from?) => {
         ...chats.shift(),
       };
       if (states.stream.randomrate.CHAT) {
-        /*
         if (states.stream.randomratenote.CHAT) {
           chunk.sampleRate = 11025 + Math.floor(Math.random() * 10) * 11025;
         } else {
@@ -109,8 +108,7 @@ export const chatEmit = async (io, from?) => {
                   states.stream.randomraterange.CHAT.min)
             );
         }
-        */
-        chunk.sampleRate = sampleRateRandomize("CHAT");
+        // chunk.sampleRate = sampleRateRandomize("CHAT");
         //          console.log(chunk.sampleRate)
       }
       if (states.stream.glitch.CHAT && chunk.video) {

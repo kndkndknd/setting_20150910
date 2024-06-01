@@ -16,4 +16,9 @@ export const pushStateStream = (
   states.stream.random[streamName] = random !== undefined ? random : false;
   states.stream.randomrate[streamName] = false;
   states.stream.target[streamName] = [];
+  states.stream.randomratemode = "random";
+  states.stream.randomraterange[streamName] = {
+    min: 5000,
+    max: 132300,
+  };
 };

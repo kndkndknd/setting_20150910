@@ -117,8 +117,16 @@ export const streamEmit = async (
     }
 
     if (state.stream.randomrate[source]) {
-      stream.sampleRate = sampleRateRandomize(source);
-      console.log("samplerate", stream.sampleRate);
+      stream.sampleRate =
+        states.stream.randomraterange[source].min +
+        Math.floor(
+          Math.random() *
+            (states.stream.randomraterange[source].max -
+              states.stream.randomraterange[source].min)
+        );
+
+      // stream.sampleRate = sampleRateRandomize(source);
+      // console.log("samplerate", stream.sampleRate);
     }
 
     if (!stream.video) console.log("not video");

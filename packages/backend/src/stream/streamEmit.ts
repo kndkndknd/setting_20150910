@@ -152,6 +152,24 @@ export const streamEmit = async (
 
 const ioEmitStreamFromServer = async (io, stream, targetId, source) => {
   console.log("targetId", targetId);
+
+  if (
+    stream.video &&
+    states.stream.floating &&
+    !states.client[targetId].projection
+  ) {
+    console.log("floating");
+    const projectionStream = {
+      ...stream,
+      floating: true,
+      target: targetId,
+    };
+    const projectionTargetId = Object.keys(states.client).find((key) => {
+      return states.client[key].projection;
+    });
+    io.to(projectionTargetId).emit("streamFromServer", projectionStream);
+  }
+
   if (
     states.client[targetId].urlPathName !== undefined &&
     states.client[targetId].urlPathName.includes("pi") &&

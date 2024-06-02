@@ -167,6 +167,20 @@ export const chatEmit = async (io, from?) => {
 const ioEmitChatFromServer = async (io, chunk, targetId) => {
   console.log("targetId", targetId);
   console.log("machine", states.client[targetId]);
+
+  if (states.stream.floating && !states.client[targetId].projection) {
+    console.log("floating");
+    const projectionChunk = {
+      ...chunk,
+      floating: true,
+      target: targetId,
+    };
+    const projectionTargetId = Object.keys(states.client).find((key) => {
+      return states.client[key].projection;
+    });
+    io.to(projectionTargetId).emit("chatFromServer", projectionChunk);
+  }
+
   if (
     states.client[targetId] !== undefined &&
     states.client[targetId].urlPathName.includes("pi") &&

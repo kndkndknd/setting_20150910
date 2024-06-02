@@ -5,6 +5,7 @@ export type buffStateType = {
   bufferSize: number;
   duration: number;
   from?: string;
+  floating?: boolean;
 };
 
 export type cmdType = {
@@ -19,6 +20,13 @@ export type cmdStateType = {
     [key: string]: {
       ipAddress: string;
       urlPathName: string;
+      projection: boolean;
+      floatingPosition: {
+        top: number;
+        left: number;
+        width: number;
+        height: number;
+      };
     };
   };
   cmdClient: string[];
@@ -132,6 +140,7 @@ export type cmdStateType = {
     };
     loop: boolean;
     timelapse: boolean;
+    floating: boolean;
   };
   web: {
     flag: boolean;

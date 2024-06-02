@@ -1,5 +1,6 @@
-import { cnvs, ctx, videoElement } from "./globalVariable";
+import { cnvs, ctx, videoElement, frontState } from "./globalVariable";
 import * as emoji from "node-emoji";
+import { Socket } from "socket.io-client";
 
 //const videoElement = <HTMLVideoElement>document.getElementById('video');
 // const cinemaElement = <HTMLVideoElement>document.getElementById("cinema");
@@ -61,7 +62,7 @@ export function erasePrint(ctx, cnvs) {
   //  ctx.fillRect(0, 0, cnvs.width, cnvs.height);
 }
 
-export function canvasSizing() {
+export function canvasSizing(socket?: Socket) {
   const windowWidth = window.innerWidth;
   const windowHeight = window.innerHeight;
   const width = String(windowWidth);
@@ -74,6 +75,14 @@ export function canvasSizing() {
   const bckcnvsElement = <HTMLCanvasElement>document.getElementById("bckcnvs");
   bckcnvsElement.setAttribute("height", height + "px");
   bckcnvsElement.setAttribute("width", width + "px");
+  if (socket !== undefined) {
+    socket.emit("connectFromClient", {
+      clientMode: "client",
+      urlPathName: window.location.pathname,
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+  }
 }
 
 export function initVideo(videoElement) {
@@ -135,7 +144,11 @@ export function renderStart() {
   render();
 }
 
-export function showImage(url: string, receive_ctx: CanvasRenderingContext2D) {
+export function showImage(
+  url: string,
+  receive_ctx: CanvasRenderingContext2D,
+  position?: { top: number; left: number; height: number; width: number }
+) {
   //canvasSizing()
   console.log(url.slice(0, 50));
   const image = new Image();
@@ -143,16 +156,65 @@ export function showImage(url: string, receive_ctx: CanvasRenderingContext2D) {
     image.src = url;
     image.onload = () => {
       const aspect = image.width / image.height;
-      let hght = window.innerHeight;
-      let wdth = hght * aspect;
-      if (aspect > window.innerWidth / window.innerHeight) {
-        hght = wdth / aspect;
-        wdth = window.innerWidth;
+      if (position === undefined) {
+        const hght =
+          aspect > window.innerWidth / window.innerHeight
+            ? window.innerWidth * aspect
+            : window.innerHeight;
+        const wdth =
+          aspect > window.innerWidth / window.innerHeight
+            ? window.innerWidth
+            : window.innerHeight / aspect;
+        // let hght = window.innerHeight;
+        // let wdth = hght * aspect;
+        //   if (aspect > window.innerWidth / window.innerHeight) {
+        //   hght = wdth / aspect;
+        //   wdth = window.innerWidth;
+        // }
+        const x = window.innerWidth / 2 - wdth / 2;
+        const y = 0;
+        receive_ctx.drawImage(image, x, y, wdth, hght);
+      } else {
+        receive_ctx.drawImage(
+          image,
+          position.left,
+          position.top,
+          position.width,
+          position.height
+        );
+        /*
+        const randomValue = Math.random();
+        const wdth = Math.floor(
+          randomValue * (window.innerWidth - position.left)
+        );
+        if (window.innerHeight - position.top >= wdth * aspect) {
+          receive_ctx.drawImage(
+            image,
+            position.left,
+            position.top,
+            wdth,
+            wdth * aspect
+          );
+        } else {
+          const hght = Math.floor(
+            randomValue * (window.innerHeight - position.top)
+          );
+          receive_ctx.drawImage(
+            image,
+            position.left,
+            position.top,
+            hght / aspect,
+            hght
+          );
+        }
+        */
+        // const hght = window.innerHeight - position.top > wdth * aspect ? wdth * aspect : window.innerHeight - position.top;
+        // const hght = position.height;
+        // const x = position.left;
+        // const y = position.top;
+        // receive_ctx.drawImage(image, x, y, wdth, hght);
       }
-      const x = window.innerWidth / 2 - wdth / 2;
-      const y = 0;
       //console.log("width:" + String(wdth) + ",height:" + String(hght) + ", x:"+ x + ", y:"+ y)
-      receive_ctx.drawImage(image, x, y, wdth, hght);
       //receive_ctx.drawImage(image, 0, 0);
     };
   } catch (error) {
@@ -265,3 +327,33 @@ export function stopCinema() {
 export function emojiState(state: boolean) {
   emojiFlag = state;
 }
+
+export const positionFloatingImage = (target) => {
+  if (Object.keys(frontState.floatingPosition).includes(target)) {
+    return frontState.floatingPosition[target];
+  } else {
+    const top = Math.floor(Math.random() * window.innerHeight);
+    const left = Math.floor(Math.random() * window.innerWidth);
+    // const height = Math.floor(Math.random() * window.innerHeight - top);
+    // const width = Math.floor(Math.random() * window.innerWidth - left);
+    const randomValue = Math.random();
+    const aspect = window.innerHeight / window.innerWidth;
+    const wdth = Math.floor(randomValue * (window.innerWidth - left));
+
+    frontState.floatingPosition[target] =
+      window.innerHeight - top >= wdth * aspect
+        ? { top, left, width: wdth, height: wdth * aspect }
+        : {
+            top,
+            left,
+            width:
+              Math.floor(randomValue * (window.innerHeight - top)) / aspect,
+            height: Math.floor(randomValue * (window.innerHeight - top)),
+          };
+    console.log(frontState.floatingPosition);
+
+    return frontState.floatingPosition[target];
+  }
+};
+
+// export const showFloatingImage = (stream) => {};

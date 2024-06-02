@@ -636,6 +636,7 @@ export const streamPlay = (
     duration?: number;
     video?: string;
     source?: string;
+    floating?: boolean;
   },
   cinemaFlag?: boolean
 ) => {

@@ -234,6 +234,9 @@ export const receiveEnter = async (
     const frequency =
       solfeggioArr[Math.floor(Math.random() * solfeggioArr.length)];
     sinewaveEmit(frequency, io, state);
+  } else if (strings === "FLOATING") {
+    state.stream.floating = !state.stream.floating;
+    stringEmit(io, "FLOATING: " + state.stream.floating, true);
   } else {
     voiceEmit(io, strings, id, state);
   }

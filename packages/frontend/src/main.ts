@@ -8,6 +8,7 @@ import {
   erasePrint,
   showImage,
   emojiState,
+  positionFloatingImage,
 } from "./imageEvent";
 
 import {
@@ -70,7 +71,7 @@ eListener.addEventListener(
 
 window.addEventListener("resize", (e) => {
   console.log("resizing");
-  canvasSizing();
+  canvasSizing(socket);
   hlsSizing();
 });
 canvasSizing();
@@ -183,8 +184,15 @@ socket.on(
     glitch: boolean;
     bufferSize: number;
     duration: number;
+    floating?: boolean;
+    target?: string;
   }) => {
-    streamPlay("CHAT", socket.id, data);
+    if (data.floating === undefined || !data.floating) {
+      streamPlay("CHAT", socket.id, data);
+    } else {
+      const position = positionFloatingImage(data.target);
+      showImage(data.video, ctx, position);
+    }
     // console.log("chatFromServer");
     // console.log("socket.id(socket.on): " + String(socket.id));
     // // console.log(data.audio);
@@ -209,8 +217,22 @@ socket.on(
     glitch: boolean;
     bufferSize: number;
     duration?: number;
+    floating?: boolean;
+    target?: string;
   }) => {
-    streamPlay("STREAM", socket.id, data, cinemaFlag);
+    if (data.floating === undefined || !data.floating) {
+      streamPlay("STREAM", socket.id, data, cinemaFlag);
+    } else {
+      const position = positionFloatingImage(data.target);
+      showImage(data.video, ctx, position);
+      // textPrint(
+      //   `${data.target}, top:${String(position.top)}, left:${String(
+      //     position.left
+      //   )}`,
+      //   ctx,
+      //   cnvs
+      // );
+    }
     // console.log(data.audio)
     // console.log(data.video);
     // // erasePrint(ctx, cnvs)
@@ -423,6 +445,8 @@ export const initialize = async () => {
     await socket.emit("connectFromClient", {
       clientMode: "client",
       urlPathName: window.location.pathname,
+      width: window.innerWidth,
+      height: window.innerHeight,
     });
     await setTimeout(() => {
       erasePrint(ctx, cnvs);

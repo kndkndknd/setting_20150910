@@ -145,6 +145,7 @@ export const states: cmdStateType = {
     quantize: {},
     loop: false,
     timelapse: false,
+    floating: false,
   },
   web: {
     flag: false,

@@ -18,4 +18,5 @@ export const frontState = {
     status: false,
     fournote: 0,
   },
+  floatingPosition: {},
 };

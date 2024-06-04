@@ -8,7 +8,7 @@ import {
   erasePrint,
   showImage,
   emojiState,
-  positionFloatingImage,
+  // positionFloatingImage,
 } from "./imageEvent";
 
 import {
@@ -185,13 +185,14 @@ socket.on(
     bufferSize: number;
     duration: number;
     floating?: boolean;
+    position?: { top: number; left: number; width: number; height: number };
     target?: string;
   }) => {
     if (data.floating === undefined || !data.floating) {
       streamPlay("CHAT", socket.id, data);
     } else {
-      const position = positionFloatingImage(data.target);
-      showImage(data.video, ctx, position);
+      // const position = positionFloatingImage(data.target);
+      showImage(data.video, ctx, data.position);
     }
     // console.log("chatFromServer");
     // console.log("socket.id(socket.on): " + String(socket.id));
@@ -218,13 +219,14 @@ socket.on(
     bufferSize: number;
     duration?: number;
     floating?: boolean;
+    position?: { top: number; left: number; width: number; height: number };
     target?: string;
   }) => {
     if (data.floating === undefined || !data.floating) {
       streamPlay("STREAM", socket.id, data, cinemaFlag);
     } else {
-      const position = positionFloatingImage(data.target);
-      showImage(data.video, ctx, position);
+      // const position = positionFloatingImage(data.target);
+      showImage(data.video, ctx, data.position);
       // textPrint(
       //   `${data.target}, top:${String(position.top)}, left:${String(
       //     position.left

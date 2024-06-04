@@ -156,15 +156,16 @@ export function showImage(
     image.src = url;
     image.onload = () => {
       const aspect = image.width / image.height;
+
       if (position === undefined) {
         const hght =
           aspect > window.innerWidth / window.innerHeight
-            ? window.innerWidth * aspect
+            ? window.innerWidth / aspect
             : window.innerHeight;
         const wdth =
           aspect > window.innerWidth / window.innerHeight
             ? window.innerWidth
-            : window.innerHeight / aspect;
+            : window.innerHeight * aspect;
         // let hght = window.innerHeight;
         // let wdth = hght * aspect;
         //   if (aspect > window.innerWidth / window.innerHeight) {
@@ -172,7 +173,7 @@ export function showImage(
         //   wdth = window.innerWidth;
         // }
         const x = window.innerWidth / 2 - wdth / 2;
-        const y = 0;
+        const y = window.innerHeight / 2 - hght / 2;
         receive_ctx.drawImage(image, x, y, wdth, hght);
       } else {
         receive_ctx.drawImage(
@@ -328,32 +329,32 @@ export function emojiState(state: boolean) {
   emojiFlag = state;
 }
 
-export const positionFloatingImage = (target) => {
-  if (Object.keys(frontState.floatingPosition).includes(target)) {
-    return frontState.floatingPosition[target];
-  } else {
-    const top = Math.floor(Math.random() * window.innerHeight);
-    const left = Math.floor(Math.random() * window.innerWidth);
-    // const height = Math.floor(Math.random() * window.innerHeight - top);
-    // const width = Math.floor(Math.random() * window.innerWidth - left);
-    const randomValue = Math.random();
-    const aspect = window.innerHeight / window.innerWidth;
-    const wdth = Math.floor(randomValue * (window.innerWidth - left));
+// export const positionFloatingImage = (target) => {
+//   if (Object.keys(frontState.floatingPosition).includes(target)) {
+//     return frontState.floatingPosition[target];
+//   } else {
+//     const top = Math.floor(Math.random() * window.innerHeight);
+//     const left = Math.floor(Math.random() * window.innerWidth);
+//     // const height = Math.floor(Math.random() * window.innerHeight - top);
+//     // const width = Math.floor(Math.random() * window.innerWidth - left);
+//     const randomValue = Math.random();
+//     const aspect = window.innerHeight / window.innerWidth;
+//     const wdth = Math.floor(randomValue * (window.innerWidth - left));
 
-    frontState.floatingPosition[target] =
-      window.innerHeight - top >= wdth * aspect
-        ? { top, left, width: wdth, height: wdth * aspect }
-        : {
-            top,
-            left,
-            width:
-              Math.floor(randomValue * (window.innerHeight - top)) / aspect,
-            height: Math.floor(randomValue * (window.innerHeight - top)),
-          };
-    console.log(frontState.floatingPosition);
+//     frontState.floatingPosition[target] =
+//       window.innerHeight - top >= wdth * aspect
+//         ? { top, left, width: wdth, height: wdth * aspect }
+//         : {
+//             top,
+//             left,
+//             width:
+//               Math.floor(randomValue * (window.innerHeight - top)) / aspect,
+//             height: Math.floor(randomValue * (window.innerHeight - top)),
+//           };
+//     console.log(frontState.floatingPosition);
 
-    return frontState.floatingPosition[target];
-  }
-};
+//     return frontState.floatingPosition[target];
+//   }
+// };
 
 // export const showFloatingImage = (stream) => {};

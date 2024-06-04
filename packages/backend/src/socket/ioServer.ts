@@ -23,7 +23,8 @@ import { stringEmit } from "./ioEmit";
 // import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { enterFromForm } from "../cmd/form/enterFromForm";
 import { stopEmit } from "../cmd/stopEmit";
-import { stat } from "fs";
+import { connectFromClient } from "../clientSetting/connectFromClient";
+// import { stat } from "fs";
 
 let strings = "";
 const previousFace = { x: 0, y: 0 };

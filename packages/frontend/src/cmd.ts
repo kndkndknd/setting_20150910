@@ -10,6 +10,7 @@ import {
 } from "./webaudio";
 import { textPrint, erasePrint, canvasSizing } from "./imageEvent";
 import { hlsVideoPlay } from "./hlsVideo";
+import { frontState } from "./globalVariable";
 
 export const cmdFromServer = (
   cmd: {
@@ -128,6 +129,13 @@ export const cmdFromServer = (
       console.log("HLS");
       erasePrint(ctx, cnvs);
       hlsVideoPlay(cmd.property);
+      break;
+    case "LATENCY":
+      frontState.recLatency = !frontState.recLatency;
+      textPrint(`LATENCY: ${frontState.recLatency}`, ctx, cnvs);
+      setTimeout(() => {
+        erasePrint(ctx, cnvs);
+      }, 500);
       break;
     default:
       break;

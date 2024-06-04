@@ -21,6 +21,7 @@ import { previousCmd } from "./previousCmd";
 import { getLiveStream } from "../stream/getLiveStream";
 import { loadScenario } from "../scenario/loadScenario";
 import { execScenario } from "../scenario/execScenario";
+import { putCmd } from "./putCmd";
 
 export const receiveEnter = async (
   strings: string,
@@ -237,6 +238,8 @@ export const receiveEnter = async (
   } else if (strings === "FLOATING") {
     state.stream.floating = !state.stream.floating;
     stringEmit(io, "FLOATING: " + state.stream.floating, true);
+  } else if (strings === "LATENCY") {
+    putCmd(io, Object.keys(state.client), { cmd: "LATENCY" }, state);
   } else {
     voiceEmit(io, strings, id, state);
   }

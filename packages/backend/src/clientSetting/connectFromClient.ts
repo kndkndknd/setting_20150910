@@ -1,4 +1,5 @@
 import { states } from "../states";
+import { floatingPosition } from "./floatingPosition";
 
 export const connectFromClient = (data, socket, io) => {
   let sockId = String(socket.id);
@@ -20,7 +21,7 @@ export const connectFromClient = (data, socket, io) => {
           ipAddress,
           urlPathName: data.urlPathName,
           projection: true,
-          floatingPosition: {
+          position: {
             top: 0,
             left: 0,
             width: data.width,
@@ -28,14 +29,20 @@ export const connectFromClient = (data, socket, io) => {
           },
         };
       } else {
-        const floatingPosition = {top: 0, left: 0, width: data.width, height: data.height,};
-        
+        // const floatingPosition = {
+        //   top: 0,
+        //   left: 0,
+        //   width: data.width,
+        //   height: data.height,
+        // };
+        const position = floatingPosition(sockId);
+
         states.client[sockId] = {
           ipAddress,
           urlPathName: data.urlPathName,
           projection: false,
-          floatingPosition,
-        });
+          position,
+        };
       }
     if (!data.urlPathName.includes("exc")) {
       if (!Object.keys(states.cmdClient).includes(sockId)) {
@@ -52,6 +59,7 @@ export const connectFromClient = (data, socket, io) => {
 
     // METRONOMEは接続時に初期値を作る
     states.cmd.METRONOME[sockId] = 1000;
+    console.log(states.client);
     return true;
     // } else if (data.clientMode === "sinewaveClient") {
     //   console.log(sockId + " is sinewaveClient");

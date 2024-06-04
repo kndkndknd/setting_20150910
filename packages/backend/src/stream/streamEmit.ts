@@ -162,6 +162,7 @@ const ioEmitStreamFromServer = async (io, stream, targetId, source) => {
     const projectionStream = {
       ...stream,
       floating: true,
+      position: states.client[targetId].position,
       target: targetId,
     };
     const projectionTargetId = Object.keys(states.client).find((key) => {

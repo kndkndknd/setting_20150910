@@ -5,6 +5,7 @@ import { sinewaveEmit } from "../sinewaveEmit";
 import { streamEmit } from "../../stream/streamEmit";
 import { parameterChange } from "../parameterChange";
 import { millisecondsPerBar } from "../bpmCalc";
+import { notTargetEmit } from "../notTargetEmit";
 
 export const numTarget = (
   stringArr: Array<string>,
@@ -81,4 +82,5 @@ export const numTarget = (
       });
     }
   }
+  notTargetEmit(target, Object.keys(state.client), io);
 };

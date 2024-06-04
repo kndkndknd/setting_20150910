@@ -5,7 +5,7 @@ export const ctx = <CanvasRenderingContext2D>cnvs.getContext("2d");
 export const videoElement = <HTMLVideoElement>document.getElementById("video");
 export const frontState = {
   start: false,
-  recLatency: false,
+  recLatency: true,
   quantize: {
     status: false,
     bar: 0,

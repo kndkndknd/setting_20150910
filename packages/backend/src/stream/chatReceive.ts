@@ -173,6 +173,7 @@ const ioEmitChatFromServer = async (io, chunk, targetId) => {
     const projectionChunk = {
       ...chunk,
       floating: true,
+      position: states.client[targetId].position,
       target: targetId,
     };
     const projectionTargetId = Object.keys(states.client).find((key) => {

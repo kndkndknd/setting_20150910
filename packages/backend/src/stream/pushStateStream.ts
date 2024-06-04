@@ -11,9 +11,9 @@ export const pushStateStream = (
   states.previous.stream[streamName] = false;
   states.stream.sampleRate[streamName] = 44100;
   states.stream.glitch[streamName] = false;
-  states.stream.grid[streamName] = false;
+  states.stream.grid[streamName] = true;
   states.stream.latency[streamName] = 1000;
-  states.stream.random[streamName] = random !== undefined ? random : false;
+  states.stream.random[streamName] = random !== undefined ? random : true;
   states.stream.randomrate[streamName] = false;
   states.stream.target[streamName] = [];
   states.stream.randomratemode = "random";

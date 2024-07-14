@@ -19,6 +19,7 @@ export const connectFromClient = (data, socket, io) => {
       if (data.urlPathName.includes("project")) {
         states.client[sockId] = {
           ipAddress,
+          stream: true,
           urlPathName: data.urlPathName,
           projection: true,
           position: {
@@ -39,6 +40,7 @@ export const connectFromClient = (data, socket, io) => {
 
         states.client[sockId] = {
           ipAddress,
+          stream: true,
           urlPathName: data.urlPathName,
           projection: false,
           position,
@@ -71,5 +73,19 @@ export const connectFromClient = (data, socket, io) => {
     //       return id;
     //     }
     //   });
+  } else if (data.clientMode === "noStream") {
+    // METRONOMEは接続時に初期値を作る
+    states.cmd.METRONOME[sockId] = 1000;
+    console.log(sockId + " is noStream Client");
+    const position = floatingPosition(sockId);
+
+    states.client[sockId] = {
+      ipAddress,
+      stream: false,
+      urlPathName: data.urlPathName,
+      projection: false,
+      position,
+    };
+    return true;
   }
 };

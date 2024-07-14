@@ -445,7 +445,11 @@ export const initialize = async () => {
     await console.log(stream);
     await textPrint("initialized", ctx, cnvs);
     await socket.emit("connectFromClient", {
-      clientMode: "client",
+      clientMode:
+        window.location.pathname.includes("noStream") ||
+        window.location.pathname.includes("nostream")
+          ? "noStream"
+          : "client",
       urlPathName: window.location.pathname,
       width: window.innerWidth,
       height: window.innerHeight,

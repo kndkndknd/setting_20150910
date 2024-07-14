@@ -6,6 +6,7 @@ import { streamEmit } from "../../stream/streamEmit";
 import { parameterChange } from "../parameterChange";
 import { millisecondsPerBar } from "../bpmCalc";
 import { notTargetEmit } from "../notTargetEmit";
+import { stringEmit } from "../../socket/ioEmit";
 
 export const numTarget = (
   stringArr: Array<string>,
@@ -23,8 +24,9 @@ export const numTarget = (
     arrTypeArr[1] === "string" &&
     Object.keys(cmdList).includes(stringArr[1])
   ) {
+    const cmd = cmdList[stringArr[1]];
     console.log("currend cmd", state.current.cmd[stringArr[1]]);
-    const flag = !state.current.cmd[stringArr[1]].includes(target);
+    const flag = !state.current.cmd[cmd].includes(target);
     cmdEmit(stringArr[1], io, state, target, flag);
   } else if (arrTypeArr[1] === "string" && streamList.includes(stringArr[1])) {
     console.log("target stream");
@@ -81,6 +83,8 @@ export const numTarget = (
         beat: state.stream.quantize[target],
       });
     }
+  } else {
+    stringEmit(io, "not cmd", true, target);
   }
   notTargetEmit(target, Object.keys(state.client), io);
 };

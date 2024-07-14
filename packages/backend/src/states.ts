@@ -125,15 +125,15 @@ export const states: cmdStateType = {
     randomratekey: "A",
     randomraterange: {
       CHAT: {
-        min: 5000,
+        min: 4300,
         max: 132300,
       },
       PLAYBACK: {
-        min: 5000,
+        min: 4300,
         max: 132300,
       },
       TIMELAPSE: {
-        min: 5000,
+        min: 4300,
         max: 132300,
       },
     },

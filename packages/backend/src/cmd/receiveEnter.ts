@@ -240,6 +240,20 @@ export const receiveEnter = async (
     stringEmit(io, "FLOATING: " + state.stream.floating, true);
   } else if (strings === "LATENCY") {
     putCmd(io, Object.keys(state.client), { cmd: "LATENCY" }, state);
+  } else if (
+    strings === "TWITCASTING" ||
+    strings === "TWICAS" ||
+    strings === "TWITCAS"
+  ) {
+    const qWord = "TWITCASTING";
+    console.log("qWord", qWord);
+    const result = await getLiveStream("LIVESTREAM", qWord);
+    console.log("get livestream", result);
+    if (result) {
+      stringEmit(io, "GET LIVESTREAM: SUCCESS");
+    } else {
+      stringEmit(io, "GET LIVESTREAM: FAILED");
+    }
   } else {
     voiceEmit(io, strings, id, state);
   }

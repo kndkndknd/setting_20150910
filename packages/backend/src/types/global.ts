@@ -21,6 +21,7 @@ export type cmdStateType = {
       ipAddress: string;
       urlPathName: string;
       projection: boolean;
+      stream: boolean;
       position: {
         top: number;
         left: number;

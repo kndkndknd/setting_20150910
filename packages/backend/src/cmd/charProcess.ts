@@ -4,6 +4,10 @@ import { receiveEnter } from "./receiveEnter";
 import { stopEmit } from "./stopEmit";
 import { metronomeBpmSet } from "./metronomeBpmSet";
 import { stringEmit } from "../socket/ioEmit";
+import { getLogCmd, resetCmdLogNum } from "../logging/getLogCmd";
+// import { get } from "http";
+
+let cmdLogNum = 0;
 
 export function charProcess(
   character: string,
@@ -15,12 +19,18 @@ export function charProcess(
   //console.log(character)
   if (character === "Enter") {
     receiveEnter(strings, id, io, state);
+    resetCmdLogNum();
     strings = "";
-  } else if (
-    character === "Tab" ||
-    character === "ArrowRight" ||
-    character === "ArrowDown"
-  ) {
+  } else if (character === "ArrowUp" || character === "ArrowDown") {
+    // if (character === "ArrowUp") {
+    //   cmdLogNum++;
+    // } else if (character === "ArrowDown" && cmdLogNum > 0) {
+    //   cmdLogNum--;
+    // }
+    // strings = getLogCmd(cmdLogNum);
+    strings = getLogCmd(character);
+    stringEmit(io, strings, false);
+  } else if (character === "Tab" || character === "ArrowRight") {
     io.emit("erasePrintFromServer", "");
     strings = "";
   } else if (character === "ArrowLeft" || character === "Backspace") {

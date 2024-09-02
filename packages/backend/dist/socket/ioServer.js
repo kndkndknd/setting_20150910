@@ -21,6 +21,8 @@ const ioEmit_1 = require("./ioEmit");
 // import { DefaultEventsMap } from "socket.io/dist/typed-events";
 const enterFromForm_1 = require("../cmd/form/enterFromForm");
 const stopEmit_1 = require("../cmd/stopEmit");
+const connectFromClient_1 = require("../clientSetting/connectFromClient");
+// import { stat } from "fs";
 let strings = "";
 const previousFace = { x: 0, y: 0 };
 const ioServer = (httpserver) => {
@@ -29,55 +31,79 @@ const ioServer = (httpserver) => {
     });
     io.sockets.on("connection", (socket) => {
         socket.on("connectFromClient", (data) => {
-            let sockId = String(socket.id);
-            const ipAddress = socket.handshake.address;
-            console.log("ipAddress: " + ipAddress);
-            console.log("urlPathName", data.urlPathName);
-            if (data.clientMode === "client") {
-                if (!states_1.states.stream.timelapse)
-                    states_1.states.stream.timelapse = true;
-                console.log('socket.on("connectFromClient", (data) => {data:' +
-                    data +
-                    ", id:" +
-                    sockId +
-                    "}");
-                if (!Object.keys(states_1.states.client).includes(sockId))
-                    states_1.states.client[sockId] = { ipAddress, urlPathName: data.urlPathName };
-                if (!data.urlPathName.includes("exc")) {
-                    if (!Object.keys(states_1.states.cmdClient).includes(sockId)) {
-                        states_1.states.cmdClient.push(sockId);
-                    }
-                    if (!Object.keys(states_1.states.streamClient).includes(sockId)) {
-                        states_1.states.streamClient.push(sockId);
-                    }
-                }
-                if (!Object.keys(states_1.states.bpm).includes(sockId)) {
-                    states_1.states.bpm[sockId] = 60;
-                }
-                // あとでオブジェクト向けに作り直す
-                // states.client = states.client.filter((id) => {
-                //   //console.log(io.sockets.adapter.rooms.has(id))
-                //   if (io.sockets.adapter.rooms.has(id)) {
-                //     return id;
-                //   }
-                // });
-                // METRONOMEは接続時に初期値を作る
-                states_1.states.cmd.METRONOME[sockId] = 1000;
+            const result = (0, connectFromClient_1.connectFromClient)(data, socket, io);
+            // let sockId = String(socket.id);
+            // const ipAddress = socket.handshake.address;
+            // console.log("ipAddress: " + ipAddress);
+            // console.log("urlPathName", data.urlPathName);
+            // if (data.clientMode === "client") {
+            //   if (!states.stream.timelapse) states.stream.timelapse = true;
+            //   console.log(
+            //     'socket.on("connectFromClient", (data) => {data:' +
+            //       data +
+            //       ", id:" +
+            //       sockId +
+            //       "}"
+            //   );
+            //   if (!Object.keys(states.client).includes(sockId))
+            //     if (data.urlPathName.includes("project")) {
+            //       states.client[sockId] = {
+            //         ipAddress,
+            //         urlPathName: data.urlPathName,
+            //         projection: true,
+            //         floatingPosition: {
+            //           top: 0,
+            //           left: 0,
+            //           width: data.width,
+            //           height: data.height,
+            //         },
+            //       };
+            //     } else {
+            //       const floatingPosition = (states.client[sockId] = {
+            //         ipAddress,
+            //         urlPathName: data.urlPathName,
+            //         projection: false,
+            //       });
+            //     }
+            //   if (!data.urlPathName.includes("exc")) {
+            //     if (!Object.keys(states.cmdClient).includes(sockId)) {
+            //       states.cmdClient.push(sockId);
+            //     }
+            //     if (!Object.keys(states.streamClient).includes(sockId)) {
+            //       states.streamClient.push(sockId);
+            //     }
+            //   }
+            //   if (!Object.keys(states.bpm).includes(sockId)) {
+            //     states.bpm[sockId] = 60;
+            //   }
+            //   // あとでオブジェクト向けに作り直す
+            //   // states.client = states.client.filter((id) => {
+            //   //   //console.log(io.sockets.adapter.rooms.has(id))
+            //   //   if (io.sockets.adapter.rooms.has(id)) {
+            //   //     return id;
+            //   //   }
+            //   // });
+            //   // METRONOMEは接続時に初期値を作る
+            //   states.cmd.METRONOME[sockId] = 1000;
+            // } else if (data.clientMode === "sinewaveClient") {
+            //   console.log(sockId + " is sinewaveClient");
+            //   if (!states.sinewaveClient.includes(sockId))
+            //     states.sinewaveClient.push(sockId);
+            //   states.sinewaveClient = states.sinewaveClient.filter((id) => {
+            //     //console.log(io.sockets.adapter.rooms.has(id))
+            //     if (io.sockets.adapter.rooms.has(id)) {
+            //       return id;
+            //     }
+            //   });
+            // }
+            // console.log(states.client);
+            // console.log(states.sinewaveClient);
+            if (result) {
+                socket.emit("debugFromServer");
             }
-            else if (data.clientMode === "sinewaveClient") {
-                console.log(sockId + " is sinewaveClient");
-                if (!states_1.states.sinewaveClient.includes(sockId))
-                    states_1.states.sinewaveClient.push(sockId);
-                states_1.states.sinewaveClient = states_1.states.sinewaveClient.filter((id) => {
-                    //console.log(io.sockets.adapter.rooms.has(id))
-                    if (io.sockets.adapter.rooms.has(id)) {
-                        return id;
-                    }
-                });
+            else {
+                console.log("connectFromClient failed");
             }
-            console.log(states_1.states.client);
-            console.log(states_1.states.sinewaveClient);
-            socket.emit("debugFromServer");
         });
         socket.on("charFromClient", (character) => {
             console.log("socket.id: " + String(socket.id));

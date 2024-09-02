@@ -22,6 +22,7 @@ import { getLiveStream } from "../stream/getLiveStream";
 import { loadScenario } from "../scenario/loadScenario";
 import { execScenario } from "../scenario/execScenario";
 import { putCmd } from "./putCmd";
+import { cmdLogging } from "../logging/cmdLogging";
 
 export const receiveEnter = async (
   strings: string,
@@ -29,6 +30,8 @@ export const receiveEnter = async (
   io: SocketIO.Server,
   state: cmdStateType
 ) => {
+  cmdLogging(strings);
+
   //VOICE
   // if (strings.includes("VOICE ")) {
   // voiceEmit(io, strings, id, state);

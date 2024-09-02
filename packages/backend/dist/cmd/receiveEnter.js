@@ -18,8 +18,10 @@ const recordEmit_1 = require("../stream/recordEmit");
 const arduinoAccess_1 = require("../arduinoAccess/arduinoAccess");
 const ioEmit_1 = require("../socket/ioEmit");
 const previousCmd_1 = require("./previousCmd");
+const getLiveStream_1 = require("../stream/getLiveStream");
 const loadScenario_1 = require("../scenario/loadScenario");
 const execScenario_1 = require("../scenario/execScenario");
+const putCmd_1 = require("./putCmd");
 const receiveEnter = async (strings, id, io, state) => {
     //VOICE
     // if (strings.includes("VOICE ")) {
@@ -106,7 +108,8 @@ const receiveEnter = async (strings, id, io, state) => {
             for (let key in state.client) {
                 if (state.stream.quantize[key] === undefined) {
                     // 1~7の整数をランダムで生成
-                    state.stream.quantize[key] = Math.floor(Math.random() * 6) + 1;
+                    // state.stream.quantize[key] = Math.floor(Math.random() * 6) + 1;
+                    state.stream.quantize[key] = 4;
                 }
             }
             // state.stream.quantize = !state.stream.quantize;
@@ -235,6 +238,32 @@ const receiveEnter = async (strings, id, io, state) => {
             (0, voiceEmit_1.voiceEmit)(io, strings, "scenario", state);
         }
         (0, ioEmit_1.stringEmit)(io, strings, false);
+    }
+    else if (strings === "SOLFEGGIO") {
+        const solfeggioArr = [285, 396, 417, 528, 639, 741, 852, 963];
+        const frequency = solfeggioArr[Math.floor(Math.random() * solfeggioArr.length)];
+        (0, sinewaveEmit_1.sinewaveEmit)(frequency, io, state);
+    }
+    else if (strings === "FLOATING") {
+        state.stream.floating = !state.stream.floating;
+        (0, ioEmit_1.stringEmit)(io, "FLOATING: " + state.stream.floating, true);
+    }
+    else if (strings === "LATENCY") {
+        (0, putCmd_1.putCmd)(io, Object.keys(state.client), { cmd: "LATENCY" }, state);
+    }
+    else if (strings === "TWITCASTING" ||
+        strings === "TWICAS" ||
+        strings === "TWITCAS") {
+        const qWord = "TWITCASTING";
+        console.log("qWord", qWord);
+        const result = await (0, getLiveStream_1.getLiveStream)("LIVESTREAM", qWord);
+        console.log("get livestream", result);
+        if (result) {
+            (0, ioEmit_1.stringEmit)(io, "GET LIVESTREAM: SUCCESS");
+        }
+        else {
+            (0, ioEmit_1.stringEmit)(io, "GET LIVESTREAM: FAILED");
+        }
     }
     else {
         (0, voiceEmit_1.voiceEmit)(io, strings, id, state);

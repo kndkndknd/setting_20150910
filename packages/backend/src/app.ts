@@ -20,7 +20,7 @@ import { stringEmit } from "./socket/ioEmit";
 //   optionsSuccessStatus: 200,
 // };
 
-const port = 8000;
+const port = 8888;
 const app = Express();
 app.use(Express.json());
 // const __filename = fileURLToPath(import.meta.url);

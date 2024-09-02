@@ -41,7 +41,7 @@ const ioEmit_1 = require("./socket/ioEmit");
 //   origin: "http://127.0.0.1:5173",
 //   optionsSuccessStatus: 200,
 // };
-const port = 8000;
+const port = 8888;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 // const __filename = fileURLToPath(import.meta.url);

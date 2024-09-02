@@ -1,4 +1,9 @@
-import { StreamsType, cmdStateType, sevenSinsType } from "./types/global";
+import {
+  StreamsType,
+  cmdLogType,
+  cmdStateType,
+  sevenSinsType,
+} from "./types/global";
 
 export const states: cmdStateType = {
   cmd: {
@@ -278,3 +283,5 @@ export const helpList = {
 };
 
 export const streamApiUrl: string = "http://127.0.0.1:8088/getLiveStream";
+
+export const cmdLog: cmdLogType = [];

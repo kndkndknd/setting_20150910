@@ -126,15 +126,15 @@ exports.states = {
         randomratekey: "A",
         randomraterange: {
             CHAT: {
-                min: 5000,
+                min: 4300,
                 max: 132300,
             },
             PLAYBACK: {
-                min: 5000,
+                min: 4300,
                 max: 132300,
             },
             TIMELAPSE: {
-                min: 5000,
+                min: 4300,
                 max: 132300,
             },
         },
@@ -146,6 +146,7 @@ exports.states = {
         quantize: {},
         loop: false,
         timelapse: false,
+        floating: false,
     },
     web: {
         flag: false,

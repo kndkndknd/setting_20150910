@@ -16,6 +16,7 @@ export const streamEmit = async (
   state.current.stream[source] = true;
   // console.log(state.client);
   // console.log(source);
+  console.log(`debug ${source} targetArr`, state.stream.target[source]);
   const targetId =
     from === undefined
       ? pickupStreamTarget(state, source)
@@ -170,15 +171,15 @@ const ioEmitStreamFromServer = async (io, stream, targetId, source) => {
     });
     io.to(projectionTargetId).emit("streamFromServer", projectionStream);
   }
-
-  if (
-    states.client[targetId].urlPathName !== undefined &&
-    states.client[targetId].urlPathName.includes("pi") &&
-    states.arduino.connected
-  ) {
-    console.log("pi or not pi", states.client[targetId].urlPathName);
-    const result = await switchCramp(source);
-    console.log("switchCramp", result);
-  }
+  // 20240922_あとで戻す
+  // if (
+  //   states.client[targetId].urlPathName !== undefined &&
+  //   states.client[targetId].urlPathName.includes("pi") &&
+  //   states.arduino.connected
+  // ) {
+  //   console.log("pi or not pi", states.client[targetId].urlPathName);
+  //   const result = await switchCramp(source);
+  //   console.log("switchCramp", result);
+  // }
   io.to(targetId).emit("streamFromServer", stream);
 };

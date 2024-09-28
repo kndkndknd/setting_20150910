@@ -1,8 +1,11 @@
 import { cmdLog } from "../states";
+import { getDateTimeString } from "../util/getDateTimeString";
 
 export const cmdLogging = (strings: string) => {
-  const now = new Date();
-  const date = now.toLocaleDateString();
-  cmdLog.push({ date: date, cmd: strings });
+  const { yyyy, mm, dd, hh, mi, ss, ms } = getDateTimeString();
+  cmdLog.push({
+    date: `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}.${ms}`,
+    cmd: strings,
+  });
   console.log("cmdLog", cmdLog);
 };

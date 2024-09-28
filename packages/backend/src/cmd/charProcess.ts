@@ -5,6 +5,7 @@ import { stopEmit } from "./stopEmit";
 import { metronomeBpmSet } from "./metronomeBpmSet";
 import { stringEmit } from "../socket/ioEmit";
 import { getLogCmd, resetCmdLogNum } from "../logging/getLogCmd";
+import { cmdLogging } from "../logging/cmdLogging";
 // import { get } from "http";
 
 let cmdLogNum = 0;
@@ -39,9 +40,11 @@ export function charProcess(
   } else if (character === "Escape") {
     // const client: 'client' | 'sinewaveClient' = state.sinewaveMode ? "sinewaveClient" : "client";
     // console.log(client)
+    cmdLogging("STOP");
     stopEmit(io, state, id, "ALL");
     strings = "";
   } else if (character === "BASS") {
+    cmdLogging("BASS");
     console.log(
       "io.to(" + id + ').emit("cmdFromSever",{"cmd":"BASS","property":"LOW"})'
     );

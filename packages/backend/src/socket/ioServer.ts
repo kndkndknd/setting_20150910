@@ -26,6 +26,8 @@ import { stopEmit } from "../cmd/stopEmit";
 import { connectFromClient } from "../clientSetting/connectFromClient";
 // import { stat } from "fs";
 
+import { emitStringsToWebServer } from "./ioClient";
+
 let strings = "";
 const previousFace = { x: 0, y: 0 };
 
@@ -120,6 +122,7 @@ export const ioServer = (
       console.log("socket.id: " + String(socket.id));
       console.log("client: " + states.client);
       strings = charProcess(character, strings, socket.id, io, states);
+      emitStringsToWebServer(strings);
     });
 
     socket.on("chatFromClient", (buffer: buffStateType) => {

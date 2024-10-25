@@ -14,6 +14,32 @@ import SocketIO from "socket.io";
 import { getLiveStream } from "./stream/getLiveStream";
 import { stringEmit } from "./socket/ioEmit";
 
+import WebSocket from "ws";
+
+const webSocket = new WebSocket("wss://localhost:8080", {
+  perMessageDeflate: false,
+  rejectUnauthorized: false,
+});
+webSocket.onopen = () => {
+  console.log("WebSocket connected");
+};
+
+webSocket.onmessage = (message) => {
+  console.log(`Received: ${message.data}`);
+};
+
+webSocket.onclose = () => {
+  console.log("WebSocket closed");
+};
+
+// import { io as socketIoClient, Socket } from "socket.io-client";
+
+// const socketClient: Socket = socketIoClient("https://localhost:8080/socket.io");
+
+// socketClient.on("connect", () => {
+//   console.log("Connected to server" + socketClient.id);
+// });
+
 // import { cors } from "cors";
 // const corsOptions = {
 //   origin: "http://127.0.0.1:5173",
@@ -50,11 +76,12 @@ app.use(allowCrossDomain);
 //const httpsserver = Https.createServer(options,app).listen(port);
 const options = {
   key: fs.readFileSync(
-    path.join(__dirname, "../../../..", "keys/chat/privkey.pem")
+    path.join(__dirname, "../../../..", "keys/chat/private.key")
   ),
   cert: fs.readFileSync(
-    path.join(__dirname, "../../../..", "keys/chat/cert.pem")
+    path.join(__dirname, "../../../..", "keys/chat/selfsigned.crt")
   ),
+  passphrase: "chat",
 };
 
 const httpserver = Https.createServer(options, app).listen(port);

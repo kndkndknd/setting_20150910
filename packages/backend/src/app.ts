@@ -13,24 +13,7 @@ import SocketIO from "socket.io";
 
 import { getLiveStream } from "./stream/getLiveStream";
 import { stringEmit } from "./socket/ioEmit";
-
-import WebSocket from "ws";
-
-const webSocket = new WebSocket("wss://localhost:8080", {
-  perMessageDeflate: false,
-  rejectUnauthorized: false,
-});
-webSocket.onopen = () => {
-  console.log("WebSocket connected");
-};
-
-webSocket.onmessage = (message) => {
-  console.log(`Received: ${message.data}`);
-};
-
-webSocket.onclose = () => {
-  console.log("WebSocket closed");
-};
+import { webSocket } from "./webSocket/webSocketConnection";
 
 // import { io as socketIoClient, Socket } from "socket.io-client";
 
@@ -96,6 +79,8 @@ const host = getIpAddress();
 console.log(`Server listening on ${host}:${port}`);
 
 const io: SocketIO.Server = ioServer(httpserver);
+
+webSocket();
 
 app.get("/", function (req, res, next) {
   try {

@@ -38,6 +38,7 @@ import { voiceEmit } from "../voiceEmit";
 import { loadScenario } from "../../scenario/loadScenario";
 import { execScenario } from "../../scenario/execScenario";
 import { bufferSizeChange } from "../../stream/bufferSizeChange";
+import { modulationByBPM } from "./modulationByBPM";
 
 import { putLogFile } from "../../logging/putLogFile";
 
@@ -426,6 +427,26 @@ export const splitSpace = async (
     const input = Number(stringArr[1]);
     state.stream.basisBufferSize = bufferSizeChange(input);
     stringEmit(io, `BufferSize: ${state.stream.basisBufferSize}`);
+  } else if (
+    arrTypeArr[1] === "number" &&
+    (stringArr[0] === "MODULATION" || stringArr[0] === "MOD")
+  ) {
+    const freqArr =
+      stringArr.length === 3 && arrTypeArr[2] === "number"
+        ? modulationByBPM(
+            Number(stringArr[1]),
+            Number(stringArr[2]),
+            state.cmdClient
+          )
+        : modulationByBPM(
+            Number(stringArr[1]),
+            Object.values(state.bpm).reduce((acc, val) => acc + val, 0) /
+              Object.values(state.bpm).length,
+            state.cmdClient
+          );
+    freqArr.forEach((freq, index) => {
+      sinewaveEmit(freq, io, state, state.cmdClient[index]);
+    });
   } else if (stringArr[0] === "LOG") {
     if (stringArr[1] === "FILE") {
       const result = putLogFile();

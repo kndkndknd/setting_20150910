@@ -57,12 +57,12 @@ let threeOsc: OscillatorNode;
 let threeGain: GainNode;
 
 export const initAudio = () => {
-  console.log("debug1");
+  // console.log("debug1");
   audioContext = new AudioContext();
   masterGain = audioContext.createGain();
   masterGain.gain.setValueAtTime(1, 0);
   masterGain.connect(audioContext.destination);
-  console.log(masterGain.gain.maxValue);
+  // console.log(masterGain.gain.maxValue);
 
   //record/play
   // javascriptnode = audioContext.createScriptProcessor(8192, 1, 1);

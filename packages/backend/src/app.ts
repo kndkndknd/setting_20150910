@@ -80,7 +80,7 @@ console.log(`Server listening on ${host}:${port}`);
 
 const io: SocketIO.Server = ioServer(httpserver);
 
-webSocket();
+// webSocket(io);
 
 app.get("/", function (req, res, next) {
   try {

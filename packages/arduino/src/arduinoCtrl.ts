@@ -84,8 +84,9 @@ app.get("/cramp", function (req: Request, res: Response) {
     relay.off();
     setTimeout(() => {
       relay.on();
-    }, 1 / freq);
-  }, (1 / freq) * 2);
+    //}, 1 / freq);
+    }, freq);
+  }, freq * 2);
   setTimeout(() => {
     clearInterval(interval);
     relay.off();

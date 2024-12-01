@@ -3,9 +3,13 @@ import { floatingPosition } from "./floatingPosition";
 
 export const connectFromClient = (data, socket, io) => {
   let sockId = String(socket.id);
-  const ipAddress = socket.handshake.address;
+  const ipAddress = socket.handshake.address.split(":")[3];
   console.log("ipAddress: " + ipAddress);
   console.log("urlPathName", data.urlPathName);
+  if (data.urlPathName.includes("pi")) {
+    console.log("aruidino host is " + ipAddress);
+    states.arduino.host = ipAddress;
+  }
   if (data.clientMode === "client") {
     if (!states.stream.timelapse) states.stream.timelapse = true;
     console.log(

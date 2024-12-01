@@ -1,6 +1,7 @@
 import { time } from "console";
 import { states } from "../states";
 import axios from "axios";
+import { stat } from "fs";
 
 export const connectTest = async () => {
   const requestUrl = `http://${states.arduino.host}:${states.arduino.port}/test`;
@@ -45,10 +46,13 @@ export const switchCtrl = async () => {
 };
 
 export const switchCramp = async (source) => {
-  const freq = 1000 / (20 * (states.stream.sampleRate[source] / 44100));
+  // const freq = 1000 / (20 * (states.stream.sampleRate[source] / 44100));
+  const freq = states.stream.sampleRate[source] / 1000;
   const timeout =
     (1000 * states.stream.basisBufferSize) / states.stream.sampleRate[source];
   const params = { freq: freq, timeout: timeout };
+  console.log("interval:", 1 / freq);
+  console.log(params);
   // const body = JSON.stringify({ freq: freq, timeout: timeout });
   // console.log(body);
   // // const method = "POST";

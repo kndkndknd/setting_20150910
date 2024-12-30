@@ -138,7 +138,9 @@ export const streamEmit = async (
       const timeOutVal =
         (Math.round(Math.random() * 16) * states.stream.latency[source]) / 4;
       setTimeout(() => {
-        ioEmitStreamFromServer(io, stream, targetId, source);
+        if (state.current.stream[source]) {
+          ioEmitStreamFromServer(io, stream, targetId, source);
+        }
       }, timeOutVal);
     }
   } else {

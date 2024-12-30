@@ -3,8 +3,10 @@ import { states } from "../states";
 import axios from "axios";
 import { stat } from "fs";
 
+const requestHost = "http://localhost:" + states.arduino.port;
+
 export const connectTest = async () => {
-  const requestUrl = `http://${states.arduino.host}:${states.arduino.port}/test`;
+  const requestUrl = `${requestHost}/test`;
   console.log(requestUrl);
   /*
   const response = await fetch(
@@ -31,7 +33,7 @@ export const connectTest = async () => {
 export const switchCtrl = async () => {
   console.log("switchCtrl");
   let relay: "on" | "off" = states.arduino.relay === "on" ? "off" : "on";
-  const requestUrl = `http://${states.arduino.host}:${states.arduino.port}/${relay}`;
+  const requestUrl = `${requestHost}/${relay}`;
   console.log(requestUrl);
   try {
     const response = await fetch(requestUrl);
@@ -67,7 +69,7 @@ export const switchCramp = async (source) => {
   //     "Content-Type": "application/json",
   //   },
   // };
-  const url = `http://${states.arduino.host}:${states.arduino.port}/cramp`;
+  const url = `${requestHost}/cramp`;
   // const response = await fetch(url, options);
   // return axios
   //   .post(url, { freq: freq, timeout: timeout })
@@ -95,7 +97,7 @@ export const switchCramp = async (source) => {
 };
 
 export const switchOneshot = async (timeout) => {
-  const url = `http://${states.arduino.host}:${states.arduino.port}/oneshot`;
+  const url = `${requestHost}/oneshot`;
   const params = { timeout: timeout };
   try {
     const response = await axios.get(url, { params: params });

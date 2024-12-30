@@ -165,9 +165,7 @@ export const states: cmdStateType = {
   bpm: {},
   clockMode: false,
   arduino: {
-    // host: "localhost",
-    host: "pi5.local",
-    // host: "192.168.15.166",
+    host: "localhost",
     port: 5050,
     connected: false,
     relay: "off",

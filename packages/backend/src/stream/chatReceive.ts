@@ -100,13 +100,14 @@ export const chatEmit = async (io, from?) => {
         if (states.stream.randomratenote.CHAT) {
           chunk.sampleRate = 11025 + Math.floor(Math.random() * 10) * 11025;
         } else {
-          chunk.sampleRate =
-            states.stream.randomraterange.CHAT.min +
-            Math.floor(
-              Math.random() *
-                (states.stream.randomraterange.CHAT.max -
-                  states.stream.randomraterange.CHAT.min)
-            );
+          chunk.sampleRate = sampleRateRandomize("CHAT");
+          // chunk.sampleRate =
+          //   states.stream.randomraterange.CHAT.min +
+          //   Math.floor(
+          //     Math.random() *
+          //       (states.stream.randomraterange.CHAT.max -
+          //         states.stream.randomraterange.CHAT.min)
+          //   );
         }
         // chunk.sampleRate = sampleRateRandomize("CHAT");
         //          console.log(chunk.sampleRate)
@@ -128,7 +129,11 @@ export const chatEmit = async (io, from?) => {
         //   (Math.round(Math.random() * 16) * states.stream.latency.CHAT) / 4;
         setTimeout(() => {
           // io.to(targetId).emit("chatFromServer", chunk);
-          ioEmitChatFromServer(io, chunk, targetId);
+          console.log("grid setTimeout");
+          if (states.stream.grid.CHAT) {
+            console.log("grid emit");
+            ioEmitChatFromServer(io, chunk, targetId);
+          }
         }, timeOutVal);
       }
     } else {

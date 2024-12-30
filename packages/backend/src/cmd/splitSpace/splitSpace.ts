@@ -41,6 +41,7 @@ import { bufferSizeChange } from "../../stream/bufferSizeChange";
 import { modulationByBPM } from "./modulationByBPM";
 
 import { putLogFile } from "../../logging/putLogFile";
+import { text } from "stream/consumers";
 
 export const splitSpace = async (
   stringArr: Array<string>,
@@ -135,9 +136,16 @@ export const splitSpace = async (
               return !isNaN(Number(item));
             })
           ) {
-            for (let key in state.stream.randomraterange) {
-              state.stream.randomraterange[key].min = Number(rateRangeArr[0]);
-              state.stream.randomraterange[key].max = Number(rateRangeArr[1]);
+            if (
+              Number(rateRangeArr[0]) >= 4000 &&
+              Number(rateRangeArr[1]) <= 132300
+            ) {
+              for (let key in state.stream.randomraterange) {
+                state.stream.randomraterange[key].min = Number(rateRangeArr[0]);
+                state.stream.randomraterange[key].max = Number(rateRangeArr[1]);
+              }
+            } else {
+              stringEmit(io, "OUT RATE RANGE: 4000-132300", true);
             }
           }
         } else if (

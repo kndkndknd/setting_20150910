@@ -405,6 +405,9 @@ export const initialize = async () => {
     const mics = devices.filter((device) => device.kind === "audioinput");
     console.log(mics);
     console.log("mic length", mics.length);
+    // if(window.location.pathname.includes("pi")){
+
+    // }
     /*
     const mic = mics.filter((element)=>{
       if(element.label.includes("Microphone Array")){
@@ -462,7 +465,8 @@ export const initialize = async () => {
   }
 
   frontState.start = true;
-  streamFlag.timelapse = true;
+  // streamFlag.timelapse = true;
+  streamFlag.timelapse = false;
   timelapseId = window.setInterval(() => {
     streamFlag.timelapse = true;
   }, 60000);

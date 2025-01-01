@@ -7,6 +7,7 @@ import { parameterChange } from "../parameterChange";
 import { millisecondsPerBar } from "../bpmCalc";
 import { notTargetEmit } from "../notTargetEmit";
 import { stringEmit } from "../../socket/ioEmit";
+import { chatPreparation } from "../../stream/chatPreparation";
 
 export const numTarget = (
   stringArr: Array<string>,
@@ -14,7 +15,7 @@ export const numTarget = (
   io,
   state
 ) => {
-  console.log(stringArr);
+  console.log("num target: ", stringArr);
   // 送信先を指定したコマンド/SINEWAVE
   // 20230923 sinewave modeの動作を記載
   const target = Object.keys(state.client)[Number(stringArr[0])];
@@ -28,14 +29,21 @@ export const numTarget = (
     console.log("currend cmd", state.current.cmd[stringArr[1]]);
     const flag = !state.current.cmd[cmd].includes(target);
     cmdEmit(stringArr[1], io, state, target, flag);
-  } else if (arrTypeArr[1] === "string" && streamList.includes(stringArr[1])) {
+  } else if (
+    arrTypeArr[1] === "string" &&
+    (streamList.includes(stringArr[1]) || stringArr[1] === "CHAT")
+  ) {
     console.log("target stream");
     state.stream.target[stringArr[1]] = [target];
     console.log(
       `set ${stringArr[1]} stream`,
       state.stream.target[stringArr[1]]
     );
-    streamEmit(stringArr[1], io, state, target);
+    if (stringArr[1] === "CHAT") {
+      chatPreparation(io, state);
+    } else {
+      streamEmit(stringArr[1], io, state, target);
+    }
   } else if (stringArr[1] === "RECORD" || stringArr[1] === "REC") {
     recordEmit(io, state, target);
   } else if (arrTypeArr[1] === "number") {

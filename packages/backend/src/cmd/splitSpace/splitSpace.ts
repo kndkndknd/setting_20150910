@@ -39,6 +39,8 @@ import { loadScenario } from "../../scenario/loadScenario";
 import { execScenario } from "../../scenario/execScenario";
 import { bufferSizeChange } from "../../stream/bufferSizeChange";
 
+import { putLogFile } from "../../logging/putLogFile";
+
 export const splitSpace = async (
   stringArr: Array<string>,
   io: SocketIO.Server,
@@ -424,6 +426,16 @@ export const splitSpace = async (
     const input = Number(stringArr[1]);
     state.stream.basisBufferSize = bufferSizeChange(input);
     stringEmit(io, `BufferSize: ${state.stream.basisBufferSize}`);
+  } else if (stringArr[0] === "LOG") {
+    if (stringArr[1] === "FILE") {
+      const result = putLogFile();
+      console.log(result);
+      // if(result) {
+      //   stringEmit(io, "LOG: SUCCESS");
+      // } else {
+      //   stringEmit(io, "LOG: FAILED");
+      // }
+    }
   } else {
     stringEmit(io, stringArr.join(" "), false);
     if (state.cmd.VOICE.length > 0) {

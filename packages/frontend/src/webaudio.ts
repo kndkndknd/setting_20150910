@@ -56,6 +56,9 @@ let analyser: AnalyserNode;
 let threeOsc: OscillatorNode;
 let threeGain: GainNode;
 
+let workletNode: AudioWorkletNode;
+let chatBuffer = new Float32Array(0);
+
 export const initAudio = () => {
   console.log("debug1");
   audioContext = new AudioContext();
@@ -155,16 +158,27 @@ export const initAudio = () => {
   threeOsc.start(0);
 };
 
-export const initAudioStream = (stream) => {
-  let mediastreamsource: MediaStreamAudioSourceNode;
-  mediastreamsource = audioContext.createMediaStreamSource(stream);
+export const initAudioStream = async (stream) => {
+  // let mediastreamsource: MediaStreamAudioSourceNode;
+  const mediastreamsource = audioContext.createMediaStreamSource(stream);
   mediastreamsource.connect(javascriptnode);
   mediastreamsource.connect(feedbackGain);
   mediastreamsource.connect(feedbackReverveGain);
   feedbackGain.connect(masterGain);
   javascriptnode.onaudioprocess = onAudioProcess;
   javascriptnode.connect(masterGain);
-  //rec
+  // audio worklet
+  // await loadWorklet(audioContext);
+  // export const loadWorklet = async (audioContext: AudioContext) => {
+  try {
+    // AudioWorkletProcessor をロード
+    await audioContext.audioWorklet.addModule("/chat-processor.js");
+    workletNode = new AudioWorkletNode(audioContext, "chat-worklet-processor");
+    mediastreamsource.connect(workletNode);
+  } catch (error) {
+    console.error("Error loading AudioWorkletProcessor:", error);
+  }
+  // };
 
   //SIMULATE
   analyser = audioContext.createAnalyser();
@@ -172,25 +186,65 @@ export const initAudioStream = (stream) => {
   simFilter.connect(analyser);
 };
 
+// audioWorklet.onmessage
+workletNode.port.onmessage = (event) => {
+  // console.log("onmessage", e.data);
+  if (streamFlag.chat) {
+    const newChunk = event.data;
+
+    //バッファを結合
+    const updatedBuffer = new Float32Array(chatBuffer.length + newChunk.length);
+    updatedBuffer.set(chatBuffer);
+    updatedBuffer.set(newChunk, chatBuffer.length);
+    chatBuffer = updatedBuffer;
+
+    if (buffer.length >= 8192) {
+      //バッファが8192以上になったら送信
+      sendChat(chatBuffer.slice(0, 8192), 8192);
+      chatBuffer = new Float32Array(0);
+    }
+  }
+};
+
+const sendChat = (buffer, bufferSize) => {
+  let bufferData = {
+    source: "CHAT",
+    video: toBase64(),
+    audio: new Float32Array(bufferSize),
+    bufferSize: bufferSize,
+    duration: buffer.duration,
+  };
+  buffer.copyFromChannel(bufferData.audio, 0);
+  // console.log(bufferData.audio)
+  // console.log("socket.id(chatFromClient)", socket.id);
+  if (socketId !== "") {
+    bufferData["from"] = socketId;
+  }
+  socket.emit("chatFromClient", bufferData);
+  // console.log("chatFromClient");
+  streamFlag.chat = false;
+};
+
 const onAudioProcess = (e: AudioProcessingEvent) => {
   const bufferSize = 8192;
   if (streamFlag.chat) {
-    let bufferData = {
-      source: "CHAT",
-      video: toBase64(),
-      audio: new Float32Array(bufferSize),
-      bufferSize: bufferSize,
-      duration: e.inputBuffer.duration,
-    };
-    e.inputBuffer.copyFromChannel(bufferData.audio, 0);
-    // console.log(bufferData.audio)
-    // console.log("socket.id(chatFromClient)", socket.id);
-    if (socketId !== "") {
-      bufferData["from"] = socketId;
-    }
-    socket.emit("chatFromClient", bufferData);
-    // console.log("chatFromClient");
-    streamFlag.chat = false;
+    sendChat(e.inputBuffer, bufferSize);
+    // let bufferData = {
+    //   source: "CHAT",
+    //   video: toBase64(),
+    //   audio: new Float32Array(bufferSize),
+    //   bufferSize: bufferSize,
+    //   duration: e.inputBuffer.duration,
+    // };
+    // e.inputBuffer.copyFromChannel(bufferData.audio, 0);
+    // // console.log(bufferData.audio)
+    // // console.log("socket.id(chatFromClient)", socket.id);
+    // if (socketId !== "") {
+    //   bufferData["from"] = socketId;
+    // }
+    // socket.emit("chatFromClient", bufferData);
+    // // console.log("chatFromClient");
+    // streamFlag.chat = false;
   }
   if (streamFlag.record) {
     console.log("record");
@@ -403,6 +457,10 @@ export const chatReq = (id: string) => {
   if (id !== undefined && id) {
     socketId = id;
   }
+  workletNode.port.postMessage("req");
+  workletNode.port.onmessage = (e) => {
+    console.log("onmessage", e.data);
+  };
 };
 
 export const recordReq = (recordReq: { source: string; timeout: number }) => {

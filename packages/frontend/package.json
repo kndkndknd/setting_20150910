@@ -11,6 +11,7 @@
     "snowleopard": "webpack --mode production"
   },
   "devDependencies": {
+    "@types/webaudioapi": "0.0.27",
     "node-emoji": "2.1.3",
     "socket.io-client": "4.7.2",
     "typescript": "^5.3.3",

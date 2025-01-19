@@ -4,9 +4,9 @@ export const pickupStreamTarget = (
   states: cmdStateType,
   stream: string,
   from?: string
-) => {
+): string => {
   console.log("states.stream.target", states.stream.target[stream]);
-  if (states.stream.target[stream].length > 0) {
+  if (states.stream.target[stream].length > 1) {
     // from以外のtargetがあればFromを除外した配列を返し、fromがなければtarget全体を返す
     // const targetArr =
     //   from === undefined
@@ -44,6 +44,9 @@ export const pickupStreamTarget = (
       console.log("from");
       return from;
     }
+  } else if (states.stream.target[stream].length === 1) {
+    console.log("targetArr(1)", states.stream.target[stream]);
+    return states.stream.target[stream][0];
   } else {
     // targetがなければランダムに返す
     console.log("random");

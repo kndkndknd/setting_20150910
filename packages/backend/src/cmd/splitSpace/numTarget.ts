@@ -30,6 +30,11 @@ export const numTarget = (
     cmdEmit(stringArr[1], io, state, target, flag);
   } else if (arrTypeArr[1] === "string" && streamList.includes(stringArr[1])) {
     console.log("target stream");
+    state.stream.target[stringArr[1]] = [target];
+    console.log(
+      `set ${stringArr[1]} stream`,
+      state.stream.target[stringArr[1]]
+    );
     streamEmit(stringArr[1], io, state, target);
   } else if (stringArr[1] === "RECORD" || stringArr[1] === "REC") {
     recordEmit(io, state, target);

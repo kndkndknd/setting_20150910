@@ -189,8 +189,9 @@ socket.on(
     position?: { top: number; left: number; width: number; height: number };
     target?: string;
   }) => {
+    // console.log("chatFromServer");
     if (
-      frontState.quantize.status &&
+      frontState.quantize.flag &&
       (frontState.quantize.stream === "all" ||
         frontState.quantize.stream === "CHAT")
     ) {
@@ -234,7 +235,7 @@ socket.on(
   }) => {
     frontState.streamFlag[data.source] = true;
     if (
-      frontState.quantize.status &&
+      frontState.quantize.flag &&
       (frontState.quantize.stream === "all" ||
         frontState.quantize.stream === data.source)
     ) {

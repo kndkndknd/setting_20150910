@@ -1,7 +1,7 @@
 import SocketIO from "socket.io";
 
 import { cmdStateType } from "../../../types/global";
-import { millisecondsPerBar } from "./bpmCalc";
+import { millisecondsPerBar } from "../cmd/bpmCalc";
 
 export const quantizeCmd = (
   io: SocketIO.Server,
@@ -140,16 +140,13 @@ const averageBPM = (
       });
       bpm = bpm / Object.keys(stateBPM).length;
     } else {
-      console.log("debug");
       let denominator = 0;
       Object.keys(stateBPM).forEach((streamElement) => {
         Object.keys(stateBPM[streamElement]).forEach((clientElement) => {
           bpm += stateBPM[streamElement][clientElement];
         });
         denominator += Object.keys(stateBPM[streamElement]).length;
-        console.log("denominator", denominator);
       });
-      console.log("denominator", denominator);
       bpm = bpm / denominator;
     }
   }

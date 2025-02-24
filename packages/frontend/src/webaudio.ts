@@ -181,11 +181,11 @@ const onAudioProcess = (e: AudioProcessingEvent) => {
       bufferData["from"] = socketId;
     }
     socket.emit("chatFromClient", bufferData);
-    // console.log("chatFromClient");
+    console.log("chatFromClient emit");
     frontState.chatFlag = false;
   }
   if (frontState.recordFlag) {
-    console.log("record");
+    // console.log("record");
     let bufferData = {
       source: "PLAYBACK",
       video: toBase64(),
@@ -198,7 +198,7 @@ const onAudioProcess = (e: AudioProcessingEvent) => {
     socket.emit("chatFromClient", bufferData);
   }
   if (frontState.otherStreamFlag !== "") {
-    console.log(frontState.otherStreamFlag);
+    // console.log(frontState.otherStreamFlag);
     let bufferData = {
       source: frontState.otherStreamFlag,
       video: toBase64(),
@@ -220,14 +220,14 @@ const onAudioProcess = (e: AudioProcessingEvent) => {
     };
     e.inputBuffer.copyFromChannel(bufferData.audio, 0);
     // console.log(bufferData.audio)
-    console.log("socket.id(chatFromClient)", socket.id);
+    // console.log("socket.id(chatFromClient)", socket.id);
     socket.emit("chatFromClient", bufferData);
     frontState.timelapseFlag = false;
   }
   if (frontState.simulate) {
     let freqData = new Uint8Array(analyser.frequencyBinCount);
     analyser.getByteFrequencyData(freqData);
-    console.log(freqData.length);
+    // console.log(freqData.length);
     let freq = { freq: 0, val: 0 };
     for (let i = 0, len = freqData.length; i < len; i++) {
       //if(freq.val < freqData[i]) freq = {freq:(i*20000/2048), val:freqData[i]/256}
@@ -239,7 +239,7 @@ const onAudioProcess = (e: AudioProcessingEvent) => {
     //    freq.val = simsGain
     //    freq.val //later
     //    if(freq.val > clientState.gain.manekkoGain) freq.val = clientState.gain.manekkoGain
-    console.log(freq);
+    // console.log(freq);
     let currentTime = audioContext.currentTime;
     simulateGain.gain.setTargetAtTime(freq.val, currentTime, 0.1);
     simulateOsc.frequency.setTargetAtTime(freq.freq, currentTime, 0.1);
@@ -254,9 +254,9 @@ export const playAudioStream = (
   glitch: boolean,
   bufferSize: number
 ) => {
-  console.log(sampleRate);
-  console.log(bufferSize);
-  console.log(bufferArray);
+  // console.log(sampleRate);
+  // console.log(bufferSize);
+  // console.log(bufferArray);
   let audio_src = audioContext.createBufferSource();
   const flo32arr = new Float32Array(bufferArray);
   let audioData = new Float32Array(bufferSize);
@@ -268,8 +268,8 @@ export const playAudioStream = (
       audioData[i] = 0.0;
     }
   }
-  console.log(bufferSize);
-  console.log(sampleRate);
+  // console.log(sampleRate);
+  // console.log(bufferSize);
   // console.log(audioData)
   if (!glitch) {
     let audio_buf = audioContext.createBuffer(1, bufferSize, sampleRate);
@@ -277,7 +277,7 @@ export const playAudioStream = (
     audio_src.buffer = audio_buf;
     audio_src.connect(chatGain);
   } else {
-    console.log("glitched");
+    // console.log("glitched");
     let audio_buf = audioContext.createBuffer(
       1,
       bufferSize,
@@ -589,16 +589,18 @@ function Setup() {
   vol.gain.value = 1;
 }
 
-let quantizeInterval: number;
-let quantizerCurrentTime: number = 0;
+// let quantizeInterval: number;
+// let quantizerCurrentTime: number = 0;
 let eighthNoteSec: number = 0;
 
 export const quantize = (bar: number, beat: number, stream: string) => {
   console.log("bar", bar);
-  frontState.quantize.status = true;
+  console.log("streamFlag: ", frontState.streamFlag);
+  frontState.quantize.flag = true;
   frontState.quantize.bar = bar;
   frontState.quantize.beat = beat;
   frontState.quantize.stream = stream;
+
   frontState.quantize.interval = window.setInterval(() => {
     if (frontState.quantize.stream === "all") {
       for (let key in frontState.streamFlag) {
@@ -634,7 +636,7 @@ export const quantize = (bar: number, beat: number, stream: string) => {
 export const stopQuantize = () => {
   console.log("stop quantize");
   clearInterval(frontState.quantize.interval);
-  frontState.quantize.status = false;
+  frontState.quantize.flag = false;
   frontState.quantize.currentTime = 0;
   frontState.quantize.bar = 0;
   console.log("frontState.quantize", frontState.quantize);
@@ -663,7 +665,7 @@ export const initQuantizePlay = (
       ? Math.pow(2, Math.floor(Math.random() * 5))
       : frontState.quantize.beat;
 
-  console.log("currentTimeDiff", currentTimeDiff);
+  // console.log("currentTimeDiff", currentTimeDiff);
   let i = 1;
   while (true) {
     const note = (frontState.quantize.bar / beat) * i;
@@ -673,8 +675,9 @@ export const initQuantizePlay = (
         frontState.quantize.currentTime + frontState.quantize.bar
     ) {
       setTimeout(() => {
-        streamPlay(data.source === "CHAT" ? "CHAT" : "STREAM", id, data);
-      }, note - currentTimeDiff);
+        // streamPlay(data.source === "CHAT" ? "CHAT" : "STREAM", id, data);
+        console.log("streamPlay, debug initQuantizePlay");
+      }, note - currentTimeDiff * 1000);
       break;
     }
     i++;
@@ -696,20 +699,35 @@ export const quantizePlay = (
   },
   id
 ) => {
-  const beat =
-    frontState.quantize.beat === 0
-      ? Math.pow(2, Math.floor(Math.random() * 5))
-      : frontState.quantize.beat;
-  streamPlay(data.source === "CHAT" ? "CHAT" : "STREAM", id, data);
-
-  if (beat >= 16) {
-    const note = frontState.quantize.bar / beat;
-    for (let i = 1; i <= beat / 4; i++) {
-      setTimeout(() => {
-        streamPlay(data.source === "CHAT" ? "CHAT" : "STREAM", id, data);
-      }, note * i);
-    }
+  console.log("streamPlay, debug quantizePlay");
+  // playAudioStream(data.audio, data.sampleRate, data.glitch, data.bufferSize);
+  // if (data.video) {
+  //   showImage(data.video, ctx);
+  //   setTimeout(() => {
+  //     erasePrint(ctx, cnvs);
+  //   }, 300);
+  // } else if (data.source !== undefined) {
+  //   textPrint(data.source.toLowerCase(), ctx, cnvs);
+  // }
+  if (data.source === "CHAT") {
+    chatReq(String(id));
+  } else {
+    socket.emit("streamReqFromClient", data.source);
   }
+  // streamPlay(data.source === "CHAT" ? "CHAT" : "STREAM", id, data);
+
+  // const beat =
+  //   frontState.quantize.beat === 0
+  //     ? Math.pow(2, Math.floor(Math.random() * 5))
+  //     : frontState.quantize.beat;
+  // if (beat >= 16) {
+  //   const note = frontState.quantize.bar / beat;
+  //   for (let i = 1; i <= beat / 4; i++) {
+  //     setTimeout(() => {
+  //       streamPlay(data.source === "CHAT" ? "CHAT" : "STREAM", id, data);
+  //     }, note * i);
+  //   }
+  // }
 };
 
 export const streamPlay = (
@@ -727,89 +745,89 @@ export const streamPlay = (
   },
   cinemaFlag?: boolean
 ) => {
-  if (!frontState.quantize.status) {
-    console.log("chatFromServer");
-    console.log("socket.id(socket.on): " + String(socket.id));
-    // console.log(data.audio);
-    playAudioStream(
-      stream.audio,
-      stream.sampleRate,
-      stream.glitch,
-      stream.bufferSize
-    );
-    if (stream.video) {
-      showImage(stream.video, ctx);
-      if (type === "STREAM" && cinemaFlag !== undefined && cinemaFlag) {
-        setTimeout(() => {
-          erasePrint(ctx, cnvs);
-        }, 300);
-      }
-    } else if (stream.source !== undefined) {
-      textPrint(stream.source.toLowerCase(), ctx, cnvs);
-    }
-    if (frontState.recLatency) {
+  // if (!frontState.quantize.flag) {
+  // console.log("chatFromServer");
+  // console.log("socket.id(socket.on): " + String(socket.id));
+  // console.log(data.audio);
+  playAudioStream(
+    stream.audio,
+    stream.sampleRate,
+    stream.glitch,
+    stream.bufferSize
+  );
+  if (stream.video) {
+    showImage(stream.video, ctx);
+    if (type === "STREAM" && cinemaFlag !== undefined && cinemaFlag) {
       setTimeout(() => {
-        if (type === "CHAT") {
-          chatReq(String(id));
-        } else {
-          socket.emit("streamReqFromClient", stream.source);
-        }
-      }, (stream.bufferSize / stream.sampleRate) * 1000);
-    } else {
+        erasePrint(ctx, cnvs);
+      }, 300);
+    }
+  } else if (stream.source !== undefined) {
+    textPrint(stream.source.toLowerCase(), ctx, cnvs);
+  }
+  if (frontState.recLatency) {
+    setTimeout(() => {
       if (type === "CHAT") {
         chatReq(String(id));
       } else {
         socket.emit("streamReqFromClient", stream.source);
       }
-    }
+    }, (stream.bufferSize / stream.sampleRate) * 1000);
   } else {
-    if (frontState.quantize.timeout === 0) {
-      frontState.quantize.timeout = getBeatTimeout(
-        frontState.quantize.bar / frontState.quantize.beat,
-        audioContext.currentTime,
-        frontState.quantize.currentTime
-      );
-      console.log("timeout", frontState.quantize.timeout);
-      // const currentTime = audioContext.currentTime;
-      // const beatTime = frontState.quantize.bar / frontState.quantize.beat;
-      // frontState.quantize.timeout =
-      //   beatTime > (currentTime - frontState.quantize.currentTime) * 1000
-      //     ? beatTime - (currentTime - frontState.quantize.currentTime) * 1000
-      //     : beatTime * 2 -
-      //       (currentTime - frontState.quantize.currentTime) * 1000;
-      // console.log(
-      //   "bar",
-      //   frontState.quantize.bar,
-      //   "currentTime",
-      //   currentTime,
-      //   "frontState.currentTime",
-      //   frontState.quantize.currentTime
-      // );
-      setTimeout(() => {
-        console.log("play", frontState.quantize.timeout);
-        playAudioStream(
-          stream.audio,
-          stream.sampleRate,
-          stream.glitch,
-          stream.bufferSize
-        );
-        if (stream.video) {
-          showImage(stream.video, ctx);
-        } else if (stream.source !== undefined) {
-          textPrint(stream.source.toLowerCase(), ctx, cnvs);
-        }
-        frontState.quantize.timeout = 0;
-      }, frontState.quantize.timeout);
-    } else {
-      console.log("not timeout", frontState.quantize.timeout);
-    }
-    console.log("request");
     if (type === "CHAT") {
       chatReq(String(id));
     } else {
       socket.emit("streamReqFromClient", stream.source);
     }
   }
+  // } else {
+  //   if (frontState.quantize.timeout === 0) {
+  //     frontState.quantize.timeout = getBeatTimeout(
+  //       frontState.quantize.bar / frontState.quantize.beat,
+  //       audioContext.currentTime,
+  //       frontState.quantize.currentTime
+  //     );
+  //     // console.log("timeout", frontState.quantize.timeout);
+  //     // const currentTime = audioContext.currentTime;
+  //     // const beatTime = frontState.quantize.bar / frontState.quantize.beat;
+  //     // frontState.quantize.timeout =
+  //     //   beatTime > (currentTime - frontState.quantize.currentTime) * 1000
+  //     //     ? beatTime - (currentTime - frontState.quantize.currentTime) * 1000
+  //     //     : beatTime * 2 -
+  //     //       (currentTime - frontState.quantize.currentTime) * 1000;
+  //     // console.log(
+  //     //   "bar",
+  //     //   frontState.quantize.bar,
+  //     //   "currentTime",
+  //     //   currentTime,
+  //     //   "frontState.currentTime",
+  //     //   frontState.quantize.currentTime
+  //     // );
+  //     setTimeout(() => {
+  //       console.log("play", frontState.quantize.timeout);
+  //       playAudioStream(
+  //         stream.audio,
+  //         stream.sampleRate,
+  //         stream.glitch,
+  //         stream.bufferSize
+  //       );
+  //       if (stream.video) {
+  //         showImage(stream.video, ctx);
+  //       } else if (stream.source !== undefined) {
+  //         textPrint(stream.source.toLowerCase(), ctx, cnvs);
+  //       }
+  //       frontState.quantize.timeout = 0;
+  //     }, frontState.quantize.timeout);
+  //   } else {
+  //     console.log("not timeout", frontState.quantize.timeout);
+  //   }
+  //   console.log("request");
+  //   if (type === "CHAT") {
+  //     chatReq(String(id));
+  //   } else {
+  //     socket.emit("streamReqFromClient", stream.source);
+  //   }
+  // }
 };
 
 const getBeatTimeout = (

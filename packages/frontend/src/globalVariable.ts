@@ -7,7 +7,7 @@ export const frontState = {
   start: false,
   recLatency: true,
   quantize: {
-    status: false,
+    flag: false,
     bar: 0,
     beat: 1,
     interval: 0,

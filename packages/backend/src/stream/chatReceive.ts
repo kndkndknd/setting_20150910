@@ -14,13 +14,14 @@ export const chatReceive = async (
   buffer?: buffStateType
   // from: string
 ) => {
-  console.log("buffer.keys:", Object.keys(buffer));
+  // console.log("buffer.keys:", Object.keys(buffer));
   // console.log("buffer.target:", buffer.target);
   // console.log("buffer.from:", buffer.from);
   if (buffer !== undefined) {
     switch (buffer.source) {
       case "CHAT":
         chats.push(buffer);
+        console.log("chat length: ", chats.length);
         if (buffer.from !== undefined) {
           chatEmit(io, buffer.from);
         } else {
@@ -88,7 +89,7 @@ export const chatEmit = async (io, from?) => {
         : pickupStreamTarget(states, "CHAT");
     // const targetId =
     //   states.client[Math.floor(Math.random() * states.client.length)];
-    console.log("chatReceive targetId: ", targetId);
+    // console.log("chatReceive targetId: ", targetId);
     // if (targetId !== "arduino") {
     if (chats.length > 0) {
       const chunk = {
@@ -114,7 +115,7 @@ export const chatEmit = async (io, from?) => {
       }
       if (states.stream.glitch.CHAT && chunk.video) {
         chunk.video = await glitchStream(chunk.video);
-        console.log("glitch", chunk.video.slice(0, 50));
+        // console.log("glitch", chunk.video.slice(0, 50));
       }
       if (!states.stream.grid.CHAT) {
         // io.to(targetId).emit("chatFromServer", chunk);
@@ -129,9 +130,9 @@ export const chatEmit = async (io, from?) => {
         //   (Math.round(Math.random() * 16) * states.stream.latency.CHAT) / 4;
         setTimeout(() => {
           // io.to(targetId).emit("chatFromServer", chunk);
-          console.log("grid setTimeout");
+          // console.log("grid setTimeout");
           if (states.stream.grid.CHAT) {
-            console.log("grid emit");
+            // console.log("grid emit");
             ioEmitChatFromServer(io, chunk, targetId);
           }
         }, timeOutVal);
@@ -170,11 +171,11 @@ export const chatEmit = async (io, from?) => {
 };
 
 const ioEmitChatFromServer = async (io, chunk, targetId) => {
-  console.log("targetId", targetId);
-  console.log("machine", states.client[targetId]);
+  // console.log("targetId", targetId);
+  // console.log("machine", states.client[targetId]);
 
   if (states.stream.floating && !states.client[targetId].projection) {
-    console.log("floating");
+    // console.log("floating");
     const projectionChunk = {
       ...chunk,
       floating: true,

@@ -150,7 +150,7 @@ export function showImage(
   position?: { top: number; left: number; height: number; width: number }
 ) {
   //canvasSizing()
-  console.log(url.slice(0, 50));
+  // console.log(url.slice(0, 50));
   const image = new Image();
   try {
     image.src = url;

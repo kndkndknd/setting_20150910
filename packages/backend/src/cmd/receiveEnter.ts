@@ -23,7 +23,7 @@ import { loadScenario } from "../scenario/loadScenario";
 import { execScenario } from "../scenario/execScenario";
 import { putCmd } from "./putCmd";
 import { cmdLogging } from "../logging/cmdLogging";
-import { quantizeCmd } from "./quantize";
+import { quantizeCmd } from "../stream/quantize";
 
 export const receiveEnter = async (
   strings: string,

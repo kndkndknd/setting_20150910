@@ -1,5 +1,5 @@
 import SocketIO from "socket.io";
-import { cmdStateType, buffStateType } from "../types/global";
+import { cmdStateType, buffStateType } from "../../../types/global";
 import { streams, states } from "../states";
 import { pickupStreamTarget } from "./pickupStreamTarget";
 import { switchCramp } from "../arduinoAccess/arduinoAccess";

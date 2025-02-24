@@ -1,5 +1,5 @@
 import { streamList } from "../states";
-import { cmdStateType } from "../types/global";
+import { cmdStateType } from "../../../types/global";
 
 export const pushStateStream = (
   streamName: string,
@@ -21,4 +21,11 @@ export const pushStateStream = (
     min: 5000,
     max: 132300,
   };
+  states.stream.quantize.flag.stream[streamName] = false;
+  states.stream.quantize.bpm[streamName] = {};
+  states.stream.quantize.beat[streamName] = {};
+  for (let key in states.client) {
+    states.stream.quantize.bpm[streamName][key] = 60;
+    states.stream.quantize.beat[streamName][key] = 0;
+  }
 };

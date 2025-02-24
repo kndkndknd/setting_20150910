@@ -1,5 +1,5 @@
 import SocketIO from "socket.io";
-import { cmdStateType } from "../types/global";
+import { cmdStateType } from "../../../types/global";
 import { cmdEmit } from "./cmdEmit";
 import { sinewaveEmit } from "./sinewaveEmit";
 import { chatPreparation } from "../stream/chatPreparation";

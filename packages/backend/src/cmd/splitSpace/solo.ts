@@ -5,7 +5,7 @@ import {
   states,
   streams,
 } from "../../states";
-import { cmdStateType } from "../../types/global";
+import { cmdStateType } from "../../../../types/global";
 
 export const solo = (
   stringArr: string[],

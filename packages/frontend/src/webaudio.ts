@@ -4,14 +4,6 @@ import { cnvs, ctx } from "./globalVariable";
 import { hlsVideoStop } from "./hlsVideo";
 import { frontState } from "./globalVariable";
 
-export let streamFlag = {
-  chat: false,
-  record: false,
-  timelapse: false,
-  simulate: false,
-  other: "",
-};
-
 let simsGain = 1;
 let chatGainVal = 1.5;
 let glitchGainVal = 1.5;
@@ -174,7 +166,7 @@ export const initAudioStream = (stream) => {
 
 const onAudioProcess = (e: AudioProcessingEvent) => {
   const bufferSize = 8192;
-  if (streamFlag.chat) {
+  if (frontState.chatFlag) {
     let bufferData = {
       source: "CHAT",
       video: toBase64(),
@@ -190,9 +182,9 @@ const onAudioProcess = (e: AudioProcessingEvent) => {
     }
     socket.emit("chatFromClient", bufferData);
     // console.log("chatFromClient");
-    streamFlag.chat = false;
+    frontState.chatFlag = false;
   }
-  if (streamFlag.record) {
+  if (frontState.recordFlag) {
     console.log("record");
     let bufferData = {
       source: "PLAYBACK",
@@ -205,10 +197,10 @@ const onAudioProcess = (e: AudioProcessingEvent) => {
     // console.log(bufferData);
     socket.emit("chatFromClient", bufferData);
   }
-  if (streamFlag.other !== "") {
-    console.log(streamFlag.other);
+  if (frontState.otherStreamFlag !== "") {
+    console.log(frontState.otherStreamFlag);
     let bufferData = {
-      source: streamFlag.other,
+      source: frontState.otherStreamFlag,
       video: toBase64(),
       audio: new Float32Array(bufferSize),
       bufferSize: bufferSize,
@@ -218,7 +210,7 @@ const onAudioProcess = (e: AudioProcessingEvent) => {
     console.log(bufferData);
     socket.emit("chatFromClient", bufferData);
   }
-  if (streamFlag.timelapse) {
+  if (frontState.timelapseFlag) {
     let bufferData = {
       source: "TIMELAPSE",
       video: toBase64(),
@@ -230,9 +222,9 @@ const onAudioProcess = (e: AudioProcessingEvent) => {
     // console.log(bufferData.audio)
     console.log("socket.id(chatFromClient)", socket.id);
     socket.emit("chatFromClient", bufferData);
-    streamFlag.timelapse = false;
+    frontState.timelapseFlag = false;
   }
-  if (streamFlag.simulate) {
+  if (frontState.simulate) {
     let freqData = new Uint8Array(analyser.frequencyBinCount);
     analyser.getByteFrequencyData(freqData);
     console.log(freqData.length);
@@ -399,7 +391,7 @@ export const click = (gain: number, frequency?: number) => {
 
 export const chatReq = (id: string) => {
   // textPrint("chat req", ctx, cnvs);
-  streamFlag.chat = true;
+  frontState.chatFlag = true;
   if (id !== undefined && id) {
     socketId = id;
   }
@@ -409,16 +401,16 @@ export const recordReq = (recordReq: { source: string; timeout: number }) => {
   console.log(recordReq);
   switch (recordReq.source) {
     case "PLAYBACK":
-      streamFlag.record = true;
+      frontState.recordFlag = true;
       setTimeout(() => {
-        streamFlag.record = false;
+        frontState.recordFlag = false;
       }, recordReq.timeout);
       break;
     default:
       console.log("other");
-      streamFlag.other = recordReq.source;
+      frontState.otherStreamFlag = recordReq.source;
       setTimeout(() => {
-        streamFlag.other = "";
+        frontState.otherStreamFlag = "";
       }, recordReq.timeout);
       break;
   }
@@ -449,13 +441,16 @@ export const stopCmd = (fade: number, except?: string) => {
   if (except !== "HLS") {
     hlsVideoStop();
   }
-  streamFlag.simulate = false;
+  frontState.simulate = false;
+  for (let key in frontState.streamFlag) {
+    frontState.streamFlag[key] = false;
+  }
   // const hlsVideo = document.getElementById("hls") as HTMLVideoElement;
 };
 
 export const simulate = (gain: number) => {
-  streamFlag.simulate = !streamFlag.simulate;
-  if (streamFlag.simulate) {
+  frontState.simulate = !frontState.simulate;
+  if (frontState.simulate) {
     simsGain = gain;
   } else {
     simsGain = 0;
@@ -598,14 +593,35 @@ let quantizeInterval: number;
 let quantizerCurrentTime: number = 0;
 let eighthNoteSec: number = 0;
 
-export const quantize = (bar: number, beat: number) => {
+export const quantize = (bar: number, beat: number, stream: string) => {
   console.log("bar", bar);
   frontState.quantize.status = true;
   frontState.quantize.bar = bar;
   frontState.quantize.beat = beat;
+  frontState.quantize.stream = stream;
   frontState.quantize.interval = window.setInterval(() => {
+    if (frontState.quantize.stream === "all") {
+      for (let key in frontState.streamFlag) {
+        if (
+          frontState.streamFlag[key] &&
+          frontState.streamChunk[key] !== undefined &&
+          frontState.streamChunk[key].audio !== undefined
+        ) {
+          quantizePlay(frontState.streamChunk[key], socket.id);
+        }
+      }
+    } else if (
+      frontState.streamFlag[frontState.quantize.stream] &&
+      frontState.streamChunk[frontState.quantize.stream] !== undefined &&
+      frontState.streamChunk[frontState.quantize.stream].audio !== undefined
+    ) {
+      quantizePlay(
+        frontState.streamChunk[frontState.quantize.stream],
+        socket.id
+      );
+    }
     frontState.quantize.currentTime = audioContext.currentTime;
-    console.log("bar", frontState.quantize.currentTime);
+    console.log("bar currentTime", frontState.quantize.currentTime);
   }, bar);
   // eighthNoteSec = eightNote;
   // quantizeInterval = window.setInterval(() => {
@@ -623,6 +639,77 @@ export const stopQuantize = () => {
   frontState.quantize.bar = 0;
   console.log("frontState.quantize", frontState.quantize);
   // quantizerCurrentTime = 0;
+};
+
+export const initQuantizePlay = (
+  data: {
+    source: string;
+    audio: Float32Array;
+    video?: string;
+    sampleRate: number;
+    glitch: boolean;
+    bufferSize: number;
+    duration?: number;
+    floating?: boolean;
+    position?: { top: number; left: number; width: number; height: number };
+    target?: string;
+  },
+  id
+) => {
+  const currentTime = audioContext.currentTime;
+  const currentTimeDiff = currentTime - frontState.quantize.currentTime;
+  const beat =
+    frontState.quantize.beat === 0
+      ? Math.pow(2, Math.floor(Math.random() * 5))
+      : frontState.quantize.beat;
+
+  console.log("currentTimeDiff", currentTimeDiff);
+  let i = 1;
+  while (true) {
+    const note = (frontState.quantize.bar / beat) * i;
+    if (
+      note > currentTimeDiff &&
+      note + currentTime <
+        frontState.quantize.currentTime + frontState.quantize.bar
+    ) {
+      setTimeout(() => {
+        streamPlay(data.source === "CHAT" ? "CHAT" : "STREAM", id, data);
+      }, note - currentTimeDiff);
+      break;
+    }
+    i++;
+  }
+};
+
+export const quantizePlay = (
+  data: {
+    source: string;
+    audio: Float32Array;
+    video?: string;
+    sampleRate: number;
+    glitch: boolean;
+    bufferSize: number;
+    duration?: number;
+    floating?: boolean;
+    position?: { top: number; left: number; width: number; height: number };
+    target?: string;
+  },
+  id
+) => {
+  const beat =
+    frontState.quantize.beat === 0
+      ? Math.pow(2, Math.floor(Math.random() * 5))
+      : frontState.quantize.beat;
+  streamPlay(data.source === "CHAT" ? "CHAT" : "STREAM", id, data);
+
+  if (beat >= 16) {
+    const note = frontState.quantize.bar / beat;
+    for (let i = 1; i <= beat / 4; i++) {
+      setTimeout(() => {
+        streamPlay(data.source === "CHAT" ? "CHAT" : "STREAM", id, data);
+      }, note * i);
+    }
+  }
 };
 
 export const streamPlay = (

@@ -21,7 +21,6 @@ import {
   playAudioStream,
   stopCmd,
   recordReq,
-  streamFlag,
   simulate,
   metronome,
   gainChange,
@@ -29,7 +28,7 @@ import {
   stopQuantize,
 } from "./webaudio";
 
-import { cnvs, ctx, videoElement } from "./globalVariable";
+import { cnvs, ctx, frontState, videoElement } from "./globalVariable";
 
 //import {debugOn} from './socket'
 
@@ -359,9 +358,15 @@ socket.on("windowReqFromServer", (data: newWindowReqType) => {
 
 socket.on(
   "quantizeFromServer",
-  (data: { flag: boolean; bpm: number; bar: number; beat: number }) => {
+  (data: {
+    flag: boolean;
+    stream: string;
+    bpm: number;
+    bar: number;
+    beat: number;
+  }) => {
     if (data.flag) {
-      quantize(data.bar, data.beat);
+      quantize(data.bar, data.beat, data.stream);
       textPrint("QUANTIZE(BPM:" + String(data.bpm) + ")", ctx, cnvs);
       setTimeout(() => {
         erasePrint(ctx, cnvs);
@@ -451,9 +456,9 @@ export const initialize = async () => {
   }
 
   start = true;
-  streamFlag.timelapse = true;
+  frontState.timelapse = true;
   timelapseId = window.setInterval(() => {
-    streamFlag.timelapse = true;
+    frontState.timelapse = true;
   }, 60000);
 
   /*

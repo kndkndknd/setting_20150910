@@ -1,6 +1,6 @@
 import SocketIO from "socket.io";
 
-import { cmdStateType } from "../types/global";
+import { cmdStateType } from "../../../types/global";
 import { cmdList } from "../states";
 
 import { stopEmit } from "./stopEmit";

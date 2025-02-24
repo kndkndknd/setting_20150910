@@ -1,6 +1,6 @@
 import SocketIO from "socket.io";
 
-import { cmdStateType } from "../types/global";
+import { cmdStateType } from "../../../types/global";
 import { putCmd } from "./putCmd";
 
 export const sinewaveChange = (

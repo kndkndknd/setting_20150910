@@ -1,4 +1,4 @@
-import { cmdStateType } from "../../types/global";
+import { cmdStateType } from "../../../../types/global";
 import { stringEmit } from "../../socket/ioEmit";
 import { putCmd } from "../putCmd";
 import { stopEmit } from "../stopEmit";

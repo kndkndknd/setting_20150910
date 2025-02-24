@@ -137,7 +137,24 @@ export type cmdStateType = {
       [key: string]: boolean;
     };
     quantize: {
-      [key: string]: number;
+      flag: {
+        stream: {
+          [key: string]: boolean;
+        };
+        client: {
+          [key: string]: boolean;
+        };
+      };
+      bpm: {
+        [key: string]: {
+          [key: string]: number;
+        };
+      };
+      beat: {
+        [key: string]: {
+          [key: string]: number;
+        };
+      };
     };
     loop: boolean;
     timelapse: boolean;
@@ -162,6 +179,7 @@ export type cmdStateType = {
   timer: boolean;
   hls: string[];
 };
+
 export type buffArrayType = {
   KICK: {
     audio: Array<Float32Array>;

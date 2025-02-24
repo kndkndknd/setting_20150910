@@ -1,5 +1,5 @@
 import SocketIO from "socket.io";
-import { cmdStateType, CmdType } from "../../types/global";
+import { cmdStateType, CmdType } from "../../../../types/global";
 import { cmdList } from "../../states";
 import { stringEmit } from "../../socket/ioEmit";
 import { pickupCmdTarget } from "../pickupCmdTarget";

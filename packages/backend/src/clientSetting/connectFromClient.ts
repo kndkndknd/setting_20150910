@@ -65,6 +65,16 @@ export const connectFromClient = (data, socket, io) => {
 
     // METRONOMEは接続時に初期値を作る
     states.cmd.METRONOME[sockId] = 1000;
+
+    // QUANTIZE
+    states.stream.quantize.flag.client[sockId] = false;
+    for (let key in states.stream.quantize.bpm) {
+      states.stream.quantize.bpm[key][sockId] = 60;
+    }
+    for (let key in states.stream.quantize.beat) {
+      states.stream.quantize.beat[key][sockId] = 0;
+    }
+
     console.log(states.client);
     return true;
     // } else if (data.clientMode === "sinewaveClient") {

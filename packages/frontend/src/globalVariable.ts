@@ -13,10 +13,27 @@ export const frontState = {
     interval: 0,
     currentTime: 0,
     timeout: 0,
+    stream: "all",
   },
   metronome: {
     status: false,
     fournote: 0,
   },
   floatingPosition: {},
+  streamChunk: {
+    CHAT: {},
+    PLAYBACK: {},
+    TIMELAPSE: {},
+  },
+  streamFlag: {
+    CHAT: false,
+    PLAYBACK: false,
+    TIMELAPSE: false,
+  },
+  recordFlag: false,
+  timelapseFlag: false,
+  otherStreamFlag: "",
+  chatFlag: false,
+  simulate: false,
+  timelapse: false,
 };

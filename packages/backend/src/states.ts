@@ -3,7 +3,7 @@ import {
   cmdLogType,
   cmdStateType,
   sevenSinsType,
-} from "./types/global";
+} from "../../types/global";
 
 export const states: cmdStateType = {
   cmd: {
@@ -152,7 +152,22 @@ export const states: cmdStateType = {
       PLAYBACK: false,
       TIMELAPSE: false,
     },
-    quantize: {},
+    quantize: {
+      flag: {
+        client: {},
+        stream: {},
+      },
+      bpm: {
+        CHAT: {},
+        PLAYBACK: {},
+        TIMELAPSE: {},
+      },
+      beat: {
+        CHAT: {},
+        PLAYBACK: {},
+        TIMELAPSE: {},
+      },
+    },
     loop: false,
     timelapse: false,
     floating: false,

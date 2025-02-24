@@ -1,5 +1,5 @@
 import SocketIO from "socket.io";
-import { cmdStateType } from "../types/global";
+import { cmdStateType } from "../../../types/global";
 import { streamList, states } from "../states";
 import { pushStateStream } from "./pushStateStream";
 

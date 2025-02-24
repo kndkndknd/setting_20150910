@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 import { cmdList, streamList, parameterList, states, streams } from "../states";
 // import { putString } from "../cmd/putString";
-import { buffStateType } from "../types/global";
+// import { buffStateType } from "../../../types/global";
 import { stringEmit } from "../socket/ioEmit";
 dotenv.config();
 

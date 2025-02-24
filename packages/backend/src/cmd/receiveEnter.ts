@@ -1,6 +1,6 @@
 import SocketIO from "socket.io";
 
-import { cmdStateType } from "../types/global";
+import { cmdStateType } from "../../../types/global";
 import { cmdList, streamList, parameterList } from "../states";
 import { streamEmit } from "../stream/streamEmit";
 import { cmdEmit } from "./cmdEmit";
@@ -23,6 +23,7 @@ import { loadScenario } from "../scenario/loadScenario";
 import { execScenario } from "../scenario/execScenario";
 import { putCmd } from "./putCmd";
 import { cmdLogging } from "../logging/cmdLogging";
+import { quantizeCmd } from "./quantize";
 
 export const receiveEnter = async (
   strings: string,
@@ -91,44 +92,8 @@ export const receiveEnter = async (
     voiceEmit(io, strings, id, state);
     stopEmit(io, state, id, "ALL");
   } else if (strings === "QUANTIZE") {
-    if (
-      Object.keys(state.stream.quantize).length >
-      Object.keys(state.client).length / 2
-    ) {
-      for (let key in state.stream.quantize) {
-        delete state.stream.quantize[key];
-      }
-      for (let key in state.bpm) {
-        const bar = millisecondsPerBar(state.bpm[key]);
-        io.emit("quantizeFromServer", {
-          flag: false,
-          bpm: state.bpm[key],
-          bar: bar,
-          beat: 1,
-        });
-      }
-    } else {
-      for (let key in state.client) {
-        if (state.stream.quantize[key] === undefined) {
-          // 1~7の整数をランダムで生成
-          // state.stream.quantize[key] = Math.floor(Math.random() * 6) + 1;
-          state.stream.quantize[key] = 4;
-        }
-      }
-      // state.stream.quantize = !state.stream.quantize;
-      console.log("state.bpm", state.bpm);
-      for (let key in state.bpm) {
-        const bar = millisecondsPerBar(state.bpm[key]);
-        // const eighthNote = secondsPerEighthNote(state.bpm[key]);
-        console.log("quantize bar", bar);
-        io.to(key).emit("quantizeFromServer", {
-          flag: true,
-          bpm: state.bpm[key],
-          bar: bar,
-          beat: state.stream.quantize[key],
-        });
-      }
-    }
+    const quantizeObj = quantizeCmd(io, state, "all", "all", 0);
+    io.emit("quantizeFromServer", quantizeObj);
   } else if (strings === "TWICE" || strings === "HALF") {
     sinewaveChange(strings, io, state);
   } else if (strings === "PREVIOUS" || strings === "PREV") {

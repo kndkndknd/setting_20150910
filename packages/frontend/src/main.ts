@@ -23,12 +23,12 @@ import {
   playAudioStream,
   stopCmd,
   recordReq,
-  streamFlag,
   simulate,
   metronome,
   gainChange,
   quantize,
   stopQuantize,
+  initQuantizePlay,
   streamPlay,
 } from "./webaudio";
 
@@ -157,6 +157,7 @@ socket.on("textFromServer", (data: { text: string }) => {
 socket.on("chatReqFromServer", () => {
   chatReq(String(socket.id));
   // textPrint("chatrequest", ctx, cnvs);
+  frontState.streamFlag.CHAT = true;
   setTimeout(() => {
     erasePrint(ctx, cnvs);
   }, 1000);
@@ -188,22 +189,31 @@ socket.on(
     position?: { top: number; left: number; width: number; height: number };
     target?: string;
   }) => {
-    if (data.floating === undefined || !data.floating) {
-      streamPlay("CHAT", socket.id, data);
+    if (
+      frontState.quantize.status &&
+      (frontState.quantize.stream === "all" ||
+        frontState.quantize.stream === "CHAT")
+    ) {
+      const chunk = {
+        source: "CHAT",
+        audio: data.audio,
+        video: data.video,
+        sampleRate: data.sampleRate,
+        glitch: data.glitch,
+        bufferSize: data.bufferSize,
+        duration: data.duration,
+      };
+      // data.source = "CHAT";
+      frontState.streamChunk.CHAT = chunk;
+      initQuantizePlay(chunk, socket.id);
     } else {
-      // const position = positionFloatingImage(data.target);
-      showImage(data.video, ctx, data.position);
+      if (data.floating === undefined || !data.floating) {
+        streamPlay("CHAT", socket.id, data);
+      } else {
+        // const position = positionFloatingImage(data.target);
+        showImage(data.video, ctx, data.position);
+      }
     }
-    // console.log("chatFromServer");
-    // console.log("socket.id(socket.on): " + String(socket.id));
-    // // console.log(data.audio);
-    // playAudioStream(data.audio, data.sampleRate, data.glitch, data.bufferSize);
-    // if (data.video) {
-    //   showImage(data.video, ctx);
-    // }
-    // setTimeout(() => {
-    //   chatReq(String(socket.id));
-    // }, (data.bufferSize / data.sampleRate) * 1000);
   }
 );
 
@@ -222,45 +232,21 @@ socket.on(
     position?: { top: number; left: number; width: number; height: number };
     target?: string;
   }) => {
-    if (data.floating === undefined || !data.floating) {
-      streamPlay("STREAM", socket.id, data, cinemaFlag);
+    frontState.streamFlag[data.source] = true;
+    if (
+      frontState.quantize.status &&
+      (frontState.quantize.stream === "all" ||
+        frontState.quantize.stream === data.source)
+    ) {
+      frontState.streamChunk[data.source] = data;
+      initQuantizePlay(data, socket.id);
     } else {
-      // const position = positionFloatingImage(data.target);
-      showImage(data.video, ctx, data.position);
-      // textPrint(
-      //   `${data.target}, top:${String(position.top)}, left:${String(
-      //     position.left
-      //   )}`,
-      //   ctx,
-      //   cnvs
-      // );
+      if (data.floating === undefined || !data.floating) {
+        streamPlay("STREAM", socket.id, data, cinemaFlag);
+      } else {
+        showImage(data.video, ctx, data.position);
+      }
     }
-    // console.log(data.audio)
-    // console.log(data.video);
-    // // erasePrint(ctx, cnvs)
-    // if (data.audio) {
-    //   playAudioStream(
-    //     data.audio,
-    //     data.sampleRate,
-    //     data.glitch,
-    //     data.bufferSize
-    //   );
-    // }
-    // // console.log(data.video)
-    // if (data.video) {
-    //   showImage(data.video, ctx);
-    //   if (cinemaFlag) {
-    //     setTimeout(() => {
-    //       erasePrint(ctx, cnvs);
-    //     }, 300);
-    //   }
-    // } else {
-    //   textPrint(data.source.toLowerCase(), ctx, cnvs);
-    // }
-    // console.log(data.source);
-    // setTimeout(() => {
-    //   socket.emit("streamReqFromClient", data.source);
-    // }, (data.bufferSize / data.sampleRate) * 1000);
   }
 );
 
@@ -308,9 +294,16 @@ socket.on("windowReqFromServer", (data: newWindowReqType) => {
 
 socket.on(
   "quantizeFromServer",
-  (data: { flag: boolean; bpm: number; bar: number; beat: number }) => {
+  (data: {
+    flag: boolean;
+    stream: string;
+    bpm: number;
+    bar: number;
+    beat: number;
+  }) => {
     if (data.flag) {
-      quantize(data.bar, data.beat);
+      console.log(data);
+      quantize(data.bar, data.beat, data.stream);
       textPrint(
         `QUANTIZE(BPM:${String(data.bpm)},Beat:${String(data.beat)})`,
         ctx,
@@ -466,9 +459,9 @@ export const initialize = async () => {
 
   frontState.start = true;
   // streamFlag.timelapse = true;
-  streamFlag.timelapse = false;
+  frontState.timelapse = false;
   timelapseId = window.setInterval(() => {
-    streamFlag.timelapse = true;
+    frontState.timelapse = true;
   }, 60000);
 
   /*
